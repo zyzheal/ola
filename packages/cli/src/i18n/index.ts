@@ -33,13 +33,12 @@ const getBuiltinLocalesDir = (): string => {
   return path.join(path.dirname(__filename), 'locales');
 };
 
-const getUserLocalesDir = (): string =>
-  path.join(homedir(), '.qwen', 'locales');
+const getUserLocalesDir = (): string => path.join(homedir(), '.ola', 'locales');
 
 /**
  * Get the path to the user's custom locales directory.
  * Users can place custom language packs (e.g., es.js, fr.js) in this directory.
- * @returns The path to ~/.qwen/locales
+ * @returns The path to ~/.ola/locales
  */
 export function getUserLocalesDirectory(): string {
   return getUserLocalesDir();

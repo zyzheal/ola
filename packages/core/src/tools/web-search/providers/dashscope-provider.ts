@@ -59,7 +59,7 @@ interface DashScopeSearchResponse {
 }
 
 // File System Configuration
-const OLA_DIR = '.qwen';
+const OLA_DIR = '.ola';
 const OLA_CREDENTIAL_FILENAME = 'oauth_creds.json';
 
 /**

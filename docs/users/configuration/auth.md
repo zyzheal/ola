@@ -1,6 +1,6 @@
 # Authentication
 
-Qwen Code supports three authentication methods. Pick the one that matches how you want to run the CLI:
+OLA supports three authentication methods. Pick the one that matches how you want to run the CLI:
 
 - **Qwen OAuth**: sign in with your `qwen.ai` account in a browser. Free with a daily quota.
 - **Alibaba Cloud Coding Plan**: use an API key from Alibaba Cloud. Paid subscription with diverse model options and higher quotas.
@@ -10,7 +10,7 @@ Qwen Code supports three authentication methods. Pick the one that matches how y
 
 Use this if you want the simplest setup and you're using Qwen models.
 
-- **How it works**: on first start, Qwen Code opens a browser login page. After you finish, credentials are cached locally so you usually won't need to log in again.
+- **How it works**: on first start, OLA opens a browser login page. After you finish, credentials are cached locally so you usually won't need to log in again.
 - **Requirements**: a `qwen.ai` account + internet access (at least for the first login).
 - **Benefits**: no API key management, automatic credential refresh.
 - **Cost & quota**: free, with a quota of **60 requests/minute** and **1,000 requests/day**.
@@ -36,7 +36,7 @@ qwen auth qwen-oauth
 
 Use this if you want predictable costs with diverse model options and higher usage quotas.
 
-- **How it works**: Subscribe to the Coding Plan with a fixed monthly fee, then configure Qwen Code to use the dedicated endpoint and your subscription API key.
+- **How it works**: Subscribe to the Coding Plan with a fixed monthly fee, then configure OLA to use the dedicated endpoint and your subscription API key.
 - **Requirements**: Obtain an active Coding Plan subscription from [Aliyun Bailian](https://bailian.console.aliyun.com/?tab=model#/efm/coding_plan) or [Alibaba Cloud](https://bailian.console.alibabacloud.com/?tab=model#/efm/coding_plan), depending on the region of your account.
 - **Benefits**: Diverse model options, higher usage quotas, predictable monthly costs, access to a wide range of models (Qwen, GLM, Kimi, Minimax and more).
 - **Cost & quota**: View [Aliyun Bailian Coding Plan documentation](https://bailian.console.aliyun.com/cn-beijing/?tab=doc#/doc/?type=model&url=3005961).
@@ -62,9 +62,9 @@ qwen auth coding-plan
 qwen auth coding-plan --region china --key sk-sp-xxxxxxxxx
 ```
 
-**Option B: Inside a Qwen Code session**
+**Option B: Inside a OLA session**
 
-Enter `qwen` in the terminal to launch Qwen Code, then run the `/auth` command and select **Alibaba Cloud Coding Plan**. Choose your region, then enter your `sk-sp-xxxxxxxxx` key.
+Enter `qwen` in the terminal to launch OLA, then run the `/auth` command and select **Alibaba Cloud Coding Plan**. Choose your region, then enter your `sk-sp-xxxxxxxxx` key.
 
 After authentication, use the `/model` command to switch between all Alibaba Cloud Coding Plan supported models (including qwen3.5-plus, qwen3-coder-plus, qwen3-coder-next, qwen3-max, glm-4.7, and kimi-k2.5).
 
@@ -140,12 +140,12 @@ The simplest way to get started with API Key authentication is to put everything
 
 What each field does:
 
-| Field                        | Description                                                                                                                                     |
-| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `modelProviders`             | Declares which models are available and how to connect to them. Keys (`openai`, `anthropic`, `gemini`) represent the API protocol.              |
-| `env`                        | Stores API keys directly in `settings.json` as a fallback (lowest priority — shell `export` and `.env` files take precedence).                  |
-| `security.auth.selectedType` | Tells Qwen Code which protocol to use on startup (e.g. `openai`, `anthropic`, `gemini`). Without this, you'd need to run `/auth` interactively. |
-| `model.name`                 | The default model to activate when Qwen Code starts. Must match one of the `id` values in your `modelProviders`.                                |
+| Field                        | Description                                                                                                                               |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `modelProviders`             | Declares which models are available and how to connect to them. Keys (`openai`, `anthropic`, `gemini`) represent the API protocol.        |
+| `env`                        | Stores API keys directly in `settings.json` as a fallback (lowest priority — shell `export` and `.env` files take precedence).            |
+| `security.auth.selectedType` | Tells OLA which protocol to use on startup (e.g. `openai`, `anthropic`, `gemini`). Without this, you'd need to run `/auth` interactively. |
+| `model.name`                 | The default model to activate when OLA starts. Must match one of the `id` values in your `modelProviders`.                                |
 
 After saving the file, just run `qwen` — no interactive `/auth` setup needed.
 
@@ -153,7 +153,7 @@ After saving the file, just run `qwen` — no interactive `/auth` setup needed.
 >
 > The sections below explain each part in more detail. If the quick example above works for you, feel free to skip ahead to [Security notes](#security-notes).
 
-The key concept is **Model Providers** (`modelProviders`): Qwen Code supports multiple API protocols, not just OpenAI. You configure which providers and models are available by editing `~/.qwen/settings.json`, then switch between them at runtime with the `/model` command.
+The key concept is **Model Providers** (`modelProviders`): OLA supports multiple API protocols, not just OpenAI. You configure which providers and models are available by editing `~/.qwen/settings.json`, then switch between them at runtime with the `/model` command.
 
 #### Supported protocols
 
@@ -224,7 +224,7 @@ For the full `modelProviders` schema and advanced options like `generationConfig
 
 #### Step 2: Set environment variables
 
-Qwen Code reads API keys from environment variables (specified by `envKey` in your model config). There are multiple ways to provide them, listed below from **highest to lowest priority**:
+OLA reads API keys from environment variables (specified by `envKey` in your model config). There are multiple ways to provide them, listed below from **highest to lowest priority**:
 
 **1. Shell environment / `export` (highest priority)**
 
@@ -247,11 +247,11 @@ export GEMINI_API_KEY="AIza..."
 
 **2. `.env` files**
 
-Qwen Code auto-loads the **first** `.env` file it finds (variables are **not merged** across multiple files). Only variables not already present in `process.env` are loaded.
+OLA auto-loads the **first** `.env` file it finds (variables are **not merged** across multiple files). Only variables not already present in `process.env` are loaded.
 
 Search order (from the current directory, walking upward toward `/`):
 
-1. `.qwen/.env` (preferred — keeps Qwen Code variables isolated from other tools)
+1. `.qwen/.env` (preferred — keeps OLA variables isolated from other tools)
 2. `.env`
 
 If nothing is found, it falls back to your **home directory**:
@@ -261,7 +261,7 @@ If nothing is found, it falls back to your **home directory**:
 
 > [!tip]
 >
-> `.qwen/.env` is recommended over `.env` to avoid conflicts with other tools. Some variables (like `DEBUG` and `DEBUG_MODE`) are excluded from project-level `.env` files to avoid interfering with Qwen Code behavior.
+> `.qwen/.env` is recommended over `.env` to avoid conflicts with other tools. Some variables (like `DEBUG` and `DEBUG_MODE`) are excluded from project-level `.env` files to avoid interfering with OLA behavior.
 
 **3. `settings.json` → `env` field (lowest priority)**
 
@@ -290,7 +290,7 @@ This is the approach used in the [one-file setup example](#recommended-one-file-
 
 #### Step 3: Switch models with `/model`
 
-After launching Qwen Code, use the `/model` command to switch between all configured models. Models are grouped by protocol:
+After launching OLA, use the `/model` command to switch between all configured models. Models are grouped by protocol:
 
 ```
 /model
@@ -312,7 +312,7 @@ qwen --model "qwen3.5-plus"
 
 ## `qwen auth` CLI command
 
-In addition to the in-session `/auth` slash command, Qwen Code provides a standalone `qwen auth` CLI command for managing authentication directly from the terminal — without starting an interactive session first.
+In addition to the in-session `/auth` slash command, OLA provides a standalone `qwen auth` CLI command for managing authentication directly from the terminal — without starting an interactive session first.
 
 ### Interactive mode
 

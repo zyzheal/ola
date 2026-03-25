@@ -25,7 +25,7 @@
     └─ 否 → NPM 包更新检查
              ↓
           有新版？
-             ├─ 是 → 显示"Qwen Code update available!"
+             ├─ 是 → 显示"OLA update available!"
              └─ 否 → 无提示
 ```
 
@@ -61,7 +61,7 @@ ola
 
 - ✅ 检测 NPM 包
 - ✅ 检查 npm registry
-- ✅ 显示：`Qwen Code update available! 0.13.0 → 1.2.1`
+- ✅ 显示：`OLA update available! 0.13.0 → 1.2.1`
 - ✅ 自动执行：npm install -g @latest
 
 ### 场景 3: 本地链接开发
@@ -163,7 +163,7 @@ if (
 | 安装方式       | Git 检测 | NPM 检测 | 自动构建 | 通知消息                     |
 | -------------- | -------- | -------- | -------- | ---------------------------- |
 | **源码 + Git** | ✅       | ❌       | ✅       | Repository update available! |
-| **NPM 全局**   | ❌       | ✅       | ✅       | Qwen Code update available!  |
+| **NPM 全局**   | ❌       | ✅       | ✅       | OLA update available!        |
 | **NPM 本地**   | ✅       | ❌       | ❌       | (跳过)                       |
 | **开发模式**   | ❌       | ❌       | ❌       | (跳过)                       |
 | **npx**        | ❌       | ❌       | ❌       | (跳过)                       |

@@ -41,7 +41,7 @@ const debugLogger = createDebugLogger('SUBAGENT_MANAGER');
 import { BuiltinAgentRegistry } from './builtin-agents.js';
 import { ToolDisplayNamesMigration } from '../tools/tool-names.js';
 
-const OLA_CONFIG_DIR = '.qwen';
+const OLA_CONFIG_DIR = '.ola';
 const AGENT_CONFIG_DIR = 'agents';
 
 /**

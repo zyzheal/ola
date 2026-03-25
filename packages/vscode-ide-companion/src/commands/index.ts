@@ -25,7 +25,7 @@ export const newConversationCommand = 'aip-code.newConversation';
 export const showLogsCommand = 'aip-code.showLogs';
 
 /**
- * Register all Qwen Code chat-related commands.
+ * Register all OLA chat-related commands.
  *
  * `openChat` and `newConversation` always open an editor tab, while
  * `focusChat` focuses the secondary sidebar (preferred) or primary sidebar.
@@ -103,7 +103,7 @@ export function registerNewCommands(
         await providers[providers.length - 1].forceReLogin();
       } else {
         vscode.window.showInformationMessage(
-          'Please open Qwen Code chat first before logging in.',
+          'Please open OLA chat first before logging in.',
         );
       }
     }),

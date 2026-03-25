@@ -1,14 +1,14 @@
-# AGENTS.md - Qwen Code Project Context
+# AGENTS.md - ola Project Context
 
 ## Project Overview
 
-**Qwen Code** is an open-source AI agent for the terminal, optimized for [Qwen3-Coder](https://github.com/QwenLM/Qwen3-Coder). It helps developers understand large codebases, automate tedious work, and ship faster.
+**ola** is an open-source AI agent for the terminal, optimized for code assistance. It helps developers understand large codebases, automate tedious work, and ship faster.
 
-This project is based on [Google Gemini CLI](https://github.com/google-gemini/gemini-cli) with adaptations to better support Qwen-Coder models.
+This project is based on [Google Gemini CLI](https://github.com/google-gemini/gemini-cli) with adaptations to better support AI coding models.
 
 ### Key Features
 
-- **OpenAI-compatible, OAuth free tier**: Use an OpenAI-compatible API, or sign in with Qwen OAuth to get 1,000 free requests/day
+- **OpenAI-compatible, OAuth free tier**: Use an OpenAI-compatible API, or sign in with ola OAuth to get 1,000 free requests/day
 - **Agentic workflow, feature-rich**: Rich built-in tools (Skills, SubAgents, Plan Mode) for a full agentic workflow
 - **Terminal-first, IDE-friendly**: Built for developers who live in the command line, with optional integration for VS Code, Zed, and JetBrains IDEs
 
@@ -61,7 +61,7 @@ Core library containing:
 - **Tools**: File operations (read, write, edit, glob, grep), shell execution, web fetch, LSP integration, MCP client
 - **Subagents**: Task delegation to specialized agents
 - **Skills**: Reusable skill system
-- **Models**: Model configuration and registry for Qwen and OpenAI-compatible APIs
+- **Models**: Model configuration and registry for AI and OpenAI-compatible APIs
 - **Services**: Git integration, file discovery, session management
 - **LSP Support**: Language Server Protocol integration
 - **MCP**: Model Context Protocol implementation
@@ -109,7 +109,7 @@ npm run bundle
 npm start
 
 # Or after global installation
-qwen
+ola
 
 # Debug mode
 npm run debug
@@ -207,14 +207,14 @@ Task delegation framework:
 Hierarchical configuration loading:
 
 1. Default values
-2. User settings (`~/.qwen/settings.json`)
-3. Project settings (`.qwen/settings.json`)
+2. User settings (`~/.ola/settings.json`)
+3. Project settings (`.ola/settings.json`)
 4. Environment variables
 5. CLI flags
 
 ### Authentication Methods
 
-1. **Qwen OAuth** (recommended): Browser-based OAuth flow
+1. **ola OAuth** (recommended): Browser-based OAuth flow
 2. **OpenAI-compatible API**: Via `OPENAI_API_KEY` environment variable
 
 Environment variables for API mode:
@@ -245,7 +245,7 @@ npx react-devtools@4.28.5
 ### Sandbox Debugging
 
 ```bash
-DEBUG=1 qwen
+DEBUG=1 ola
 ```
 
 ## Documentation
@@ -292,6 +292,6 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines. Key points:
 - `/compress` - Compress history to save tokens
 - `/stats` - Show session information
 - `/bug` - Submit bug report
-- `/exit` or `/quit` - Exit Qwen Code
+- `/exit` or `/quit` - Exit ola
 
 ---

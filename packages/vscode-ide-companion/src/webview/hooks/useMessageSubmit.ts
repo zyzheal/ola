@@ -101,7 +101,7 @@ export const useMessageSubmit = ({
         });
         // Show a friendly loading message in the chat while logging in
         try {
-          messageHandling.setWaitingForResponse('Logging in to Qwen Code...');
+          messageHandling.setWaitingForResponse('Logging in to OLA...');
         } catch (_err) {
           // Best-effort UI hint; ignore if hook not available
         }

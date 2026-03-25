@@ -196,7 +196,7 @@ class ThemeManager {
     );
 
     // Separate Qwen themes
-    const qwenThemes = builtInThemes.filter(
+    const _qwenThemes = builtInThemes.filter(
       (theme) => theme.name === QwenLight.name || theme.name === QwenDark.name,
     );
     const otherBuiltInThemes = builtInThemes.filter(
@@ -230,7 +230,7 @@ class ThemeManager {
     );
 
     // Combine Qwen themes first, then sorted others
-    return [...qwenThemes, ...sortedOtherThemes];
+    return [...olaThemes, ...sortedOtherThemes];
   }
 
   /**

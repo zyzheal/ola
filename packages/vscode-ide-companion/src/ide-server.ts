@@ -40,7 +40,7 @@ class CORSError extends Error {
 const MCP_SESSION_ID_HEADER = 'mcp-session-id';
 const IDE_SERVER_PORT_ENV_VAR = 'OLA_CODE_IDE_SERVER_PORT';
 const IDE_WORKSPACE_PATH_ENV_VAR = 'OLA_CODE_IDE_WORKSPACE_PATH';
-const OLA_DIR = '.ola'; // de-branded from .qwen
+const OLA_DIR = '.ola'; // de-branded from .ola
 const IDE_DIR = 'ide';
 
 async function getGlobalIdeDir(): Promise<string> {

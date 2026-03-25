@@ -321,7 +321,7 @@ export async function activate(context: vscode.ExtensionContext) {
           selectedFolder = workspaceFolders[0];
         } else {
           selectedFolder = await vscode.window.showWorkspaceFolderPick({
-            placeHolder: 'Select a folder to run Qwen Code in',
+            placeHolder: 'Select a folder to run OLA in',
           });
         }
 
@@ -335,7 +335,7 @@ export async function activate(context: vscode.ExtensionContext) {
           const execPath = process.execPath;
 
           const terminalOptions: vscode.TerminalOptions = {
-            name: `Qwen Code (${selectedFolder.name})`,
+            name: `OLA (${selectedFolder.name})`,
             cwd: selectedFolder.uri.fsPath,
             location,
           };

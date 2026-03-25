@@ -27,9 +27,9 @@ export class AipIgnoreParser implements AipIgnoreFilter {
   }
 
   private loadPatterns(): void {
-    // Support both .aipignore (new) and .qwenignore (legacy)
+    // Support both .aipignore (new) and .olaignore (legacy)
     const newPatternsFilePath = path.join(this.projectRoot, '.aipignore');
-    const legacyPatternsFilePath = path.join(this.projectRoot, '.qwenignore');
+    const legacyPatternsFilePath = path.join(this.projectRoot, '.olaignore');
     const patternsFilePath = fs.existsSync(newPatternsFilePath)
       ? newPatternsFilePath
       : legacyPatternsFilePath;

@@ -24,7 +24,7 @@ import {
 const debugLogger = createDebugLogger('OLA_OAUTH');
 
 // OAuth Endpoints
-const OLA_OAUTH_BASE_URL = 'https://chat.qwen.ai';
+const OLA_OAUTH_BASE_URL = 'https://chat.ola.ai';
 
 const OLA_OAUTH_DEVICE_CODE_ENDPOINT = `${OLA_OAUTH_BASE_URL}/api/v1/oauth2/device/code`;
 const OLA_OAUTH_TOKEN_ENDPOINT = `${OLA_OAUTH_BASE_URL}/api/v1/oauth2/token`;
@@ -36,7 +36,7 @@ const OLA_OAUTH_SCOPE = 'openid profile email model.completion';
 const OLA_OAUTH_GRANT_TYPE = 'urn:ietf:params:oauth:grant-type:device_code';
 
 // File System Configuration
-const OLA_DIR = '.qwen';
+const OLA_DIR = '.ola';
 const OLA_CREDENTIAL_FILENAME = 'oauth_creds.json';
 
 /**

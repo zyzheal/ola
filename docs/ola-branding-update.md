@@ -57,13 +57,13 @@
 
 ## 品牌元素对比
 
-| 元素       | 修改前           | 修改后                     |
-| ---------- | ---------------- | -------------------------- |
-| ASCII Logo | Qwen 艺术字      | OLA 简约标志               |
-| 应用名称   | Qwen Code        | AI Platform Code Assistant |
-| 命令名称   | qwen             | ola                        |
-| 认证方式   | Qwen OAuth 等    | API Key only               |
-| Tips 文本  | "from Qwen Code" | "from OLA"                 |
+| 元素       | 修改前        | 修改后                     |
+| ---------- | ------------- | -------------------------- |
+| ASCII Logo | Qwen 艺术字   | OLA 简约标志               |
+| 应用名称   | OLA           | AI Platform Code Assistant |
+| 命令名称   | qwen          | ola                        |
+| 认证方式   | Qwen OAuth 等 | API Key only               |
+| Tips 文本  | "from OLA"    | "from OLA"                 |
 
 ---
 

@@ -14,10 +14,10 @@
  * Skills are stored as directories containing a SKILL.md file with YAML
  * frontmatter for metadata. They can be loaded from four levels
  * (precedence: project > user > extension > bundled):
- * - Project-level: `.qwen/skills/`
- * - User-level: `~/.qwen/skills/`
+ * - Project-level: `.ola/skills/`
+ * - User-level: `~/.ola/skills/`
  * - Extension-level: provided by installed extensions
- * - Bundled: built-in skills shipped with qwen-code
+ * - Bundled: built-in skills shipped with ola
  */
 
 // Core types and interfaces

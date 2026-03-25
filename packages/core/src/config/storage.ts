@@ -10,7 +10,7 @@ import * as fs from 'node:fs';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { getProjectHash, sanitizeCwd } from '../utils/paths.js';
 
-export const OLA_DIR = '.ola'; // de-branded from .qwen
+export const OLA_DIR = '.ola'; // de-branded from .ola
 export const GOOGLE_ACCOUNTS_FILENAME = 'google_accounts.json';
 export const OAUTH_FILE = 'oauth_creds.json';
 export const SKILL_PROVIDER_CONFIG_DIRS = ['.ola', '.agents'];
@@ -72,7 +72,7 @@ export class Storage {
    * Pass null/undefined/empty string to reset to default (getGlobalOlaDir()).
    * @param dir - The directory path, or null/undefined to reset
    * @param cwd - Base directory for resolving relative paths (defaults to process.cwd()).
-   *              Pass the project root so that relative values like ".qwen" resolve
+   *              Pass the project root so that relative values like ".ola" resolve
    *              per-project, enabling a single global config to work across all projects.
    */
   static setRuntimeBaseDir(dir: string | null | undefined, cwd?: string): void {
@@ -96,17 +96,14 @@ export class Storage {
    * Returns the base directory for all runtime output (temp files, debug logs,
    * session data, todos, insights, etc.).
    *
-   * Priority: OLA_RUNTIME_DIR > QWEN_RUNTIME_DIR (backward compatibility) > getGlobalOlaDir()
+   * Priority: OLA_RUNTIME_DIR > OLA_RUNTIME_DIR (backward compatibility) > getGlobalOlaDir()
    * @returns Absolute path to the runtime output base directory
    */
   static getRuntimeBaseDir(): string {
     const envDir =
-      process.env['OLA_RUNTIME_DIR'] ||
-      process.env['QWEN_RUNTIME_DIR'];  // Backward compatibility
+      process.env['OLA_RUNTIME_DIR'] || process.env['OLA_RUNTIME_DIR']; // Backward compatibility
     if (envDir) {
-      return (
-        Storage.resolveRuntimeBaseDir(envDir) ?? Storage.getGlobalOlaDir()
-      );
+      return Storage.resolveRuntimeBaseDir(envDir) ?? Storage.getGlobalOlaDir();
     }
 
     const contextualDir = Storage.runtimeBaseDirContext.getStore();

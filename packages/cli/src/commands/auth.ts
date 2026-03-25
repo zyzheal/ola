@@ -61,7 +61,7 @@ const statusCommand = {
 export const authCommand: CommandModule = {
   command: 'auth',
   describe: t(
-    'Configure Qwen authentication information with Qwen-OAuth or Alibaba Cloud Coding Plan',
+    'Configure ola authentication information with ola-OAuth or Alibaba Cloud Coding Plan',
   ),
   builder: (yargs: Argv) =>
     yargs

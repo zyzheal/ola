@@ -5,7 +5,7 @@
  */
 
 /**
- * Converter for Claude Code plugins to Qwen Code format.
+ * Converter for Claude Code plugins to OLA format.
  */
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -155,9 +155,9 @@ function parseStringOrArray(value: unknown): string[] | undefined {
 }
 
 /**
- * Converts a Claude agent config to Qwen Code subagent format.
+ * Converts a Claude agent config to OLA subagent format.
  * @param claudeAgent Claude agent configuration
- * @returns Converted agent config compatible with Qwen Code SubagentConfig
+ * @returns Converted agent config compatible with OLA SubagentConfig
  */
 export function convertClaudeAgentConfig(
   claudeAgent: ClaudeAgentConfig,
@@ -193,7 +193,7 @@ export function convertClaudeAgentConfig(
   }
 
   // Preserve unsupported fields as-is for potential future compatibility
-  // These fields are not supported by Qwen Code SubagentConfig but we keep them
+  // These fields are not supported by OLA SubagentConfig but we keep them
   if (claudeAgent.permissionMode) {
     qwenAgent['permissionMode'] = claudeAgent.permissionMode;
   }
@@ -289,7 +289,7 @@ ${systemPrompt}
 }
 
 /**
- * Converts a Claude plugin config to Qwen Code format.
+ * Converts a Claude plugin config to OLA format.
  * @param claudeConfig Claude plugin configuration
  * @returns Qwen ExtensionConfig
  */
@@ -345,7 +345,7 @@ export function convertClaudeToQwenConfig(
 }
 
 /**
- * Converts a complete Claude plugin package to Qwen Code format.
+ * Converts a complete Claude plugin package to OLA format.
  * Creates a new temporary directory with:
  * 1. Converted qwen-extension.json
  * 2. Commands, skills, and agents collected to respective folders

@@ -50,7 +50,7 @@ describe('Core System Prompt (prompts.ts)', () => {
     const prompt = getCoreSystemPrompt();
     expect(prompt).not.toContain('---\n\n'); // Separator should not be present
     expect(prompt).toContain(
-      'You are AI Platform Code Assistant, an interactive CLI agent',
+      'You are AI Platform Cli Assistant, an interactive CLI agent',
     ); // Check for core content
     expect(prompt).toMatchSnapshot(); // Use snapshot for base prompt structure
   });
@@ -60,7 +60,7 @@ describe('Core System Prompt (prompts.ts)', () => {
     const prompt = getCoreSystemPrompt('');
     expect(prompt).not.toContain('---\n\n');
     expect(prompt).toContain(
-      'You are AI Platform Code Assistant, an interactive CLI agent',
+      'You are AI Platform Cli Assistant, an interactive CLI agent',
     );
     expect(prompt).toMatchSnapshot();
   });
@@ -70,7 +70,7 @@ describe('Core System Prompt (prompts.ts)', () => {
     const prompt = getCoreSystemPrompt('   \n  \t ');
     expect(prompt).not.toContain('---\n\n');
     expect(prompt).toContain(
-      'You are AI Platform Code Assistant, an interactive CLI agent',
+      'You are AI Platform Cli Assistant, an interactive CLI agent',
     );
     expect(prompt).toMatchSnapshot();
   });
@@ -83,7 +83,7 @@ describe('Core System Prompt (prompts.ts)', () => {
 
     expect(prompt.endsWith(expectedSuffix)).toBe(true);
     expect(prompt).toContain(
-      'You are AI Platform Code Assistant, an interactive CLI agent',
+      'You are AI Platform Cli Assistant, an interactive CLI agent',
     ); // Ensure base prompt follows
     expect(prompt).toMatchSnapshot(); // Snapshot the combined prompt
   });

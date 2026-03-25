@@ -1,6 +1,6 @@
 # OLA 本地安装与使用指南
 
-AI Platform Code Assistant - 基于 qwen-code 二次开发的 AI 编码助手
+AI Platform Code Assistant - 基于 ola 二次开发的 AI 编码助手
 
 ## 目录
 
@@ -469,10 +469,10 @@ aiops --model qwen2.5-72b
 
 ```bash
 # 改为英文
-echo '<!-- qwen-code:llm-output-language: English -->' > /~.aiops/output-language.md
+echo '<!-- ola:llm-output-language: English -->' > /~.aiops/output-language.md
 
 # 改回中文
-echo '<!-- qwen-code:llm-output-language: Chinese -->' > /~.aiops/output-language.md
+echo '<!-- ola:llm-output-language: Chinese -->' > /~.aiops/output-language.md
 ```
 
 ### 配置代理
@@ -711,4 +711,4 @@ npm publish --workspace=packages/cli
 
 - 项目仓库：https://github.com/your-org/ai-platform
 - 问题反馈：https://github.com/your-org/ai-platform/issues
-- 原始项目：[qwen-code](https://github.com/QwenLM/qwen-code)（Apache 2.0）
+- 原始项目：[ola](https://github.com/QwenLM/ola)（Apache 2.0）

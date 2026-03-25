@@ -7,7 +7,7 @@
 ```
 ✕ Automatic update failed. Please try updating manually
 
-● Qwen Code update available! 0.13.0 → 1.2.1
+● OLA update available! 0.13.0 → 1.2.1
   Installed with npm. Attempting to automatically update now...
 ```
 
@@ -125,7 +125,7 @@ NODE_ENV=development ola
 
 ```
 ✕ Automatic update failed. Please try updating manually
-● Qwen Code update available! 0.13.0 → 1.2.1
+● OLA update available! 0.13.0 → 1.2.1
 ```
 
 **修改后**:

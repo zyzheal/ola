@@ -22,7 +22,7 @@ import { createDebugLogger } from '../utils/debugLogger.js';
 const debugLogger = createDebugLogger('OLA_OAUTH');
 
 // File System Configuration
-const OLA_DIR = '.qwen';
+const OLA_DIR = '.ola';
 const OLA_CREDENTIAL_FILENAME = 'oauth_creds.json';
 const OLA_LOCK_FILENAME = 'oauth_creds.lock';
 

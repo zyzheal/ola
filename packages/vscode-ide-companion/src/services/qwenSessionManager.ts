@@ -24,7 +24,7 @@ export class QwenSessionManager {
   private qwenDir: string;
 
   constructor() {
-    this.qwenDir = path.join(os.homedir(), '.qwen');
+    this.olaDir = path.join(os.homedir(), '.ola');
   }
 
   /**
@@ -32,7 +32,7 @@ export class QwenSessionManager {
    */
   private getSessionDir(workingDir: string): string {
     const projectHash = getProjectHash(workingDir);
-    const sessionDir = path.join(this.qwenDir, 'tmp', projectHash, 'chats');
+    const sessionDir = path.join(this.olaDir, 'tmp', projectHash, 'chats');
     return sessionDir;
   }
 

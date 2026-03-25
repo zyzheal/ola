@@ -26,7 +26,7 @@ import { SKILL_PROVIDER_CONFIG_DIRS } from '../config/storage.js';
 
 const debugLogger = createDebugLogger('SKILL_MANAGER');
 
-const OLA_CONFIG_DIR = '.qwen';
+const OLA_CONFIG_DIR = '.ola';
 const SKILLS_CONFIG_DIR = 'skills';
 const SKILL_MANIFEST_FILE = 'SKILL.md';
 
@@ -502,7 +502,7 @@ export class SkillManager {
 
     // Iterate provider directories in PROVIDER_CONFIG_DIRS order.
     // The first directory that contains a skill with a given name wins,
-    // so the order defines implicit precedence (.qwen > .agent > .cursor > ...).
+    // so the order defines implicit precedence (.ola > .agent > .cursor > ...).
     const baseDirs = this.getSkillsBaseDirs(level);
     const skills: SkillConfig[] = [];
     const seenNames = new Set<string>();

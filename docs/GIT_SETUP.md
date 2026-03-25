@@ -9,7 +9,7 @@
 git@github.com:zyzheal/ola.git
 
 # 上游原始仓库（upstream）
-https://github.com/QwenLM/qwen-code.git
+https://github.com/QwenLM/ola.git
 ```
 
 ### 分支结构
@@ -210,7 +210,7 @@ git commit -m "Add your feature"
 git push origin feature/your-feature
 
 # 4. 在 GitHub 上创建 Pull Request
-# 访问：https://github.com/QwenLM/qwen-code/compare
+# 访问：https://github.com/QwenLM/ola/compare
 # 选择你的分支并创建 PR
 ```
 

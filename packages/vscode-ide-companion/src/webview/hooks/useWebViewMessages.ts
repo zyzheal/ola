@@ -924,7 +924,7 @@ export const useWebViewMessages = ({
           // Reset the VS Code tab title to default label
           vscode.postMessage({
             type: 'updatePanelTitle',
-            data: { title: 'Qwen Code' },
+            data: { title: 'OLA' },
           });
           lastPlanSnapshotRef.current = null;
           break;

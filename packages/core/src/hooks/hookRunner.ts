@@ -224,7 +224,7 @@ export class HookRunner {
         ...process.env,
         GEMINI_PROJECT_DIR: input.cwd,
         CLAUDE_PROJECT_DIR: input.cwd, // For compatibility
-        OLA_PROJECT_DIR: input.cwd, // For Qwen Code compatibility
+        OLA_PROJECT_DIR: input.cwd, // For OLA compatibility
         ...hookConfig.env,
       };
 

@@ -193,9 +193,9 @@ export async function parseArguments(): Promise<CliArgs> {
 
   const yargsInstance = yargs(rawArgv)
     .locale('en')
-    .scriptName('qwen')
+    .scriptName('ola')
     .usage(
-      'Usage: qwen [options] [command]\n\naiops - Launch an interactive CLI, use -p/--prompt for non-interactive mode',
+      'Usage: ola [options] [command]\n\nola - Launch an interactive CLI, use -p/--prompt for non-interactive mode',
     )
     .option('telemetry', {
       type: 'boolean',
@@ -260,7 +260,7 @@ export async function parseArguments(): Promise<CliArgs> {
     })
     .option('proxy', {
       type: 'string',
-      description: 'Proxy for aiops, like schema://user:password@host:port',
+      description: 'Proxy for ola, like schema://user:password@host:port',
     })
     .deprecateOption(
       'proxy',
@@ -271,7 +271,7 @@ export async function parseArguments(): Promise<CliArgs> {
       description:
         'Enable chat recording to disk. If false, chat history is not saved and --continue/--resume will not work.',
     })
-    .command('$0 [query..]', 'Launch aiops CLI', (yargsInstance: Argv) =>
+    .command('$0 [query..]', 'Launch ola CLI', (yargsInstance: Argv) =>
       yargsInstance
         .positional('query', {
           description:
@@ -544,8 +544,11 @@ export async function parseArguments(): Promise<CliArgs> {
             ? query.length > 0
             : !!query;
 
+          // Only check for conflict if prompt is explicitly provided via -p flag
+          // When using -p, positional arguments are treated as file contexts, not prompts
           if (argv['prompt'] && hasPositionalQuery) {
-            return 'Cannot use both a positional prompt and the --prompt (-p) flag together';
+            // Allow positional arguments when -p is used - they will be treated as file contexts
+            // No error needed
           }
           if (argv['prompt'] && argv['promptInteractive']) {
             return 'Cannot use both --prompt (-p) and --prompt-interactive (-i) together';
@@ -632,6 +635,17 @@ export async function parseArguments(): Promise<CliArgs> {
     } else {
       result['prompt'] = q;
     }
+  } else if (q && result['prompt']) {
+    // When -p is used with positional arguments, treat positional args as file contexts
+    // Convert them to @file syntax and append to the prompt
+    const positionalFiles = Array.isArray(queryArg) ? queryArg : [queryArg];
+    const fileContext = positionalFiles
+      .filter((f): f is string => Boolean(f))
+      .map((f: string) => `@${f}`)
+      .join(' ');
+    if (fileContext) {
+      result['prompt'] = `${result['prompt']} ${fileContext}`;
+    }
   }
 
   // Keep CliArgs.query as a string for downstream typing
@@ -710,7 +724,7 @@ export async function loadCliConfig(
 
   // Set runtime output directory from settings (env var OLA_RUNTIME_DIR
   // is auto-detected inside getRuntimeBaseDir() at each call site).
-  // Pass cwd so that relative paths like ".qwen" resolve per-project.
+  // Pass cwd so that relative paths like ".ola" resolve per-project.
   Storage.setRuntimeBaseDir(settings.advanced?.runtimeOutputDir, cwd);
 
   const ideMode = settings.ide?.enabled ?? false;
@@ -997,7 +1011,7 @@ export async function loadCliConfig(
       sessionId = argv.resume;
       sessionData = await sessionService.loadSession(argv.resume);
       if (!sessionData) {
-        const message = `No saved session found with ID ${argv.resume}. Run \`qwen --resume\` without an ID to choose from existing sessions.`;
+        const message = `No saved session found with ID ${argv.resume}. Run \`ola --resume\` without an ID to choose from existing sessions.`;
         writeStderrLine(message);
         process.exit(1);
       }

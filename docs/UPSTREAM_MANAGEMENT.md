@@ -1,8 +1,8 @@
 # OLA 上游更新管理指南
 
-AI Platform Code Assistant - 基于 qwen-code 二次开发的 AI 编码助手
+AI Platform Code Assistant - 基于 ola 二次开发的 AI 编码助手
 
-本文档说明如何管理基于 qwen-code 二次开发的 OLA 项目，包括如何合并上游更新、管理自定义修改等。
+本文档说明如何管理基于 ola 二次开发的 OLA 项目，包括如何合并上游更新、管理自定义修改等。
 
 ## 目录
 
@@ -43,23 +43,23 @@ ola/
 ### 初始设置
 
 ```bash
-# 1. Fork qwen-code 到你的 GitHub 账号
-# 访问：https://github.com/QwenLM/qwen-code
+# 1. Fork ola 到你的 GitHub 账号
+# 访问：https://github.com/QwenLM/ola
 
 # 2. 克隆你的 Fork
-git clone https://github.com/YOUR_USERNAME/qwen-code.git ola
+git clone https://github.com/YOUR_USERNAME/ola.git ola
 cd ola
 
 # 3. 添加上游仓库
-git remote add upstream https://github.com/QwenLM/qwen-code.git
+git remote add upstream https://github.com/QwenLM/ola.git
 
 # 4. 验证配置
 git remote -v
 # 输出应该类似：
-# origin    https://github.com/YOUR_USERNAME/qwen-code.git (fetch)
-# origin    https://github.com/YOUR_USERNAME/qwen-code.git (push)
-# upstream  https://github.com/QwenLM/qwen-code.git (fetch)
-# upstream  https://github.com/QwenLM/qwen-code.git (push)
+# origin    https://github.com/YOUR_USERNAME/ola.git (fetch)
+# origin    https://github.com/YOUR_USERNAME/ola.git (push)
+# upstream  https://github.com/QwenLM/ola.git (fetch)
+# upstream  https://github.com/QwenLM/ola.git (push)
 ```
 
 ### 分支策略
@@ -208,7 +208,7 @@ git commit
 <<<<<<< HEAD
 - You are AI Platform Code Assistant, an interactive CLI agent...
 =======
-+ You are Qwen Code, an interactive CLI agent...
++ You are OLA, an interactive CLI agent...
 + [上游新增的功能说明]
 >>>>>>> upstream/main
 ```
@@ -226,7 +226,7 @@ git commit
 <<<<<<< HEAD
 - "name": "ola",
 =======
-+ "name": "@qwen-code/qwen-code",
++ "name": "@ola/ola",
 >>>>>>> upstream/main
 ```
 

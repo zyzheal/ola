@@ -32,7 +32,7 @@ export class FileDiscoveryService {
     if (isGitRepository(this.projectRoot)) {
       this.gitIgnoreFilter = new GitIgnoreParser(this.projectRoot);
     }
-    this.qwenIgnoreFilter = new QwenIgnoreParser(this.projectRoot);
+    this.olaIgnoreFilter = new QwenIgnoreParser(this.projectRoot);
   }
 
   /**
@@ -106,8 +106,8 @@ export class FileDiscoveryService {
    * Checks if a single file should be qwen-ignored
    */
   shouldQwenIgnoreFile(filePath: string): boolean {
-    if (this.qwenIgnoreFilter) {
-      return this.qwenIgnoreFilter.isIgnored(filePath);
+    if (this.olaIgnoreFilter) {
+      return this.olaIgnoreFilter.isIgnored(filePath);
     }
     return false;
   }
@@ -134,9 +134,9 @@ export class FileDiscoveryService {
   }
 
   /**
-   * Returns loaded patterns from .qwenignore
+   * Returns loaded patterns from .olaignore
    */
   getQwenIgnorePatterns(): string[] {
-    return this.qwenIgnoreFilter?.getPatterns() ?? [];
+    return this.olaIgnoreFilter?.getPatterns() ?? [];
   }
 }

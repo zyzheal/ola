@@ -241,7 +241,7 @@ export interface QueryOptions {
    *
    * - `string`: fully overrides the main session system prompt
    * - `{ type: 'preset', preset: 'qwen_code', append?: string }`:
-   *   uses Qwen Code's built-in prompt as the base and optionally appends extra
+   *   uses OLA's built-in prompt as the base and optionally appends extra
    *   instructions for the main session
    */
   systemPrompt?: QuerySystemPrompt;
@@ -421,7 +421,7 @@ export interface QueryOptions {
    * - 'qwen-oauth': Use Qwen OAuth authentication
    *
    * Though we support 'qwen-oauth', it's not recommended to use it in the SDK.
-   * Because the credentials are stored in `~/.qwen` and may need to refresh periodically.
+   * Because the credentials are stored in `~/.ola` and may need to refresh periodically.
    */
   authType?: AuthType;
 

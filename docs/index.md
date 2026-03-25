@@ -1,6 +1,6 @@
 # OLA 文档中心
 
-AI Platform Code Assistant - 基于 qwen-code 二次开发的 AI 编码助手
+AI Platform Code Assistant - 基于 ola 二次开发的 AI 编码助手
 
 ## 快速开始
 
@@ -33,8 +33,8 @@ AI Platform Code Assistant - 基于 qwen-code 二次开发的 AI 编码助手
 
 ## 外部资源
 
-- [qwen-code 原始项目](https://github.com/QwenLM/qwen-code)
-- [qwen-code 文档](https://qwenlm.github.io/qwen-code-docs/)
+- [ola 原始项目](https://github.com/QwenLM/ola)
+- [ola 文档](https://qwenlm.github.io/ola-docs/)
 
 ## 技术支持
 
