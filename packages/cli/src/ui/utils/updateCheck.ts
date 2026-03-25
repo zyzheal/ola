@@ -9,6 +9,7 @@ import updateNotifier from 'update-notifier';
 import semver from 'semver';
 import { getPackageJson } from '../../utils/package.js';
 import { createDebugLogger } from 'ola-core';
+import * as childProcess from 'node:child_process';
 
 const debugLogger = createDebugLogger('UPDATE_CHECK');
 
@@ -45,11 +46,40 @@ function getBestAvailableUpdate(
 export async function checkForUpdates(): Promise<UpdateObject | null> {
   try {
     // Skip update check when running from source (development mode)
-    if (process.env['DEV'] === 'true') {
+    // Always skip in development/local builds
+    if (
+      process.env['DEV'] === 'true' ||
+      process.env['NODE_ENV'] === 'development'
+    ) {
+      debugLogger.info('Skipping update check in development mode');
       return null;
     }
     const packageJson = await getPackageJson();
     if (!packageJson || !packageJson.name || !packageJson.version) {
+      return null;
+    }
+
+    // Check if this is a local git repository
+    const gitDir = childProcess
+      .execSync('git rev-parse --git-dir', {
+        cwd: process.cwd(),
+        encoding: 'utf8',
+        stdio: 'pipe',
+      })
+      .trim();
+
+    if (gitDir) {
+      return checkForLocalRepoUpdate(packageJson.version);
+    }
+
+    // Skip update check for local development versions
+    // Check if this is a locally linked package (npm link)
+    const pkgJson = packageJson as Record<string, unknown>;
+    const fromField = pkgJson['_from'] as string | undefined;
+    const resolvedField = pkgJson['_resolved'] as string | undefined;
+
+    if (fromField?.includes('file:') || resolvedField?.includes('file:')) {
+      debugLogger.info('Skipping update check for locally linked package');
       return null;
     }
 
@@ -99,6 +129,54 @@ export async function checkForUpdates(): Promise<UpdateObject | null> {
     return null;
   } catch (e) {
     debugLogger.warn('Failed to check for updates: ' + e);
+    return null;
+  }
+}
+
+/**
+ * Check for updates in local git repository
+ */
+function checkForLocalRepoUpdate(currentVersion: string): UpdateObject | null {
+  try {
+    const cwd = process.cwd();
+
+    // Get current commit hash
+    const currentCommit = childProcess
+      .execSync('git rev-parse HEAD', { cwd, encoding: 'utf8' })
+      .trim();
+
+    // Get current branch
+    const branch = childProcess
+      .execSync('git rev-parse --abbrev-ref HEAD', { cwd, encoding: 'utf8' })
+      .trim();
+
+    // Fetch latest from origin
+    childProcess.execSync('git fetch origin', { cwd, stdio: 'ignore' });
+
+    // Get latest remote commit
+    const latestCommit = childProcess
+      .execSync(`git rev-parse origin/${branch}`, { cwd, encoding: 'utf8' })
+      .trim();
+
+    debugLogger.info(
+      `Local commit: ${currentCommit}, Remote commit: ${latestCommit}`,
+    );
+
+    if (currentCommit !== latestCommit) {
+      return {
+        message: `Repository update available! (${currentCommit.slice(0, 7)} → ${latestCommit.slice(0, 7)})`,
+        update: {
+          current: currentVersion,
+          latest: `${currentVersion}+${latestCommit.slice(0, 7)}`,
+          name: 'ola',
+          type: 'latest' as const,
+        },
+      };
+    }
+
+    return null;
+  } catch (e) {
+    debugLogger.warn('Failed to check local repo update: ' + e);
     return null;
   }
 }

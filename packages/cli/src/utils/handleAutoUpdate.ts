@@ -13,6 +13,14 @@ import { MessageType } from '../ui/types.js';
 import { spawnWrapper } from './spawnWrapper.js';
 import type { spawn } from 'node:child_process';
 import os from 'node:os';
+import { createDebugLogger } from 'ola-core';
+import {
+  isLocalGitRepo,
+  updateFromLocalRepo,
+  type LocalRepoUpdateResult,
+} from './localRepoUpdate.js';
+
+const debugLogger = createDebugLogger('HANDLE_AUTO_UPDATE');
 
 export function handleAutoUpdate(
   info: UpdateObject | null,
@@ -21,6 +29,21 @@ export function handleAutoUpdate(
   spawnFn: typeof spawn = spawnWrapper,
 ) {
   if (!info) {
+    return;
+  }
+
+  // Skip auto-update in development/local mode
+  if (
+    process.env['DEV'] === 'true' ||
+    process.env['NODE_ENV'] === 'development' ||
+    process.env['OLA_LOCAL_DEV'] === 'true'
+  ) {
+    return;
+  }
+
+  // Check if this is a local git repository - use local repo update
+  if (isLocalGitRepo(projectRoot)) {
+    handleLocalRepoUpdate(projectRoot, info);
     return;
   }
 
@@ -81,6 +104,35 @@ export function handleAutoUpdate(
     });
   });
   return updateProcess;
+}
+
+/**
+ * Handle update from local git repository
+ */
+function handleLocalRepoUpdate(projectRoot: string, info: UpdateObject) {
+  updateEventEmitter.emit('update-received', {
+    message: `${info.message}\nLocal git repository detected. Updating from remote repository...`,
+  });
+
+  updateFromLocalRepo(
+    { projectRoot, branch: 'main', remote: 'origin' },
+    (message) => {
+      // Progress updates
+      debugLogger.info('Update progress:', message);
+      updateEventEmitter.emit('update-info', { message });
+    },
+    (result: LocalRepoUpdateResult) => {
+      if (result.success) {
+        updateEventEmitter.emit('update-success', {
+          message: result.message,
+        });
+      } else {
+        updateEventEmitter.emit('update-failed', {
+          message: `Local repo update failed: ${result.message}`,
+        });
+      }
+    },
+  );
 }
 
 export function setUpdateHandler(
