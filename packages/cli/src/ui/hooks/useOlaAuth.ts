@@ -12,7 +12,7 @@ import {
   type DeviceAuthorizationData,
 } from 'ola-core';
 
-export interface QwenAuthState {
+export interface OlaAuthState {
   deviceAuth: DeviceAuthorizationData | null;
   authStatus:
     | 'idle'
@@ -24,23 +24,23 @@ export interface QwenAuthState {
   authMessage: string | null;
 }
 
-export const useQwenAuth = (
+export const useOlaAuth = (
   pendingAuthType: AuthType | undefined,
   isAuthenticating: boolean,
 ) => {
-  const [qwenAuthState, setQwenAuthState] = useState<QwenAuthState>({
+  const [olaAuthState, setOlaAuthState] = useState<OlaAuthState>({
     deviceAuth: null,
     authStatus: 'idle',
     authMessage: null,
   });
 
-  const isQwenAuth = pendingAuthType === AuthType.OLA_OAUTH;
+  const isOlaAuth = pendingAuthType === AuthType.OLA_OAUTH;
 
   // Set up event listeners when authentication starts
   useEffect(() => {
-    if (!isQwenAuth || !isAuthenticating) {
+    if (!isOlaAuth || !isAuthenticating) {
       // Reset state when not authenticating or not Qwen auth
-      setQwenAuthState({
+      setOlaAuthState({
         deviceAuth: null,
         authStatus: 'idle',
         authMessage: null,
@@ -48,14 +48,14 @@ export const useQwenAuth = (
       return;
     }
 
-    setQwenAuthState((prev) => ({
+    setOlaAuthState((prev) => ({
       ...prev,
       authStatus: 'idle',
     }));
 
     // Set up event listeners
     const handleDeviceAuth = (deviceAuth: DeviceAuthorizationData) => {
-      setQwenAuthState((prev) => ({
+      setOlaAuthState((prev) => ({
         ...prev,
         deviceAuth: {
           verification_uri: deviceAuth.verification_uri,
@@ -72,7 +72,7 @@ export const useQwenAuth = (
       status: 'success' | 'error' | 'polling' | 'timeout' | 'rate_limit',
       message?: string,
     ) => {
-      setQwenAuthState((prev) => ({
+      setOlaAuthState((prev) => ({
         ...prev,
         authStatus: status,
         authMessage: message || null,
@@ -88,13 +88,13 @@ export const useQwenAuth = (
       qwenOAuth2Events.off(OlaOAuth2Event.AuthUri, handleDeviceAuth);
       qwenOAuth2Events.off(OlaOAuth2Event.AuthProgress, handleAuthProgress);
     };
-  }, [isQwenAuth, isAuthenticating]);
+  }, [isOlaAuth, isAuthenticating]);
 
-  const cancelQwenAuth = useCallback(() => {
+  const cancelOlaAuth = useCallback(() => {
     // Emit cancel event to stop polling
     qwenOAuth2Events.emit(OlaOAuth2Event.AuthCancel);
 
-    setQwenAuthState({
+    setOlaAuthState({
       deviceAuth: null,
       authStatus: 'idle',
       authMessage: null,
@@ -102,7 +102,7 @@ export const useQwenAuth = (
   }, []);
 
   return {
-    qwenAuthState,
-    cancelQwenAuth,
+    olaAuthState,
+    cancelOlaAuth,
   };
 };

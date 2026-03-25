@@ -47,7 +47,7 @@ describe('ModelRegistry', () => {
 
     it('should ignore qwen-oauth models in config (hard-coded)', () => {
       const modelProvidersConfig: ModelProvidersConfig = {
-        'qwen-oauth': [
+        'ola-oauth': [
           {
             id: 'custom-qwen',
             name: 'Custom Qwen',
@@ -451,7 +451,7 @@ describe('ModelRegistry', () => {
       const registry = new ModelRegistry();
 
       registry.reloadModels({
-        'qwen-oauth': [{ id: 'custom-qwen', name: 'Custom Qwen' }],
+        'ola-oauth': [{ id: 'custom-qwen', name: 'Custom Qwen' }],
       });
 
       // qwen-oauth should still use hard-coded models

@@ -306,7 +306,7 @@ describe('AuthDialog', () => {
       const { lastFrame } = renderAuthDialog(settings);
 
       // OLA_OAUTH is the first option, so it should be selected
-      expect(lastFrame()).toContain('Qwen OAuth');
+      expect(lastFrame()).toContain('ola OAuth');
     });
 
     it('should fall back to default if OLA_DEFAULT_AUTH_TYPE is not set', () => {
@@ -345,8 +345,8 @@ describe('AuthDialog', () => {
 
       const { lastFrame } = renderAuthDialog(settings);
 
-      // Default is Qwen OAuth (first option)
-      expect(lastFrame()).toContain('Qwen OAuth');
+      // Default is ola OAuth (first option)
+      expect(lastFrame()).toContain('ola OAuth');
     });
 
     it('should show an error and fall back to default if OLA_DEFAULT_AUTH_TYPE is invalid', () => {
@@ -388,8 +388,8 @@ describe('AuthDialog', () => {
       const { lastFrame } = renderAuthDialog(settings);
 
       // Since the auth dialog doesn't show OLA_DEFAULT_AUTH_TYPE errors anymore,
-      // it will just show the default Qwen OAuth option
-      expect(lastFrame()).toContain('Qwen OAuth');
+      // it will just show the default ola OAuth option
+      expect(lastFrame()).toContain('ola OAuth');
     });
   });
 

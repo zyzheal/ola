@@ -20,7 +20,7 @@ export interface OpenAICredentials {
   baseUrl?: string;
   model?: string;
 }
-import { useQwenAuth } from '../hooks/useQwenAuth.js';
+import { useOlaAuth } from '../hooks/useOlaAuth.js';
 import { AuthState, MessageType } from '../types.js';
 import type { HistoryItem } from '../types.js';
 import { t } from '../../i18n/index.js';
@@ -32,7 +32,7 @@ import {
 } from '../../constants/codingPlan.js';
 import { backupSettingsFile } from '../../utils/settingsUtils.js';
 
-export type { QwenAuthState } from '../hooks/useQwenAuth.js';
+export type { OlaAuthState } from '../hooks/useOlaAuth.js';
 
 export const useAuthCommand = (
   settings: LoadedSettings,
@@ -54,7 +54,7 @@ export const useAuthCommand = (
     undefined,
   );
 
-  const { qwenAuthState, cancelQwenAuth } = useQwenAuth(
+  const { olaAuthState, cancelOlaAuth } = useOlaAuth(
     pendingAuthType,
     isAuthenticating,
   );
@@ -266,7 +266,7 @@ export const useAuthCommand = (
 
   const cancelAuthentication = useCallback(() => {
     if (isAuthenticating && pendingAuthType === AuthType.OLA_OAUTH) {
-      cancelQwenAuth();
+      cancelOlaAuth();
     }
 
     // Log authentication cancellation
@@ -279,7 +279,7 @@ export const useAuthCommand = (
     setIsAuthenticating(false);
     setIsAuthDialogOpen(true);
     setAuthError(null);
-  }, [isAuthenticating, pendingAuthType, cancelQwenAuth, config]);
+  }, [isAuthenticating, pendingAuthType, cancelOlaAuth, config]);
 
   /**
    * Handle coding plan submission - generates configs from template and stores api-key
@@ -465,7 +465,7 @@ export const useAuthCommand = (
     isAuthDialogOpen,
     isAuthenticating,
     pendingAuthType,
-    qwenAuthState,
+    olaAuthState,
     handleAuthSelect,
     handleCodingPlanSubmit,
     openAuthDialog,

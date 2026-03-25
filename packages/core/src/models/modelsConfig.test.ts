@@ -444,7 +444,7 @@ describe('ModelsConfig', () => {
     // it should be re-resolved by other layers in refreshAuth
   });
 
-  it('should always force Qwen OAuth apiKey placeholder when applying model defaults', async () => {
+  it('should always force ola OAuth apiKey placeholder when applying model defaults', async () => {
     // Simulate a stale/explicit apiKey existing before switching models.
     const modelsConfig = new ModelsConfig({
       initialAuthType: AuthType.OLA_OAUTH,
@@ -496,7 +496,7 @@ describe('ModelsConfig', () => {
     expect(sources['customHeaders']?.kind).toBe('modelProviders');
   });
 
-  it('should apply Qwen OAuth apiKey placeholder during syncAfterAuthRefresh for fresh users', () => {
+  it('should apply ola OAuth apiKey placeholder during syncAfterAuthRefresh for fresh users', () => {
     // Fresh user: authType not selected yet (currentAuthType undefined).
     const modelsConfig = new ModelsConfig();
 
@@ -1389,7 +1389,7 @@ describe('ModelsConfig', () => {
       expect(
         modelsConfig
           .getAllConfiguredModels()
-          .filter((m) => m.authType !== 'qwen-oauth').length,
+          .filter((m) => m.authType !== 'ola-oauth').length,
       ).toBeGreaterThan(0);
 
       // Reload with empty config
@@ -1397,7 +1397,7 @@ describe('ModelsConfig', () => {
 
       // Only qwen-oauth models should remain
       const models = modelsConfig.getAllConfiguredModels();
-      expect(models.every((m) => m.authType === 'qwen-oauth')).toBe(true);
+      expect(models.every((m) => m.authType === 'ola-oauth')).toBe(true);
     });
 
     it('should preserve qwen-oauth models after reload', () => {
@@ -1409,7 +1409,7 @@ describe('ModelsConfig', () => {
 
       const initialQwenModels = modelsConfig
         .getAllConfiguredModels()
-        .filter((m) => m.authType === 'qwen-oauth');
+        .filter((m) => m.authType === 'ola-oauth');
 
       modelsConfig.reloadModelProvidersConfig({
         gemini: [{ id: 'gemini-pro', name: 'Gemini Pro' }],
@@ -1418,7 +1418,7 @@ describe('ModelsConfig', () => {
       // qwen-oauth models should still exist
       const qwenModelsAfterReload = modelsConfig
         .getAllConfiguredModels()
-        .filter((m) => m.authType === 'qwen-oauth');
+        .filter((m) => m.authType === 'ola-oauth');
       expect(qwenModelsAfterReload.length).toBe(initialQwenModels.length);
     });
 

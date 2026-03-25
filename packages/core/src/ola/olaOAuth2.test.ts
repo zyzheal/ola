@@ -834,7 +834,7 @@ describe('getQwenOAuthClient', () => {
         }),
       ),
     ).rejects.toThrow(
-      'Qwen OAuth credentials expired. Please use /auth to re-authenticate with qwen-oauth.',
+      'ola OAuth credentials expired. Please use /auth to re-authenticate with qwen-oauth.',
     );
 
     expect(global.fetch).not.toHaveBeenCalled();

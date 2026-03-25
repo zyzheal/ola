@@ -7,9 +7,26 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { t, ta } from '../../i18n/index.js';
 
-export const WITTY_LOADING_PHRASES: string[] = ["I'm Feeling Lucky"];
+// Witty loading phrases - will be translated via i18n
+export const WITTY_LOADING_PHRASES: string[] = [
+  "I'm Feeling Lucky",
+  'Consulting the digital oracle...',
+  'Analyzing your codebase...',
+  'Generating optimal solution...',
+  'Crunching the numbers...',
+  'Reading between the lines...',
+  'Summoning the code spirits...',
+  'Compiling thoughts into existence...',
+  'Tracing execution paths...',
+  'Optimizing for maximum awesomeness...',
+  'Connecting the dots...',
+  'Weaving code magic...',
+  'Deciphering your intent...',
+  'Crafting the perfect response...',
+  'Engaging neural networks...',
+];
 
-export const PHRASE_CHANGE_INTERVAL_MS = 15000;
+export const PHRASE_CHANGE_INTERVAL_MS = 5000; // Change phrase every 5 seconds for more variety
 
 /**
  * Custom hook to manage cycling through loading phrases.

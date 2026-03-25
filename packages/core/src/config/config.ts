@@ -1019,6 +1019,12 @@ export class Config {
    * Refresh authentication and rebuild ContentGenerator.
    */
   async refreshAuth(authMethod: AuthType, isInitialAuth?: boolean) {
+    // Backward compatibility: migrate legacy 'qwen-oauth' string to AuthType.OLA_OAUTH
+    // This handles cases where settings.json still contains the old value
+    if ((authMethod as string) === 'qwen-oauth') {
+      authMethod = AuthType.OLA_OAUTH;
+    }
+
     // Sync modelsConfig state for this auth refresh
     const modelId = this.modelsConfig.getModel();
     this.modelsConfig.syncAfterAuthRefresh(authMethod, modelId);
