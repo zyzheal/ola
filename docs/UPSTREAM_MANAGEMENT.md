@@ -1,4 +1,6 @@
-# OLA 二次开发管理指南
+# OLA 上游更新管理指南
+
+AI Platform Code Assistant - 基于 qwen-code 二次开发的 AI 编码助手
 
 本文档说明如何管理基于 qwen-code 二次开发的 OLA 项目，包括如何合并上游更新、管理自定义修改等。
 
@@ -90,6 +92,7 @@ feature/* (功能分支)
 ```
 
 脚本会自动：
+
 1. 获取上游最新代码
 2. 创建合并分支
 3. 执行合并
@@ -136,18 +139,19 @@ git push origin ola-customization
 
 以下文件包含 OLA 的核心自定义修改，合并时需要特别注意：
 
-| 文件 | 修改内容 | 优先级 |
-|------|---------|--------|
-| `packages/core/src/core/prompts.ts` | 系统提示词、AI 身份 | 🔴 高 |
-| `packages/cli/src/ui/components/Header.tsx` | UI 品牌名称 | 🔴 高 |
-| `packages/cli/src/utils/languageUtils.ts` | 默认语言设置 | 🔴 高 |
-| `packages/core/src/config/storage.ts` | 配置目录名称 | 🟡 中 |
-| `package.json` (所有) | 包名、命令 | 🔴 高 |
-| `packages/cli/src/utils/systemInfoFields.ts` | 状态显示名称 | 🟡 中 |
+| 文件                                         | 修改内容            | 优先级 |
+| -------------------------------------------- | ------------------- | ------ |
+| `packages/core/src/core/prompts.ts`          | 系统提示词、AI 身份 | 🔴 高  |
+| `packages/cli/src/ui/components/Header.tsx`  | UI 品牌名称         | 🔴 高  |
+| `packages/cli/src/utils/languageUtils.ts`    | 默认语言设置        | 🔴 高  |
+| `packages/core/src/config/storage.ts`        | 配置目录名称        | 🟡 中  |
+| `package.json` (所有)                        | 包名、命令          | 🔴 高  |
+| `packages/cli/src/utils/systemInfoFields.ts` | 状态显示名称        | 🟡 中  |
 
 ### 修改记录
 
 所有自定义修改都应记录在 `OLA_CHANGES.md` 中，包括：
+
 - 修改日期
 - 修改文件
 - 修改内容
@@ -279,7 +283,7 @@ name: Check for Upstream Updates
 
 on:
   schedule:
-    - cron: '0 0 * * 1'  # 每周一检查
+    - cron: '0 0 * * 1' # 每周一检查
 
 jobs:
   check-updates:
@@ -288,16 +292,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Fetch upstream
         run: git fetch upstream
-      
+
       - name: Check for new commits
         run: |
           git fetch upstream
           UPSTREAM_LATEST=$(git rev-parse upstream/main)
           LOCAL_LATEST=$(git rev-parse main)
-          
+
           if [ "$UPSTREAM_LATEST" != "$LOCAL_LATEST" ]; then
             echo "Upstream has new commits!"
             # 可以触发通知或自动创建 PR
@@ -311,6 +315,7 @@ jobs:
 ### 常见问题
 
 **Q: 合并后构建失败**
+
 ```bash
 # 清理并重新构建
 npm run clean
@@ -319,6 +324,7 @@ npm run build
 ```
 
 **Q: 冲突太多，想放弃合并**
+
 ```bash
 # 中止合并
 git merge --abort
@@ -329,6 +335,7 @@ git branch -D merge-upstream-YYYYMMDD
 ```
 
 **Q: 不小心覆盖了自定义修改**
+
 ```bash
 # 从 Git 历史恢复
 git log -- packages/core/src/core/prompts.ts
@@ -348,5 +355,6 @@ git checkout <commit-hash> -- packages/core/src/core/prompts.ts
 ## 联系与支持
 
 如有问题，请查看：
+
 - `OLA_CHANGES.md` - 自定义修改记录
 - `scripts/merge-upstream.sh` - 自动化合并脚本

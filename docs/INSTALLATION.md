@@ -1,13 +1,13 @@
-# OLA 全局安装与更新指南
+# OLA 安装指南
 
-本文档说明如何全局安装 OLA (AI Platform Code Assistant) 以及如何更新到新版本。
+AI Platform Code Assistant - 基于 qwen-code 二次开发的 AI 编码助手
 
 ## 目录
 
 1. [系统要求](#系统要求)
-2. [全局安装方法](#全局安装方法)
+2. [安装方法](#安装方法)
 3. [验证安装](#验证安装)
-4. [更新到新版本](#更新到新版本)
+4. [更新方法](#更新方法)
 5. [卸载](#卸载)
 6. [常见问题](#常见问题)
 
@@ -33,9 +33,6 @@ npm --version   # 应该显示 9.x.x 或更高
 nvm install 20
 nvm use 20
 nvm alias default 20
-
-# 或从官网下载
-# https://nodejs.org/
 ```
 
 ---
@@ -362,25 +359,25 @@ npx ola@latest -p "test"
 
 ## 配置文件位置
 
-| 类型 | 路径 | 说明 |
-|------|------|------|
-| 全局配置 | `~/.ola/settings.json` | 用户级配置 |
-| 项目配置 | `<project>/.ola/settings.json` | 项目级配置 |
-| 输出语言 | `~/.ola/output-language.md` | 语言设置 |
-| 调试日志 | `~/.ola/debug/<session-id>.txt` | 调试信息 |
-| 会话历史 | `~/.ola/tmp/<project-id>/chats/` | 会话记录 |
+| 类型     | 路径                             | 说明       |
+| -------- | -------------------------------- | ---------- |
+| 全局配置 | `~/.ola/settings.json`           | 用户级配置 |
+| 项目配置 | `<project>/.ola/settings.json`   | 项目级配置 |
+| 输出语言 | `~/.ola/output-language.md`      | 语言设置   |
+| 调试日志 | `~/.ola/debug/<session-id>.txt`  | 调试信息   |
+| 会话历史 | `~/.ola/tmp/<project-id>/chats/` | 会话记录   |
 
 ---
 
 ## 环境变量
 
-| 变量名 | 说明 | 示例 |
-|--------|------|------|
-| `OLA_RUNTIME_DIR` | 运行时输出目录 | `~/.ola/runtime` |
-| `OLA_CODE_LANG` | 输出语言 | `Chinese` |
-| `OLA_SANDBOX` | 沙箱类型 | `docker` |
-| `OLA_SANDBOX_IMAGE` | 沙箱镜像 | `ghcr.io/your-org/ola:0.13.0` |
-| `OLA_DEBUG_LOG_FILE` | 启用调试日志 | `1` |
+| 变量名               | 说明           | 示例                          |
+| -------------------- | -------------- | ----------------------------- |
+| `OLA_RUNTIME_DIR`    | 运行时输出目录 | `~/.ola/runtime`              |
+| `OLA_CODE_LANG`      | 输出语言       | `Chinese`                     |
+| `OLA_SANDBOX`        | 沙箱类型       | `docker`                      |
+| `OLA_SANDBOX_IMAGE`  | 沙箱镜像       | `ghcr.io/your-org/ola:0.13.0` |
+| `OLA_DEBUG_LOG_FILE` | 启用调试日志   | `1`                           |
 
 向后兼容：`QWEN_*` 环境变量仍然有效。
 
@@ -397,6 +394,7 @@ npx ola@latest -p "test"
 ## 联系与支持
 
 如有问题，请查看：
+
 - `ola --help` - 命令行帮助
 - `ola /help` - 交互式帮助
 - 项目文档目录 `docs/`

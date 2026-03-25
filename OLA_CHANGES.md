@@ -1,37 +1,44 @@
 # OLA 自定义修改记录
 
+AI Platform Code Assistant - 基于 qwen-code 二次开发的 AI 编码助手
+
 本文档记录了对原始 qwen-code 项目的所有自定义修改，便于在合并上游更新时快速识别和解决冲突。
 
 ## 修改日期：2026-03-24
 
 ### 1. 品牌名称修改 (De-branding)
+
 - **文件**: `package.json`, `packages/*/package.json`
-- **修改内容**: 
+- **修改内容**:
   - `@ai-platform/code-assistant` → `ola`
   - `aiops` → `ola`
   - `aiops-core` → `ola-core`
 - **原因**: 项目重命名
 
 ### 2. 系统提示词修改
+
 - **文件**: `packages/core/src/core/prompts.ts`
-- **修改内容**: 
+- **修改内容**:
   - 系统身份从 "Qwen Code" 改为 "AI Platform Code Assistant"
   - 添加身份说明章节
 - **原因**: 自定义 AI 身份
 
 ### 3. UI 组件文本修改
+
 - **文件**: `packages/cli/src/ui/components/Header.tsx`
-- **修改内容**: 
+- **修改内容**:
   - 欢迎界面从 "Qwen Code" 改为 "AI Platform Code Assistant"
 - **原因**: 品牌一致性
 
 ### 4. 默认语言设置
+
 - **文件**: `packages/cli/src/utils/languageUtils.ts`
-- **修改内容**: 
+- **修改内容**:
   - 默认输出语言从检测系统语言改为 Chinese
 - **原因**: 本地化需求
 
 ### 5. 配置文件目录
+
 - **文件**: `packages/core/src/config/storage.ts`
 - **修改内容**:
   - `QWEN_DIR` → `OLA_DIR`（变量名）
@@ -40,12 +47,14 @@
 - **原因**: 完全去品牌化
 
 ### 6. 全局命令修改
+
 - **文件**: `package.json`, `packages/cli/package.json`
 - **修改内容**:
   - 全局命令从 `aiops` 改为 `ola`
 - **原因**: 品牌一致性
 
 ### 7. 环境变量重命名
+
 - **文件**: 所有源码文件
 - **修改内容**:
   - `QWEN_RUNTIME_DIR` → `OLA_RUNTIME_DIR`（主要）
@@ -118,6 +127,6 @@ git push origin merge-upstream-$(date +%Y%m%d)
 
 ## 版本追踪
 
-| 日期 | 上游版本 | 合并内容 | 状态 |
-|------|---------|---------|------|
-| 2026-03-24 | v0.13.0 | 初始 Fork | ✅ 完成 |
+| 日期       | 上游版本 | 合并内容  | 状态    |
+| ---------- | -------- | --------- | ------- |
+| 2026-03-24 | v0.13.0  | 初始 Fork | ✅ 完成 |

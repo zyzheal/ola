@@ -1,4 +1,6 @@
-# AI Platform Code Assistant — 本地安装与使用指南
+# OLA 本地安装与使用指南
+
+AI Platform Code Assistant - 基于 qwen-code 二次开发的 AI 编码助手
 
 ## 目录
 

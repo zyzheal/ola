@@ -1,25 +1,42 @@
-# Qwen Code Documentation
+# OLA 文档中心
 
-Welcome to the Qwen Code documentation. Qwen Code is an agentic coding tool that lives in your terminal and helps you turn ideas into code faster than ever before.
+AI Platform Code Assistant - 基于 qwen-code 二次开发的 AI 编码助手
 
-## Documentation Sections
+## 快速开始
 
-### [User Guide](./users/overview)
+- [使用指南](./USAGE.md) - 快速上手和基本使用
+- [安装指南](./INSTALLATION.md) - 各种安装方法
+- [源码安装](./SOURCE_INSTALL.md) - 从源码安装详解
 
-Learn how to use Qwen Code as an end user. This section covers:
+## 完整文档
 
-- Basic installation and setup
-- Common usage patterns
-- Features and capabilities
-- Configuration options
-- Troubleshooting
+### 安装与配置
 
-### [Developer Guide](./developers/architecture)
+| 文档                                     | 说明           |
+| ---------------------------------------- | -------------- |
+| [INSTALLATION.md](./INSTALLATION.md)     | 完整安装指南   |
+| [SOURCE_INSTALL.md](./SOURCE_INSTALL.md) | 源码安装详解   |
+| [local-install.md](./local-install.md)   | 本地安装与配置 |
 
-Learn how to contribute to and develop Qwen Code. This section covers:
+### 使用指南
 
-- Architecture overview
-- Contributing guidelines
-- Core concepts and implementation details
-- Tools and development workflow
-- Extension and plugin development
+| 文档                   | 说明               |
+| ---------------------- | ------------------ |
+| [USAGE.md](./USAGE.md) | 基本使用与命令参考 |
+
+### 开发管理
+
+| 文档                                               | 说明           |
+| -------------------------------------------------- | -------------- |
+| [UPSTREAM_MANAGEMENT.md](./UPSTREAM_MANAGEMENT.md) | 上游更新管理   |
+| [OLA_CHANGES.md](../OLA_CHANGES.md)                | 自定义修改记录 |
+
+## 外部资源
+
+- [qwen-code 原始项目](https://github.com/QwenLM/qwen-code)
+- [qwen-code 文档](https://qwenlm.github.io/qwen-code-docs/)
+
+## 技术支持
+
+- Issue: https://github.com/your-org/ai-platform/issues
+- 讨论：https://github.com/your-org/ai-platform/discussions
