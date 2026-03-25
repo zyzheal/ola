@@ -868,7 +868,7 @@ describe('SettingsDialog', () => {
 
       // Should not show restart prompt initially
       expect(lastFrame()).not.toContain(
-        'To see changes, Qwen Code must be restarted',
+        'To see changes, OLA must be restarted',
       );
 
       unmount();
@@ -891,9 +891,7 @@ describe('SettingsDialog', () => {
       await wait();
 
       await waitFor(() => {
-        expect(lastFrame()).toContain(
-          'To see changes, Qwen Code must be restarted',
-        );
+        expect(lastFrame()).toContain('To see changes, OLA must be restarted');
       });
 
       // Switch scopes; restart prompt should remain visible.
@@ -903,9 +901,7 @@ describe('SettingsDialog', () => {
       await wait();
 
       await waitFor(() => {
-        expect(lastFrame()).toContain(
-          'To see changes, Qwen Code must be restarted',
-        );
+        expect(lastFrame()).toContain('To see changes, OLA must be restarted');
       });
 
       unmount();

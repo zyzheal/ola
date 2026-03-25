@@ -10,8 +10,8 @@ import * as path from 'node:path';
 import { Storage } from './storage.js';
 
 describe('Storage – getGlobalSettingsPath', () => {
-  it('returns path to ~/.qwen/settings.json', () => {
-    const expected = path.join(os.homedir(), '.qwen', 'settings.json');
+  it('returns path to ~/.ola/settings.json', () => {
+    const expected = path.join(os.homedir(), '.ola', 'settings.json');
     expect(Storage.getGlobalSettingsPath()).toBe(expected);
   });
 });
@@ -20,23 +20,23 @@ describe('Storage – additional helpers', () => {
   const projectRoot = '/tmp/project';
   const storage = new Storage(projectRoot);
 
-  it('getWorkspaceSettingsPath returns project/.qwen/settings.json', () => {
-    const expected = path.join(projectRoot, '.qwen', 'settings.json');
+  it('getWorkspaceSettingsPath returns project/.ola/settings.json', () => {
+    const expected = path.join(projectRoot, '.ola', 'settings.json');
     expect(storage.getWorkspaceSettingsPath()).toBe(expected);
   });
 
-  it('getUserCommandsDir returns ~/.qwen/commands', () => {
-    const expected = path.join(os.homedir(), '.qwen', 'commands');
+  it('getUserCommandsDir returns ~/.ola/commands', () => {
+    const expected = path.join(os.homedir(), '.ola', 'commands');
     expect(Storage.getUserCommandsDir()).toBe(expected);
   });
 
-  it('getProjectCommandsDir returns project/.qwen/commands', () => {
-    const expected = path.join(projectRoot, '.qwen', 'commands');
+  it('getProjectCommandsDir returns project/.ola/commands', () => {
+    const expected = path.join(projectRoot, '.ola', 'commands');
     expect(storage.getProjectCommandsDir()).toBe(expected);
   });
 
-  it('getMcpOAuthTokensPath returns ~/.qwen/mcp-oauth-tokens.json', () => {
-    const expected = path.join(os.homedir(), '.qwen', 'mcp-oauth-tokens.json');
+  it('getMcpOAuthTokensPath returns ~/.ola/mcp-oauth-tokens.json', () => {
+    const expected = path.join(os.homedir(), '.ola', 'mcp-oauth-tokens.json');
     expect(Storage.getMcpOAuthTokensPath()).toBe(expected);
   });
 });
@@ -104,8 +104,8 @@ describe('Storage – getRuntimeBaseDir / setRuntimeBaseDir', () => {
 
   it('resolves relative paths in setRuntimeBaseDir using explicit cwd', () => {
     const cwd = path.resolve('workspace', 'projectA');
-    Storage.setRuntimeBaseDir('.qwen', cwd);
-    expect(Storage.getRuntimeBaseDir()).toBe(path.join(cwd, '.qwen'));
+    Storage.setRuntimeBaseDir('.ola', cwd);
+    expect(Storage.getRuntimeBaseDir()).toBe(path.join(cwd, '.ola'));
   });
 
   it('ignores cwd when path is absolute', () => {
@@ -240,7 +240,7 @@ describe('Storage – runtime path methods use getRuntimeBaseDir', () => {
   });
 });
 
-describe('Storage – config paths remain at ~/.qwen regardless of runtime dir', () => {
+describe('Storage – config paths remain at ~/.ola regardless of runtime dir', () => {
   const originalEnv = process.env['OLA_RUNTIME_DIR'];
   const globalQwenDir = Storage.getGlobalOlaDir();
 
@@ -258,53 +258,53 @@ describe('Storage – config paths remain at ~/.qwen regardless of runtime dir',
     }
   });
 
-  it('getGlobalSettingsPath still uses ~/.qwen', () => {
+  it('getGlobalSettingsPath still uses ~/.ola', () => {
     expect(Storage.getGlobalSettingsPath()).toBe(
       path.join(globalQwenDir, 'settings.json'),
     );
   });
 
-  it('getInstallationIdPath still uses ~/.qwen', () => {
+  it('getInstallationIdPath still uses ~/.ola', () => {
     expect(Storage.getInstallationIdPath()).toBe(
       path.join(globalQwenDir, 'installation_id'),
     );
   });
 
-  it('getGoogleAccountsPath still uses ~/.qwen', () => {
+  it('getGoogleAccountsPath still uses ~/.ola', () => {
     expect(Storage.getGoogleAccountsPath()).toBe(
       path.join(globalQwenDir, 'google_accounts.json'),
     );
   });
 
-  it('getMcpOAuthTokensPath still uses ~/.qwen', () => {
+  it('getMcpOAuthTokensPath still uses ~/.ola', () => {
     expect(Storage.getMcpOAuthTokensPath()).toBe(
       path.join(globalQwenDir, 'mcp-oauth-tokens.json'),
     );
   });
 
-  it('getOAuthCredsPath still uses ~/.qwen', () => {
+  it('getOAuthCredsPath still uses ~/.ola', () => {
     expect(Storage.getOAuthCredsPath()).toBe(
       path.join(globalQwenDir, 'oauth_creds.json'),
     );
   });
 
-  it('getUserCommandsDir still uses ~/.qwen', () => {
+  it('getUserCommandsDir still uses ~/.ola', () => {
     expect(Storage.getUserCommandsDir()).toBe(
       path.join(globalQwenDir, 'commands'),
     );
   });
 
-  it('getGlobalMemoryFilePath still uses ~/.qwen', () => {
+  it('getGlobalMemoryFilePath still uses ~/.ola', () => {
     expect(Storage.getGlobalMemoryFilePath()).toBe(
       path.join(globalQwenDir, 'memory.md'),
     );
   });
 
-  it('getGlobalBinDir still uses ~/.qwen', () => {
+  it('getGlobalBinDir still uses ~/.ola', () => {
     expect(Storage.getGlobalBinDir()).toBe(path.join(globalQwenDir, 'bin'));
   });
 
-  it('getUserSkillsDirs still includes ~/.qwen/skills', () => {
+  it('getUserSkillsDirs still includes ~/.ola/skills', () => {
     const storage = new Storage('/tmp/project');
     const skillsDirs = storage.getUserSkillsDirs();
     expect(
@@ -334,8 +334,8 @@ describe('Storage – runtime base dir async context isolation', () => {
     Storage.setRuntimeBaseDir(path.resolve('global-runtime'));
     const cwd = path.resolve('workspace', 'project-a');
 
-    await Storage.runWithRuntimeBaseDir('.qwen', cwd, async () => {
-      expect(Storage.getRuntimeBaseDir()).toBe(path.join(cwd, '.qwen'));
+    await Storage.runWithRuntimeBaseDir('.ola', cwd, async () => {
+      expect(Storage.getRuntimeBaseDir()).toBe(path.join(cwd, '.ola'));
     });
   });
 
@@ -343,18 +343,18 @@ describe('Storage – runtime base dir async context isolation', () => {
     const cwdA = path.resolve('workspace', 'a');
     const cwdB = path.resolve('workspace', 'b');
 
-    const runA = Storage.runWithRuntimeBaseDir('.qwen-a', cwdA, async () => {
+    const runA = Storage.runWithRuntimeBaseDir('.ola-a', cwdA, async () => {
       await new Promise((resolve) => setTimeout(resolve, 10));
       return Storage.getRuntimeBaseDir();
     });
 
-    const runB = Storage.runWithRuntimeBaseDir('.qwen-b', cwdB, async () => {
+    const runB = Storage.runWithRuntimeBaseDir('.ola-b', cwdB, async () => {
       await new Promise((resolve) => setTimeout(resolve, 1));
       return Storage.getRuntimeBaseDir();
     });
 
     const [a, b] = await Promise.all([runA, runB]);
-    expect(a).toBe(path.join(cwdA, '.qwen-a'));
-    expect(b).toBe(path.join(cwdB, '.qwen-b'));
+    expect(a).toBe(path.join(cwdA, '.ola-a'));
+    expect(b).toBe(path.join(cwdB, '.ola-b'));
   });
 });

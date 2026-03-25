@@ -28,30 +28,30 @@ import type { Content } from '@google/genai';
 
 import os from 'node:os';
 
-const GEMINI_DIR_NAME = '.qwen';
+const OLA_DIR_NAME = '.ola';
 const TMP_DIR_NAME = 'tmp';
 const LOG_FILE_NAME = 'logs.json';
 const CHECKPOINT_FILE_NAME = 'checkpoint.json';
 
 const projectDir = process.cwd();
 const hash = getProjectHash(projectDir);
-const TEST_HOME_DIR = path.join(os.tmpdir(), 'qwen-core-logger-home');
+const TEST_HOME_DIR = path.join(os.tmpdir(), 'ola-core-logger-home');
 
 let originalHome: string | undefined;
-let testGeminiDir: string;
+let testOlaDir: string;
 let testLogFilePath: string;
 let testCheckpointFilePath: string;
 
 const setTestPaths = () => {
-  testGeminiDir = path.join(os.homedir(), GEMINI_DIR_NAME, TMP_DIR_NAME, hash);
-  testLogFilePath = path.join(testGeminiDir, LOG_FILE_NAME);
-  testCheckpointFilePath = path.join(testGeminiDir, CHECKPOINT_FILE_NAME);
+  testOlaDir = path.join(os.homedir(), OLA_DIR_NAME, TMP_DIR_NAME, hash);
+  testLogFilePath = path.join(testOlaDir, LOG_FILE_NAME);
+  testCheckpointFilePath = path.join(testOlaDir, CHECKPOINT_FILE_NAME);
 };
 
 async function cleanupLogAndCheckpointFiles() {
   try {
-    if (!testGeminiDir) return;
-    await fs.rm(testGeminiDir, { recursive: true, force: true });
+    if (!testOlaDir) return;
+    await fs.rm(testOlaDir, { recursive: true, force: true });
   } catch (_error) {
     // Ignore errors, as the directory may not exist, which is fine.
   }
@@ -101,7 +101,7 @@ describe('Logger', () => {
     // Clean up before the test
     await cleanupLogAndCheckpointFiles();
     // Ensure the directory exists for the test
-    await fs.mkdir(testGeminiDir, { recursive: true });
+    await fs.mkdir(testOlaDir, { recursive: true });
     logger = new Logger(testSessionId, new Storage(process.cwd()));
     await logger.initialize();
   });
@@ -127,9 +127,9 @@ describe('Logger', () => {
   });
 
   describe('initialize', () => {
-    it('should create .gemini directory and an empty log file if none exist', async () => {
+    it('should create .ola directory and an empty log file if none exist', async () => {
       const dirExists = await fs
-        .access(testGeminiDir)
+        .access(testOlaDir)
         .then(() => true)
         .catch(() => false);
       expect(dirExists).toBe(true);
@@ -225,7 +225,7 @@ describe('Logger', () => {
 
       const logContent = await readLogFile();
       expect(logContent).toEqual([]);
-      const dirContents = await fs.readdir(testGeminiDir);
+      const dirContents = await fs.readdir(testOlaDir);
       expect(
         dirContents.some(
           (f) =>
@@ -243,7 +243,7 @@ describe('Logger', () => {
 
       const logContent = await readLogFile();
       expect(logContent).toEqual([]);
-      const dirContents = await fs.readdir(testGeminiDir);
+      const dirContents = await fs.readdir(testOlaDir);
       expect(
         dirContents.some(
           (f) =>
@@ -433,7 +433,7 @@ describe('Logger', () => {
     ])('should save a checkpoint', async ({ tag, encodedTag }) => {
       await logger.saveCheckpoint(conversation, tag);
       const taggedFilePath = path.join(
-        testGeminiDir,
+        testOlaDir,
         `checkpoint-${encodedTag}.json`,
       );
       const fileContent = await fs.readFile(taggedFilePath, 'utf-8');
@@ -490,7 +490,7 @@ describe('Logger', () => {
         { role: 'user', parts: [{ text: 'hello' }] },
       ];
       const taggedFilePath = path.join(
-        testGeminiDir,
+        testOlaDir,
         `checkpoint-${encodedTag}.json`,
       );
       await fs.writeFile(
@@ -519,7 +519,7 @@ describe('Logger', () => {
       const tag = 'invalid-json-tag';
       const encodedTag = 'invalid-json-tag';
       const taggedFilePath = path.join(
-        testGeminiDir,
+        testOlaDir,
         `checkpoint-${encodedTag}.json`,
       );
       await fs.writeFile(taggedFilePath, 'invalid json');
@@ -547,10 +547,7 @@ describe('Logger', () => {
     let taggedFilePath: string;
 
     beforeEach(async () => {
-      taggedFilePath = path.join(
-        testGeminiDir,
-        `checkpoint-${encodedTag}.json`,
-      );
+      taggedFilePath = path.join(testOlaDir, `checkpoint-${encodedTag}.json`);
       // Create a file to be deleted
       await fs.writeFile(taggedFilePath, JSON.stringify(conversation));
     });
@@ -565,10 +562,7 @@ describe('Logger', () => {
 
     it('should delete both new and old checkpoint files if they exist', async () => {
       const oldTag = 'delete-me(old)';
-      const oldStylePath = path.join(
-        testGeminiDir,
-        `checkpoint-${oldTag}.json`,
-      );
+      const oldStylePath = path.join(testOlaDir, `checkpoint-${oldTag}.json`);
       const newStylePath = logger['_checkpointPath'](oldTag);
 
       // Create both files
@@ -623,10 +617,7 @@ describe('Logger', () => {
     let taggedFilePath: string;
 
     beforeEach(() => {
-      taggedFilePath = path.join(
-        testGeminiDir,
-        `checkpoint-${encodedTag}.json`,
-      );
+      taggedFilePath = path.join(testOlaDir, `checkpoint-${encodedTag}.json`);
     });
 
     it('should return true if the checkpoint file exists', async () => {
@@ -676,7 +667,7 @@ describe('Logger', () => {
         { role: 'user', parts: [{ text: 'hello' }] },
       ];
       const tag = 'special(char)';
-      const taggedFilePath = path.join(testGeminiDir, `checkpoint-${tag}.json`);
+      const taggedFilePath = path.join(testOlaDir, `checkpoint-${tag}.json`);
       await fs.writeFile(
         taggedFilePath,
         JSON.stringify(taggedConversation, null, 2),

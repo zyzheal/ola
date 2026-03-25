@@ -188,7 +188,7 @@ describe('convertClaudePluginPackage', () => {
     }
 
     // Create marketplace.json that only specifies 4 skills
-    const marketplaceDir = path.join(pluginSourceDir, '.claude-plugin');
+    const marketplaceDir = path.join(pluginSourceDir, '.ola-plugin');
     fs.mkdirSync(marketplaceDir, { recursive: true });
 
     const marketplaceConfig: ClaudeMarketplaceConfig = {
@@ -263,7 +263,7 @@ describe('convertClaudePluginPackage', () => {
     }
 
     // Create marketplace.json WITHOUT skills field
-    const marketplaceDir = path.join(pluginSourceDir, '.claude-plugin');
+    const marketplaceDir = path.join(pluginSourceDir, '.ola-plugin');
     fs.mkdirSync(marketplaceDir, { recursive: true });
 
     const marketplaceConfig: ClaudeMarketplaceConfig = {
@@ -326,7 +326,7 @@ describe('convertClaudePluginPackage', () => {
     );
 
     // Create marketplace.json
-    const marketplaceDir = path.join(pluginSourceDir, '.claude-plugin');
+    const marketplaceDir = path.join(pluginSourceDir, '.ola-plugin');
     fs.mkdirSync(marketplaceDir, { recursive: true });
 
     const marketplaceConfig: ClaudeMarketplaceConfig = {
@@ -389,7 +389,7 @@ describe('convertClaudePluginPackage', () => {
     );
 
     // Create marketplace.json specifying to load this agent
-    const marketplaceDir = path.join(pluginSourceDir, '.claude-plugin');
+    const marketplaceDir = path.join(pluginSourceDir, '.ola-plugin');
     fs.mkdirSync(marketplaceDir, { recursive: true });
 
     const marketplaceConfig: ClaudeMarketplaceConfig = {
@@ -471,7 +471,7 @@ describe('convertClaudePluginPackage', () => {
     );
 
     // Create marketplace.json
-    const marketplaceDir = path.join(pluginSourceDir, '.claude-plugin');
+    const marketplaceDir = path.join(pluginSourceDir, '.ola-plugin');
     fs.mkdirSync(marketplaceDir, { recursive: true });
 
     const marketplaceConfig: ClaudeMarketplaceConfig = {
@@ -526,14 +526,14 @@ describe('performVariableReplacement for Claude extensions', () => {
     }
   });
 
-  it('should replace .claude with .qwen in shell scripts', () => {
+  it('should replace .ola with .qwen in shell scripts', () => {
     const extDir = path.join(testDir, 'ext-sh');
     fs.mkdirSync(extDir, { recursive: true });
 
     const shContent = `#!/bin/bash
-      CONFIG_DIR="$HOME/.claude/config"
-      CACHE_DIR="~/.claude/cache"
-      LOCAL_DIR="./.claude/local"`;
+      CONFIG_DIR="$HOME/.ola/config"
+      CACHE_DIR="~/.ola/cache"
+      LOCAL_DIR="./.ola/local"`;
     fs.writeFileSync(path.join(extDir, 'setup.sh'), shContent, 'utf-8');
 
     performVariableReplacement(extDir);
@@ -542,7 +542,7 @@ describe('performVariableReplacement for Claude extensions', () => {
     expect(result).toContain('$HOME/.qwen/config');
     expect(result).toContain('~/.qwen/cache');
     expect(result).toContain('./.qwen/local');
-    expect(result).not.toContain('.claude');
+    expect(result).not.toContain('.ola');
   });
 
   it('should replace role with type in shell scripts', () => {

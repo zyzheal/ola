@@ -267,9 +267,31 @@ export const ToolConfirmationMessage: React.FC<
     const executionProps =
       confirmationDetails as ToolExecuteConfirmationDetails;
 
+    // Check if this is a dangerous command
+    const dangerousCommands = [
+      'rm',
+      'mv',
+      'delete',
+      'del',
+      'rmdir',
+      'rm -rf',
+      'rm -r',
+      'rm -f',
+    ];
+    const isDangerousCommand = dangerousCommands.some(
+      (cmd) =>
+        executionProps.rootCommand.startsWith(cmd) ||
+        executionProps.command.includes(` ${cmd} `) ||
+        executionProps.command.includes(` ${cmd} -`) ||
+        executionProps.command.startsWith(`${cmd} `),
+    );
+
     question = t("Allow execution of: '{{command}}'?", {
       command: executionProps.rootCommand,
     });
+
+    // Add warning for dangerous commands
+    const showDangerWarning = isDangerousCommand;
     options.push({
       label: t('Yes, allow once'),
       value: ToolConfirmationOutcome.ProceedOnce,
@@ -302,6 +324,24 @@ export const ToolConfirmationMessage: React.FC<
     }
     bodyContent = (
       <Box flexDirection="column">
+        {showDangerWarning && (
+          <Box
+            flexDirection="column"
+            paddingX={1}
+            marginLeft={1}
+            marginBottom={1}
+          >
+            <Text color={theme.status.error} bold>
+              ⚠️ 危险操作警告！
+            </Text>
+            <Text color={theme.status.error}>
+              请再想一下是否真的要执行此操作？
+            </Text>
+            <Text color={theme.status.error}>
+              我可记录着你的操作日志，休想让我背锅！
+            </Text>
+          </Box>
+        )}
         <Box paddingX={1} marginLeft={1}>
           <MaxSizedBox
             maxHeight={bodyContentHeight}

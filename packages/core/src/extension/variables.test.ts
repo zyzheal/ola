@@ -301,24 +301,24 @@ describe('performVariableReplacement', () => {
     expect(result).not.toContain('.message.content');
   });
 
-  it('should replace .claude with .qwen in shell scripts', () => {
+  it('should replace .ola with .qwen in shell scripts', () => {
     const extDir = path.join(testDir, 'ext');
     fs.mkdirSync(extDir, { recursive: true });
 
     const shContent = [
       '#!/bin/bash',
-      'HOME_CLAUDE="$HOME/.claude"',
-      'CACHE_DIR="~/.claude/cache"',
-      'LOCAL_DIR="./.claude/local"',
-      'CONFIG="${CLAUDE_PLUGIN_ROOT}/.claude/config"',
-      '# Not replaced: https://example.com/.claude/page',
+      'HOME_CLAUDE="$HOME/.ola"',
+      'CACHE_DIR="~/.ola/cache"',
+      'LOCAL_DIR="./.ola/local"',
+      'CONFIG="${CLAUDE_PLUGIN_ROOT}/.ola/config"',
+      '# Not replaced: https://example.com/.ola/page',
     ].join('\n');
     fs.writeFileSync(path.join(extDir, 'setup.sh'), shContent, 'utf-8');
 
     performVariableReplacement(extDir);
 
     const result = fs.readFileSync(path.join(extDir, 'setup.sh'), 'utf-8');
-    expect(result).toContain('$HOME/.claude');
+    expect(result).toContain('$HOME/.ola');
     expect(result).toContain('~/.qwen/cache');
     expect(result).toContain('./.qwen/local');
     expect(result).toContain('.qwen/config');
