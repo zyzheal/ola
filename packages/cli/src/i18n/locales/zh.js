@@ -90,7 +90,7 @@ export default {
   // System Information Fields
   // ============================================================================
   aiops: 'aiops',
-  'aiops Plan': 'aiops 开发计划',
+  'ola Plan': 'aiops 开发计划',
   Runtime: '运行环境',
   OS: '操作系统',
   Auth: '认证',
@@ -1543,7 +1543,6 @@ export default {
   // Auth Dialog - View Titles and Labels
   // ============================================================================
   'API-KEY': 'API-KEY',
-  'aiops Plan': 'aiops 开发计划',
   "Paste your api key of Bailian Coding Plan and you're all set!":
     '粘贴您的百炼 Coding Plan API Key，即可完成设置！',
   Custom: '自定义',

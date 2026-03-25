@@ -53,7 +53,7 @@ interface MergedSettingsWithCodingPlan {
  * Handles the authentication process based on the specified command and options
  */
 export async function handleQwenAuth(
-  command: 'qwen-oauth' | 'coding-plan',
+  command: 'ola-oauth' | 'coding-plan',
   options: QwenAuthOptions,
 ) {
   try {
@@ -120,7 +120,7 @@ export async function handleQwenAuth(
       [], // No extensions for auth command
     );
 
-    if (command === 'qwen-oauth') {
+    if (command === 'ola-oauth') {
       await handleQwenOAuth(config, settings);
     } else if (command === 'coding-plan') {
       await handleCodePlanAuth(config, settings, options);
@@ -369,9 +369,9 @@ export async function runInteractiveAuth() {
   const selector = new InteractiveSelector(
     [
       {
-        value: 'qwen-oauth' as const,
-        label: t('Qwen OAuth'),
-        description: t('Free · Up to 1,000 requests/day · Qwen latest models'),
+        value: 'ola-oauth' as const,
+        label: t('ola OAuth'),
+        description: t('Free · Up to 1,000 requests/day · ola latest models'),
       },
       {
         value: 'coding-plan' as const,
@@ -389,7 +389,7 @@ export async function runInteractiveAuth() {
   if (choice === 'coding-plan') {
     await handleQwenAuth('coding-plan', {});
   } else {
-    await handleQwenAuth('qwen-oauth', {});
+    await handleQwenAuth('ola-oauth', {});
   }
 }
 
@@ -410,28 +410,26 @@ export async function showAuthStatus(): Promise<void> {
       writeStdoutLine(t('⚠️  No authentication method configured.\n'));
       writeStdoutLine(t('Run one of the following commands to get started:\n'));
       writeStdoutLine(
-        t(
-          '  qwen auth qwen-oauth     - Authenticate with Qwen OAuth (free tier)',
-        ),
+        t('  ola auth ola-oauth     - Authenticate with ola OAuth (free tier)'),
       );
       writeStdoutLine(
         t(
-          '  qwen auth coding-plan      - Authenticate with Alibaba Cloud Coding Plan\n',
+          '  ola auth coding-plan      - Authenticate with Alibaba Cloud Coding Plan\n',
         ),
       );
       writeStdoutLine(t('Or simply run:'));
       writeStdoutLine(
-        t('  qwen auth                - Interactive authentication setup\n'),
+        t('  ola auth                - Interactive authentication setup\n'),
       );
       process.exit(0);
     }
 
     // Display status based on auth type
     if (selectedType === AuthType.OLA_OAUTH) {
-      writeStdoutLine(t('✓ Authentication Method: Qwen OAuth'));
+      writeStdoutLine(t('✓ Authentication Method: ola OAuth'));
       writeStdoutLine(t('  Type: Free tier'));
       writeStdoutLine(t('  Limit: Up to 1,000 requests/day'));
-      writeStdoutLine(t('  Models: Qwen latest models\n'));
+      writeStdoutLine(t('  Models: ola latest models\n'));
     } else if (selectedType === AuthType.USE_OPENAI) {
       // Check for Coding Plan configuration
       const codingPlanRegion = mergedSettings.codingPlan?.region;
@@ -480,7 +478,7 @@ export async function showAuthStatus(): Promise<void> {
         writeStdoutLine(
           t('  Issue: API key not found in environment or settings\n'),
         );
-        writeStdoutLine(t('  Run `qwen auth coding-plan` to re-configure.\n'));
+        writeStdoutLine(t('  Run `ola auth coding-plan` to re-configure.\n'));
       }
     } else {
       writeStdoutLine(

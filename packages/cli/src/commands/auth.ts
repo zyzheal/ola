@@ -13,11 +13,11 @@ import {
 import { t } from '../i18n/index.js';
 
 // Define subcommands separately
-const qwenOauthCommand = {
-  command: 'qwen-oauth',
-  describe: t('Authenticate using Qwen OAuth'),
+const olaOauthCommand = {
+  command: 'ola-oauth',
+  describe: t('Authenticate using ola OAuth'),
   handler: async () => {
-    await handleQwenAuth('qwen-oauth', {});
+    await handleQwenAuth('ola-oauth', {});
   },
 };
 
@@ -65,7 +65,7 @@ export const authCommand: CommandModule = {
   ),
   builder: (yargs: Argv) =>
     yargs
-      .command(qwenOauthCommand)
+      .command(olaOauthCommand)
       .command(codePlanCommand)
       .command(statusCommand)
       .demandCommand(0) // Don't require a subcommand

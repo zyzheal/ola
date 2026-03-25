@@ -93,7 +93,7 @@ export default {
   // Поля системной информации
   // ============================================================================
   aiops: 'aiops',
-  'aiops Plan': 'aiops Plan',
+  'ola Plan': 'ola Plan',
   Runtime: 'Среда выполнения',
   OS: 'ОС',
   Auth: 'Аутентификация',
@@ -1597,7 +1597,6 @@ export default {
   // ============================================================================
   // Auth Dialog - View Titles and Labels
   // ============================================================================
-  'aiops Plan': 'aiops Plan',
   "Paste your api key of Bailian Coding Plan and you're all set!":
     'Вставьте ваш API-ключ Bailian Coding Plan и всё готово!',
   Custom: 'Пользовательский',

@@ -85,7 +85,7 @@ export default {
   // System Information Fields
   // ============================================================================
   aiops: 'aiops',
-  'aiops Plan': 'aiops Plan',
+  'ola Plan': 'ola Plan',
   Runtime: 'Runtime',
   OS: 'SO',
   Auth: 'Autenticação',
@@ -1662,7 +1662,6 @@ export default {
   // ============================================================================
   // Auth Dialog - View Titles and Labels
   // ============================================================================
-  'aiops Plan': 'aiops Plan',
   "Paste your api key of Bailian Coding Plan and you're all set!":
     'Cole sua chave de API do Bailian Coding Plan e pronto!',
   Custom: 'Personalizado',

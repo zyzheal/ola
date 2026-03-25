@@ -111,7 +111,7 @@ export class CredentialsClearRequiredError extends Error {
 }
 
 /**
- * Qwen OAuth2 credentials interface
+ * ola OAuth2 credentials interface
  */
 export interface QwenCredentials {
   access_token?: string;
@@ -232,7 +232,7 @@ export interface TokenRefreshData {
 export type TokenRefreshResponse = TokenRefreshData | ErrorData;
 
 /**
- * Qwen OAuth2 client interface
+ * ola OAuth2 client interface
  */
 export interface IOlaOAuth2Client {
   setCredentials(credentials: QwenCredentials): void;
@@ -251,7 +251,7 @@ export interface IOlaOAuth2Client {
 }
 
 /**
- * Qwen OAuth2 client implementation
+ * ola OAuth2 client implementation
  */
 export class OlaOAuth2Client implements IOlaOAuth2Client {
   private credentials: QwenCredentials = {};
@@ -525,7 +525,7 @@ export async function getQwenOAuthClient(
 
     if (options?.requireCachedCredentials) {
       throw new Error(
-        'Qwen OAuth credentials expired. Please use /auth to re-authenticate with qwen-oauth.',
+        'ola OAuth credentials expired. Please use /auth to re-authenticate with ola-oauth.',
       );
     }
 
@@ -549,14 +549,14 @@ export async function getQwenOAuthClient(
         (() => {
           switch (result.reason) {
             case 'timeout':
-              return 'Qwen OAuth authentication timed out';
+              return 'ola OAuth authentication timed out';
             case 'cancelled':
-              return 'Qwen OAuth authentication was cancelled by user';
+              return 'ola OAuth authentication was cancelled by user';
             case 'rate_limit':
-              return 'Too many request for Qwen OAuth authentication, please try again later.';
+              return 'Too many request for ola OAuth authentication, please try again later.';
             case 'error':
             default:
-              return 'Qwen OAuth authentication failed';
+              return 'ola OAuth authentication failed';
           }
         })();
 
@@ -575,7 +575,7 @@ export async function getQwenOAuthClient(
  * convention of user-facing messages to stderr.
  */
 function showFallbackMessage(verificationUriComplete: string): void {
-  const title = 'Qwen OAuth Device Authorization';
+  const title = 'ola OAuth Device Authorization';
   const url = verificationUriComplete;
   const minWidth = 70;
   const maxWidth = 80;

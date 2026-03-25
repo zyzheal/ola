@@ -113,7 +113,7 @@ export function ArenaStartDialog({
         <Box marginTop={1} flexDirection="column">
           {hasDisabledQwenOauth && (
             <Text color={theme.status.warning}>
-              {t('Note: qwen-oauth models are not supported in Arena.')}
+              {t('Note: ola-oauth models are not supported in Arena.')}
             </Text>
           )}
           {needsMoreModels && (

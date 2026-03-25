@@ -82,7 +82,7 @@ export const AUTH_ENV_MAPPINGS = {
     baseUrl: [],
     model: ['GOOGLE_MODEL'],
   },
-  'qwen-oauth': {
+  'ola-oauth': {
     apiKey: [],
     baseUrl: [],
     model: [],
@@ -91,7 +91,7 @@ export const AUTH_ENV_MAPPINGS = {
 
 export const DEFAULT_MODELS = {
   openai: MAINLINE_CODER_MODEL,
-  'qwen-oauth': DEFAULT_OLA_MODEL,
+  'ola-oauth': DEFAULT_OLA_MODEL,
 } as Partial<Record<AuthType, string>>;
 
 /**

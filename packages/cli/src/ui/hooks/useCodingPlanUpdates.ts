@@ -216,6 +216,10 @@ export function useCodingPlanUpdates(
 
   // Check for updates on mount
   useEffect(() => {
+    // Disabled in development to avoid blocking the UI
+    if (process.env['NODE_ENV'] === 'development') {
+      return;
+    }
     checkForUpdates();
   }, [checkForUpdates]);
 

@@ -1172,7 +1172,7 @@ export default {
   // ============================================================================
   // Auth Dialog - View Titles and Labels
   // ============================================================================
-  'aiops Plan': 'aiops Plan',
+  'ola Plan': 'ola Plan',
   "Paste your api key of Bailian Coding Plan and you're all set!":
     'Bailian Coding PlanのAPIキーを貼り付けるだけで準備完了です！',
   Custom: 'カスタム',

@@ -91,7 +91,7 @@ function formatAuth(info: ExtendedSystemInfo): string {
   }
 
   if (isCodingPlanConfig(info.baseUrl, info.apiKeyEnvKey)) {
-    return t('aiops Plan');
+    return t('ola Plan');
   }
 
   if (
