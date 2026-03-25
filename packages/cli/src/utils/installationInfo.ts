@@ -39,6 +39,11 @@ export function getInstallationInfo(
     return { packageManager: PackageManager.UNKNOWN, isGlobal: false };
   }
 
+  // Get custom registry and package name
+  const registry =
+    process.env['OLA_NPM_REGISTRY'] || 'https://registry.npmjs.org';
+  const packageName = process.env['OLA_PACKAGE_NAME'] || 'ola';
+
   try {
     // Normalize path separators to forward slashes for consistent matching.
     const realPath = fs.realpathSync(cliPath).replace(/\\/g, '/');
@@ -96,27 +101,26 @@ export function getInstallationInfo(
 
     // Check for pnpm
     if (realPath.includes('/.pnpm/global')) {
-      const updateCommand = 'pnpm add -g @qwen-platform/code-assistant@latest';
+      const updateCommand = `pnpm add -g ${packageName}@latest --registry ${registry}`;
       return {
         packageManager: PackageManager.PNPM,
         isGlobal: true,
         updateCommand,
         updateMessage: isAutoUpdateEnabled
-          ? 'Installed with pnpm. Attempting to automatically update now...'
+          ? `Installed with pnpm. Attempting to automatically update now...`
           : `Please run ${updateCommand} to update`,
       };
     }
 
     // Check for yarn
     if (realPath.includes('/.yarn/global')) {
-      const updateCommand =
-        'yarn global add @qwen-platform/code-assistant@latest';
+      const updateCommand = `yarn global add ${packageName}@latest --registry ${registry}`;
       return {
         packageManager: PackageManager.YARN,
         isGlobal: true,
         updateCommand,
         updateMessage: isAutoUpdateEnabled
-          ? 'Installed with yarn. Attempting to automatically update now...'
+          ? `Installed with yarn. Attempting to automatically update now...`
           : `Please run ${updateCommand} to update`,
       };
     }
@@ -130,13 +134,13 @@ export function getInstallationInfo(
       };
     }
     if (realPath.includes('/.bun/bin')) {
-      const updateCommand = 'bun add -g @qwen-platform/code-assistant@latest';
+      const updateCommand = `bun add -g ${packageName}@latest --registry ${registry}`;
       return {
         packageManager: PackageManager.BUN,
         isGlobal: true,
         updateCommand,
         updateMessage: isAutoUpdateEnabled
-          ? 'Installed with bun. Attempting to automatically update now...'
+          ? `Installed with bun. Attempting to automatically update now...`
           : `Please run ${updateCommand} to update`,
       };
     }
@@ -162,14 +166,14 @@ export function getInstallationInfo(
       };
     }
 
-    // Assume global npm
-    const updateCommand = 'npm install -g @qwen-platform/code-assistant@latest';
+    // Assume global npm with custom registry
+    const updateCommand = `npm install -g ${packageName}@latest --registry ${registry}`;
     return {
       packageManager: PackageManager.NPM,
       isGlobal: true,
       updateCommand,
       updateMessage: isAutoUpdateEnabled
-        ? 'Installed with npm. Attempting to automatically update now...'
+        ? `Installed with npm. Attempting to automatically update now...`
         : `Please run ${updateCommand} to update`,
     };
   } catch (error) {

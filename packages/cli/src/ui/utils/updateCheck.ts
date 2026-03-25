@@ -15,6 +15,56 @@ const debugLogger = createDebugLogger('UPDATE_CHECK');
 
 export const FETCH_TIMEOUT_MS = 2000;
 
+// Type for custom notifier options with registry support
+interface CustomNotifierOptions {
+  pkg: { name: string; version: string };
+  updateCheckInterval: number;
+  shouldNotifyInNpmScript: boolean;
+  distTag: 'latest' | 'nightly';
+  npmRegistry: string;
+}
+
+/**
+ * Get NPM registry URL (supports custom private registry)
+ */
+function getNpmRegistry(): string {
+  // Priority: Environment variable > npm config > default
+  if (process.env['OLA_NPM_REGISTRY']) {
+    return process.env['OLA_NPM_REGISTRY'];
+  }
+
+  if (process.env['NPM_CONFIG_REGISTRY']) {
+    return process.env['NPM_CONFIG_REGISTRY'];
+  }
+
+  try {
+    // Try to get registry from npm config
+    const result = childProcess.execSync('npm config get registry', {
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'ignore'],
+    });
+    const registry = result.trim();
+    if (registry && registry !== 'undefined') {
+      return registry;
+    }
+  } catch (_error) {
+    // Ignore error and use default
+  }
+
+  // Default to public npm registry
+  return 'https://registry.npmjs.org';
+}
+
+/**
+ * Get package name from environment or package.json
+ */
+function getPackageName(): string {
+  if (process.env['OLA_PACKAGE_NAME']) {
+    return process.env['OLA_PACKAGE_NAME'];
+  }
+  return 'ola';
+}
+
 export interface UpdateObject {
   message: string;
   update: UpdateInfo;
@@ -83,18 +133,26 @@ export async function checkForUpdates(): Promise<UpdateObject | null> {
       return null;
     }
 
-    const { name, version: currentVersion } = packageJson;
+    const { version: currentVersion } = packageJson;
     const isNightly = currentVersion.includes('nightly');
+
+    // Use custom registry and package name for private NPM registry
+    const registry = getNpmRegistry();
+    const packageName = getPackageName();
+
+    debugLogger.info(`Using registry: ${registry}, package: ${packageName}`);
+
     const createNotifier = (distTag: 'latest' | 'nightly') =>
       updateNotifier({
         pkg: {
-          name,
+          name: packageName,
           version: currentVersion,
         },
         updateCheckInterval: 0,
         shouldNotifyInNpmScript: true,
         distTag,
-      });
+        npmRegistry: registry,
+      } as CustomNotifierOptions);
 
     if (isNightly) {
       const [nightlyUpdateInfo, latestUpdateInfo] = await Promise.all([
@@ -108,7 +166,7 @@ export async function checkForUpdates(): Promise<UpdateObject | null> {
       );
 
       if (bestUpdate && semver.gt(bestUpdate.latest, currentVersion)) {
-        const message = `A new version of Qwen Code is available! ${currentVersion} → ${bestUpdate.latest}`;
+        const message = `A new version of OLA is available! ${currentVersion} → ${bestUpdate.latest}`;
         return {
           message,
           update: { ...bestUpdate, current: currentVersion },
@@ -118,7 +176,7 @@ export async function checkForUpdates(): Promise<UpdateObject | null> {
       const updateInfo = await createNotifier('latest').fetchInfo();
 
       if (updateInfo && semver.gt(updateInfo.latest, currentVersion)) {
-        const message = `Qwen Code update available! ${currentVersion} → ${updateInfo.latest}`;
+        const message = `OLA update available! ${currentVersion} → ${updateInfo.latest}`;
         return {
           message,
           update: { ...updateInfo, current: currentVersion },
