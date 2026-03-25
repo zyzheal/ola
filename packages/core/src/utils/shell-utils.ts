@@ -7,6 +7,7 @@
 import type { AnyToolInvocation } from '../index.js';
 import type { Config } from '../config/config.js';
 import os from 'node:os';
+import * as path from 'node:path';
 import { quote } from 'shell-quote';
 import { doesToolInvocationMatch } from './tool-utils.js';
 import { isShellCommandReadOnly } from './shellReadOnlyChecker.js';
@@ -932,6 +933,12 @@ export function resolveCommandPath(command: string): {
         return { path: null, error: undefined };
       }
 
+      // On Windows, take the first result if multiple are found
+      if (result) {
+        const paths = result.split('\r\n');
+        result = paths[0]!;
+      }
+
       return result ? { path: result } : { path: null };
     } else {
       const shell = '/bin/sh';
@@ -948,7 +955,14 @@ export function resolveCommandPath(command: string): {
       }
 
       if (!result) return { path: null, error: undefined };
-      accessSync(result, fsConstants.X_OK);
+
+      // Windows doesn't support X_OK permission check
+      if (!isWin) {
+        accessSync(result, fsConstants.X_OK);
+      } else {
+        accessSync(result, fsConstants.F_OK);
+      }
+
       return { path: result, error: undefined };
     }
   } catch (error) {
@@ -1054,4 +1068,162 @@ export function shouldDefaultToNodePty(): boolean {
   if (os.platform() !== 'win32') return true;
   const build = parseInt(os.release().split('.')[2] ?? '', 10);
   return !isNaN(build) && build >= CONPTY_MIN_WINDOWS_BUILD;
+}
+
+/**
+ * 跨平台路径 Join
+ * Cross-platform path join
+ */
+export function joinPath(...paths: string[]): string {
+  if (isWindows()) {
+    return path.win32.join(...paths);
+  }
+  return path.posix.join(...paths);
+}
+
+/**
+ * 跨平台路径分隔符 (PATH 环境变量)
+ * Cross-platform path separator (for PATH environment variable)
+ */
+export const PATH_SEPARATOR = isWindows() ? ';' : ':';
+
+/**
+ * 跨平台获取 PATH 环境变量名
+ * Get PATH environment variable name (cross-platform)
+ */
+export function getPathVariableName(): string {
+  return isWindows() ? 'Path' : 'PATH';
+}
+
+/**
+ * 格式化环境变量引用（跨平台）
+ * Format environment variable reference (cross-platform)
+ * @param name 环境变量名 / Environment variable name
+ * @param shell Shell 类型 / Shell type
+ */
+export function formatEnvVar(name: string, shell: ShellType = 'bash'): string {
+  if (shell === 'cmd' || shell === 'powershell') {
+    return `%${name}%`;
+  }
+  return `$${name}`;
+}
+
+/**
+ * 设置环境变量的命令（跨平台）
+ * Create set environment variable command (cross-platform)
+ */
+export function createSetEnvCommand(
+  name: string,
+  value: string,
+  shell: ShellType = 'bash',
+): string {
+  if (shell === 'cmd') {
+    return `set ${name}=${value}`;
+  }
+  if (shell === 'powershell') {
+    return `$env:${name}="${value}"`;
+  }
+  return `export ${name}="${value}"`;
+}
+
+/**
+ * 标准化换行符（跨平台）
+ * Normalize line endings (cross-platform)
+ */
+export function normalizeLineEndings(text: string): string {
+  return text.replace(/\r\n/g, '\n');
+}
+
+/**
+ * 平台特定换行符
+ * Platform-specific line ending
+ */
+export const LINE_ENDING = isWindows() ? '\r\n' : '\n';
+
+/**
+ * Windows 系统工具映射
+ * Windows system tool aliases
+ */
+const WINDOWS_TOOL_ALIASES: Record<string, string[]> = {
+  grep: ['findstr'],
+  cat: ['type'],
+  rm: ['del', '/Q'],
+  cp: ['copy'],
+  mv: ['move'],
+  mkdir: ['mkdir'],
+  pwd: ['cd'],
+  ps: ['tasklist'],
+  kill: ['taskkill', '/F', '/IM'],
+  chmod: ['icacls'],
+  chown: ['takeown'],
+};
+
+/**
+ * 获取 Windows 等价命令
+ * Get Windows equivalent command
+ * @param command Unix 命令 / Unix command
+ * @returns Windows 命令数组 / Windows command array
+ */
+export function getWindowsEquivalent(command: string): string[] {
+  if (!isWindows()) {
+    return [command];
+  }
+
+  const baseCommand = command.split(/\s+/)[0]!;
+  const alias = WINDOWS_TOOL_ALIASES[baseCommand];
+
+  if (alias) {
+    // 保留原命令的参数
+    const args = command.split(/\s+/).slice(1);
+    return [...alias, ...args];
+  }
+
+  // 检查是否为 .exe/.bat/.cmd 文件
+  if (
+    command.endsWith('.exe') ||
+    command.endsWith('.bat') ||
+    command.endsWith('.cmd')
+  ) {
+    return [command];
+  }
+
+  // 尝试添加 .exe 扩展名
+  return [`${command}.exe`];
+}
+
+/**
+ * 检查是否为 Windows PowerShell
+ * Check if running PowerShell on Windows
+ */
+export function isPowerShell(): boolean {
+  if (!isWindows()) return false;
+
+  const comSpec = process.env['ComSpec']?.toLowerCase() || '';
+  return comSpec.includes('powershell') || comSpec.includes('pwsh');
+}
+
+/**
+ * 执行 PowerShell 命令
+ * Execute PowerShell command
+ */
+export function executePowerShellCommand(
+  command: string,
+  args: string[] = [],
+  options?: { preserveOutputOnError?: boolean } & ExecFileOptions,
+): Promise<{ stdout: string; stderr: string; code: number }> {
+  const powershellPath = process.env['SystemRoot']
+    ? joinPath(
+        process.env['SystemRoot']!,
+        'System32',
+        'WindowsPowerShell',
+        'v1.0',
+        'powershell.exe',
+      )
+    : 'powershell.exe';
+
+  return execCommand(
+    powershellPath,
+    ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', command, ...args],
+    options,
+  );
 }
