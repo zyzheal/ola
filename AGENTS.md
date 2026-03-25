@@ -44,7 +44,7 @@ This project is based on [Google Gemini CLI](https://github.com/google-gemini/ge
 
 ### Package Details
 
-#### `@qwen-code/qwen-code` (packages/cli/)
+#### `ola` (packages/cli/)
 
 The main CLI package providing:
 
@@ -54,7 +54,7 @@ The main CLI package providing:
 - Configuration management
 - Command system (`/help`, `/clear`, `/compress`, etc.)
 
-#### `@qwen-code/qwen-code-core` (packages/core/)
+#### `ola-core` (packages/core/)
 
 Core library containing:
 
@@ -78,8 +78,8 @@ Core library containing:
 
 ```bash
 # Clone and install
-git clone https://github.com/QwenLM/qwen-code.git
-cd qwen-code
+git clone https://github.com/zyzheal/ola.git
+cd ola
 npm install
 ```
 
@@ -174,7 +174,7 @@ npm run typecheck
 import { something } from './utils/something.js';
 
 // Between packages - use package names
-import { Config } from '@qwen-code/qwen-code-core';
+import { Config } from 'ola-core';
 ```
 
 ### Testing Patterns
