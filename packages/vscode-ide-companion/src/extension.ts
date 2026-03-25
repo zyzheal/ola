@@ -302,7 +302,7 @@ export async function activate(context: vscode.ExtensionContext) {
       ideServer.syncEnvVars();
     }),
     vscode.commands.registerCommand(
-      'aip-code.runAipCode',
+      'ola.runAipCode',
       async (
         location?:
           | vscode.TerminalLocation
@@ -367,7 +367,7 @@ export async function activate(context: vscode.ExtensionContext) {
         }
       },
     ),
-    vscode.commands.registerCommand('aip-code.showNotices', async () => {
+    vscode.commands.registerCommand('ola.showNotices', async () => {
       const noticePath = vscode.Uri.joinPath(
         context.extensionUri,
         'NOTICES.txt',

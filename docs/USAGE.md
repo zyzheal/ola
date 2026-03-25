@@ -422,7 +422,7 @@ rm -rf ~/.ola
 ### v0.13.0
 
 - 品牌名称从 aiops 改为 ola
-- 配置目录从 .aip-code 改为 .ola
+- 配置目录从 .ola 改为 .ola
 - 环境变量从 QWEN* 改为 OLA*（保留向后兼容）
 - 默认输出语言设置为 Chinese
 

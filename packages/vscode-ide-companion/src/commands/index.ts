@@ -15,14 +15,14 @@ import {
 
 type Logger = (message: string) => void;
 
-export const runAipCodeCommand = 'aip-code.runAipCode';
+export const runAipCodeCommand = 'ola.runAipCode';
 export const showDiffCommand = 'aipCode.showDiff';
-export const openChatCommand = 'aip-code.openChat';
+export const openChatCommand = 'ola.openChat';
 export const openNewChatTabCommand = 'aipCode.openNewChatTab';
-export const loginCommand = 'aip-code.login';
-export const focusChatCommand = 'aip-code.focusChat';
-export const newConversationCommand = 'aip-code.newConversation';
-export const showLogsCommand = 'aip-code.showLogs';
+export const loginCommand = 'ola.login';
+export const focusChatCommand = 'ola.focusChat';
+export const newConversationCommand = 'ola.newConversation';
+export const showLogsCommand = 'ola.showLogs';
 
 /**
  * Register all OLA chat-related commands.

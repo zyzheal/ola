@@ -182,7 +182,7 @@ ola
 **方法 2**: 配置文件
 
 ```json
-// ~/.aip-code/settings.json
+// ~/.ola/settings.json
 {
   "general": {
     "enableAutoUpdate": false
@@ -204,7 +204,7 @@ ola
 ### 启用自动更新
 
 ```json
-// ~/.aip-code/settings.json
+// ~/.ola/settings.json
 {
   "general": {
     "enableAutoUpdate": true
@@ -229,7 +229,7 @@ ola
 echo $NODE_ENV  # 应该是 undefined 或 production
 
 # 检查设置
-cat ~/.aip-code/settings.json
+cat ~/.ola/settings.json
 
 # 确保是 Git 仓库
 git rev-parse --git-dir  # 应该输出 .git

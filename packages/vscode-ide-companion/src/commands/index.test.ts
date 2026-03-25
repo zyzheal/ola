@@ -99,9 +99,7 @@ describe('registerNewCommands', () => {
 
     await getRegisteredHandler(focusChatCommand)();
 
-    expect(executeCommand).toHaveBeenCalledWith(
-      'aip-code.chatView.secondary.focus',
-    );
+    expect(executeCommand).toHaveBeenCalledWith('ola.chatView.secondary.focus');
   });
 
   it('focusChat falls back to the primary sidebar when secondary sidebar is unavailable', async () => {
@@ -117,8 +115,6 @@ describe('registerNewCommands', () => {
 
     await getRegisteredHandler(focusChatCommand)();
 
-    expect(executeCommand).toHaveBeenCalledWith(
-      'aip-code.chatView.sidebar.focus',
-    );
+    expect(executeCommand).toHaveBeenCalledWith('ola.chatView.sidebar.focus');
   });
 });

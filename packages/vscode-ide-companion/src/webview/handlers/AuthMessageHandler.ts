@@ -65,7 +65,7 @@ export class AuthMessageHandler extends BaseMessageHandler {
         vscode.window.showInformationMessage(
           'Please wait while we connect to OLA...',
         );
-        await vscode.commands.executeCommand('aip-code.login');
+        await vscode.commands.executeCommand('ola.login');
       }
     } catch (error) {
       const errorMsg = getErrorMessage(error);

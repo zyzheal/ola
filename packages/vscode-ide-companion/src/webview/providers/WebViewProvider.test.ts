@@ -181,7 +181,7 @@ describe('WebViewProvider.attachToView', () => {
         onDidChangeVisibility: vi.fn(() => ({ dispose: vi.fn() })),
         onDidDispose: vi.fn(() => ({ dispose: vi.fn() })),
       } as never,
-      'aip-code.chatView.sidebar',
+      'ola.chatView.sidebar',
     );
 
     const roots = (
@@ -265,7 +265,7 @@ describe('WebViewProvider.attachToView', () => {
         onDidChangeVisibility: vi.fn(() => ({ dispose: vi.fn() })),
         onDidDispose: vi.fn(() => ({ dispose: vi.fn() })),
       } as never,
-      'aip-code.chatView.sidebar',
+      'ola.chatView.sidebar',
     );
 
     await messageHandler?.({

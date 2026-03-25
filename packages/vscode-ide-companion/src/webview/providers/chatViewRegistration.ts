@@ -14,7 +14,7 @@ import {
   type WebViewProviderFactory,
 } from './ChatWebviewViewProvider.js';
 
-const SECONDARY_SIDEBAR_CONTEXT_KEY = 'aip-code:doesNotSupportSecondarySidebar';
+const SECONDARY_SIDEBAR_CONTEXT_KEY = 'ola:doesNotSupportSecondarySidebar';
 
 export function detectSecondarySidebarSupport(vscodeVersion: string): boolean {
   const [major, minor] = vscodeVersion.split('.').map(Number);

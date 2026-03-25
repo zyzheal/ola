@@ -64,8 +64,8 @@ describe('registerChatViewProviders', () => {
     >;
 
     expect(calls.map((call) => call[0])).toEqual([
-      'aip-code.chatView.sidebar',
-      'aip-code.chatView.secondary',
+      'ola.chatView.sidebar',
+      'ola.chatView.secondary',
     ]);
     expect(calls[0]?.[1]).not.toBe(calls[1]?.[1]);
     expect(calls[0]?.[2]).toEqual({
@@ -84,7 +84,7 @@ describe('registerChatViewProviders', () => {
 
     expect(executeCommand).toHaveBeenCalledWith(
       'setContext',
-      'aip-code:doesNotSupportSecondarySidebar',
+      'ola:doesNotSupportSecondarySidebar',
       true,
     );
   });

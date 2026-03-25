@@ -148,8 +148,8 @@ describe('activate', () => {
     const viewIds = registerCalls.map((call) => call[0]);
 
     // Only sidebar and secondary are registered; panel view was removed
-    expect(viewIds).toContain('aip-code.chatView.sidebar');
-    expect(viewIds).toContain('aip-code.chatView.secondary');
+    expect(viewIds).toContain('ola.chatView.sidebar');
+    expect(viewIds).toContain('ola.chatView.secondary');
   });
 
   it('should launch the Qwen Code when the user clicks the button', async () => {

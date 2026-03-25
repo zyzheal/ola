@@ -9,7 +9,7 @@
 
 - ✅ `package.json` - 包名从 `aiops` 改为 `ola`
 - ✅ 所有文档中的 Qwen Code → OLA
-- ✅ 配置目录从 `.aip-code` 改为 `.ola`
+- ✅ 配置目录从 `.ola` 改为 `.ola`
 - ✅ 环境变量从 `QWEN_*` 改为 `OLA_*`
 
 ### 2. 文件和目录重命名 ✅

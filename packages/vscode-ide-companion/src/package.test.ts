@@ -19,7 +19,7 @@ describe('package.json command metadata', () => {
     };
 
     const command = manifest.contributes.commands.find(
-      (item) => item.command === 'aip-code.focusChat',
+      (item) => item.command === 'ola.focusChat',
     );
 
     expect(command?.title).toBe('Qwen Code: Focus Chat View');

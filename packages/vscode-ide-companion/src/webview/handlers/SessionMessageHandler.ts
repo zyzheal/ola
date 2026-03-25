@@ -226,7 +226,7 @@ export class SessionMessageHandler extends BaseMessageHandler {
       if (this.loginHandler) {
         await this.loginHandler();
       } else {
-        await vscode.commands.executeCommand('aip-code.login');
+        await vscode.commands.executeCommand('ola.login');
       }
       return true;
     }
@@ -250,7 +250,7 @@ export class SessionMessageHandler extends BaseMessageHandler {
       if (this.loginHandler) {
         await this.loginHandler();
       } else {
-        await vscode.commands.executeCommand('aip-code.login');
+        await vscode.commands.executeCommand('ola.login');
       }
       return 'login';
     }

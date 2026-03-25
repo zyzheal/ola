@@ -164,7 +164,7 @@ ola
 ### 启用自动更新
 
 ```json
-// ~/.aip-code/settings.json
+// ~/.ola/settings.json
 {
   "general": {
     "enableAutoUpdate": true
@@ -179,7 +179,7 @@ ola
 export OLA_LOCAL_DEV=true
 
 # 方法 2: 配置文件
-// ~/.aip-code/settings.json
+// ~/.ola/settings.json
 {
   "general": {
     "enableAutoUpdate": false
@@ -250,7 +250,7 @@ npm view ola version --registry https://npm.your-company.com
 
 ```bash
 # 检查是否启用了自动更新
-cat ~/.aip-code/settings.json | grep enableAutoUpdate
+cat ~/.ola/settings.json | grep enableAutoUpdate
 
 # 检查环境变量
 env | grep OLA

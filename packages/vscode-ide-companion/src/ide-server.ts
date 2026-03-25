@@ -430,7 +430,7 @@ export class IDEServer {
 const createMcpServer = (diffManager: DiffManager) => {
   const server = new McpServer(
     {
-      name: 'aip-code-companion-mcp-server',
+      name: 'ola-companion-mcp-server',
       version: '1.0.0',
     },
     { capabilities: { logging: {} } },

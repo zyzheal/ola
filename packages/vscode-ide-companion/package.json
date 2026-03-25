@@ -27,55 +27,55 @@
   ],
   "activationEvents": [
     "onStartupFinished",
-    "onView:aip-code.chatView.sidebar",
-    "onView:aip-code.chatView.secondary",
-    "onCommand:aip-code.openChat",
-    "onCommand:aip-code.focusChat",
-    "onCommand:aip-code.newConversation",
-    "onCommand:aip-code.showLogs"
+    "onView:ola.chatView.sidebar",
+    "onView:ola.chatView.secondary",
+    "onCommand:ola.openChat",
+    "onCommand:ola.focusChat",
+    "onCommand:ola.newConversation",
+    "onCommand:ola.showLogs"
   ],
   "contributes": {
     "jsonValidation": [
       {
-        "fileMatch": "**/.aip-code/settings.json",
+        "fileMatch": "**/.ola/settings.json",
         "url": "./schemas/settings.schema.json"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "aip-code-sidebar",
+          "id": "ola-sidebar",
           "title": "AI Platform Code Assistant",
           "icon": "assets/sidebar-icon.svg",
-          "when": "aip-code:doesNotSupportSecondarySidebar"
+          "when": "ola:doesNotSupportSecondarySidebar"
         }
       ],
       "secondarySidebar": [
         {
-          "id": "aip-code-secondary",
+          "id": "ola-secondary",
           "title": "AI Platform Code Assistant",
           "icon": "assets/sidebar-icon.svg",
-          "when": "!aip-code:doesNotSupportSecondarySidebar"
+          "when": "!ola:doesNotSupportSecondarySidebar"
         }
       ]
     },
     "views": {
-      "aip-code-sidebar": [
+      "ola-sidebar": [
         {
           "type": "webview",
-          "id": "aip-code.chatView.sidebar",
+          "id": "ola.chatView.sidebar",
           "name": "AI Platform Code Assistant",
           "icon": "assets/sidebar-icon.svg",
-          "when": "aip-code:doesNotSupportSecondarySidebar"
+          "when": "ola:doesNotSupportSecondarySidebar"
         }
       ],
-      "aip-code-secondary": [
+      "ola-secondary": [
         {
           "type": "webview",
-          "id": "aip-code.chatView.secondary",
+          "id": "ola.chatView.secondary",
           "name": "AI Platform Code Assistant",
           "icon": "assets/sidebar-icon.svg",
-          "when": "!aip-code:doesNotSupportSecondarySidebar"
+          "when": "!ola:doesNotSupportSecondarySidebar"
         }
       ]
     },
@@ -96,32 +96,32 @@
         "icon": "$(close)"
       },
       {
-        "command": "aip-code.runAipCode",
+        "command": "ola.runAipCode",
         "title": "AI Platform Code Assistant: Run"
       },
       {
-        "command": "aip-code.showNotices",
+        "command": "ola.showNotices",
         "title": "AI Platform Code Assistant: View Third-Party Notices"
       },
       {
-        "command": "aip-code.openChat",
+        "command": "ola.openChat",
         "title": "AI Platform Code Assistant: Open",
         "icon": "./assets/icon.png"
       },
       {
-        "command": "aip-code.login",
+        "command": "ola.login",
         "title": "AI Platform Code Assistant: Login"
       },
       {
-        "command": "aip-code.focusChat",
+        "command": "ola.focusChat",
         "title": "AI Platform Code Assistant: Focus Chat View"
       },
       {
-        "command": "aip-code.newConversation",
+        "command": "ola.newConversation",
         "title": "AI Platform Code Assistant: New Conversation"
       },
       {
-        "command": "aip-code.showLogs",
+        "command": "ola.showLogs",
         "title": "AI Platform Code Assistant: Show Logs"
       }
     ],
@@ -136,7 +136,7 @@
           "when": "aip.diff.isVisible"
         },
         {
-          "command": "aip-code.login",
+          "command": "ola.login",
           "when": "false"
         }
       ],
@@ -152,7 +152,7 @@
           "group": "navigation"
         },
         {
-          "command": "aip-code.openChat",
+          "command": "ola.openChat",
           "group": "navigation"
         }
       ]
@@ -169,7 +169,7 @@
         "when": "aip.diff.isVisible"
       },
       {
-        "command": "aip-code.focusChat",
+        "command": "ola.focusChat",
         "key": "ctrl+shift+l",
         "mac": "cmd+shift+l"
       }
