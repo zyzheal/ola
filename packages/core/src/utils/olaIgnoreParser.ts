@@ -89,4 +89,4 @@ export class AipIgnoreParser implements AipIgnoreFilter {
 }
 
 // Alias for backward compatibility
-export const QwenIgnoreParser = AipIgnoreParser;
+export const OlaIgnoreParser = AipIgnoreParser;

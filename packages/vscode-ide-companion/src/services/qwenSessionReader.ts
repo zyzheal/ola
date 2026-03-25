@@ -40,7 +40,7 @@ export interface QwenSession {
 }
 
 export class QwenSessionReader {
-  private qwenDir: string;
+  private olaDir: string;
 
   constructor() {
     this.olaDir = path.join(os.homedir(), '.ola');

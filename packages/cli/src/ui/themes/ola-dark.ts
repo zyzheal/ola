@@ -27,7 +27,7 @@ const qwenDarkColors: ColorsTheme = {
   GradientColors: ['#FFD700', '#da7959'],
 };
 
-export const QwenDark: Theme = new Theme(
+export const OlaDark: Theme = new Theme(
   'Qwen Dark',
   'dark',
   {

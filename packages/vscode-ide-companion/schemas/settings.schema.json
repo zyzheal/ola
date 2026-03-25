@@ -68,7 +68,7 @@
           "default": false
         },
         "language": {
-          "description": "The language for the user interface. Use \"auto\" to detect from system settings. You can also use custom language codes (e.g., \"es\", \"fr\") by placing JS language files in ~/.qwen/locales/ (e.g., ~/.qwen/locales/es.js). Options: auto, en, zh, ru, de, ja, pt",
+          "description": "The language for the user interface. Use \"auto\" to detect from system settings. You can also use custom language codes (e.g., \"es\", \"fr\") by placing JS language files in ~/.ola/locales/ (e.g., ~/.ola/locales/es.js). Options: auto, en, zh, ru, de, ja, pt",
           "enum": [
             "auto",
             "en",
@@ -84,6 +84,24 @@
           "description": "The language for LLM output. Use \"auto\" to detect from system settings, or set a specific language.",
           "type": "string",
           "default": "Chinese"
+        },
+        "trustedCommands": {
+          "description": "Commands that are automatically approved without confirmation.",
+          "type": "object",
+          "properties": {
+            "patterns": {
+              "description": "Glob patterns for commands to trust (e.g., \"find *\", \"git *\").",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "enabled": {
+              "description": "Enable automatic approval of trusted commands.",
+              "type": "boolean",
+              "default": false
+            }
+          }
         },
         "terminalBell": {
           "description": "Play terminal bell sound when response completes or needs approval.",
@@ -343,7 +361,7 @@
               "default": true
             },
             "respectQwenIgnore": {
-              "description": "Respect .qwenignore files when searching",
+              "description": "Respect .olaignore files when searching",
               "type": "boolean",
               "default": true
             },
@@ -581,7 +599,7 @@
           "additionalProperties": true
         },
         "runtimeOutputDir": {
-          "description": "Custom directory for runtime output (temp files, debug logs, session data, todos, etc.). Config files remain at ~/.qwen. Env var OLA_RUNTIME_DIR takes priority.",
+          "description": "Custom directory for runtime output (temp files, debug logs, session data, todos, etc.). Config files remain at ~/.ola. Env var OLA_RUNTIME_DIR takes priority.",
           "type": "string"
         },
         "tavilyApiKey": {
@@ -610,7 +628,7 @@
           "type": "object",
           "properties": {
             "worktreeBaseDir": {
-              "description": "Custom base directory for Arena worktrees. Defaults to ~/.qwen/arena.",
+              "description": "Custom base directory for Arena worktrees. Defaults to ~/.ola/arena.",
               "type": "string"
             },
             "preserveArtifacts": {

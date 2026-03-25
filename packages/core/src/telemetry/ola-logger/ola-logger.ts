@@ -96,8 +96,8 @@ export interface LogResponse {
 
 // Singleton class for batch posting log events to RUM. When a new event comes in, the elapsed time
 // is checked and events are flushed to RUM if at least a minute has passed since the last flush.
-export class QwenLogger {
-  private static instance: QwenLogger;
+export class OlaLogger {
+  private static instance: OlaLogger;
   private config?: Config;
   private debugLogger: DebugLogger;
   private readonly installationManager: InstallationManager;
@@ -144,14 +144,14 @@ export class QwenLogger {
     return `user-${installationId ?? 'unknown'}`;
   }
 
-  static getInstance(config?: Config): QwenLogger | undefined {
+  static getInstance(config?: Config): OlaLogger | undefined {
     if (config === undefined || !config?.getUsageStatisticsEnabled())
       return undefined;
-    if (!QwenLogger.instance) {
-      QwenLogger.instance = new QwenLogger(config);
+    if (!OlaLogger.instance) {
+      OlaLogger.instance = new OlaLogger(config);
     }
 
-    return QwenLogger.instance;
+    return OlaLogger.instance;
   }
 
   enqueueLogEvent(event: RumEvent): void {
@@ -167,11 +167,11 @@ export class QwenLogger {
 
       if (wasAtCapacity) {
         this.debugLogger.debug(
-          `QwenLogger: Dropped old event to prevent memory leak (queue size: ${this.events.size})`,
+          `OlaLogger: Dropped old event to prevent memory leak (queue size: ${this.events.size})`,
         );
       }
     } catch (error) {
-      this.debugLogger.error('QwenLogger: Failed to enqueue log event.', error);
+      this.debugLogger.error('OlaLogger: Failed to enqueue log event.', error);
     }
   }
 

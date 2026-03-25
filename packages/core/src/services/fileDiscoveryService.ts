@@ -5,9 +5,9 @@
  */
 
 import type { GitIgnoreFilter } from '../utils/gitIgnoreParser.js';
-import type { QwenIgnoreFilter } from '../utils/qwenIgnoreParser.js';
+import type { AipIgnoreFilter } from '../utils/olaIgnoreParser.js';
 import { GitIgnoreParser } from '../utils/gitIgnoreParser.js';
-import { QwenIgnoreParser } from '../utils/qwenIgnoreParser.js';
+import { OlaIgnoreParser } from '../utils/olaIgnoreParser.js';
 import { isGitRepository } from '../utils/gitUtils.js';
 import * as path from 'node:path';
 
@@ -24,7 +24,7 @@ export interface FilterReport {
 
 export class FileDiscoveryService {
   private gitIgnoreFilter: GitIgnoreFilter | null = null;
-  private qwenIgnoreFilter: QwenIgnoreFilter | null = null;
+  private qwenIgnoreFilter: AipIgnoreFilter | null = null;
   private projectRoot: string;
 
   constructor(projectRoot: string) {
@@ -32,7 +32,7 @@ export class FileDiscoveryService {
     if (isGitRepository(this.projectRoot)) {
       this.gitIgnoreFilter = new GitIgnoreParser(this.projectRoot);
     }
-    this.olaIgnoreFilter = new QwenIgnoreParser(this.projectRoot);
+    this.qwenIgnoreFilter = new OlaIgnoreParser(this.projectRoot);
   }
 
   /**
@@ -106,8 +106,8 @@ export class FileDiscoveryService {
    * Checks if a single file should be qwen-ignored
    */
   shouldQwenIgnoreFile(filePath: string): boolean {
-    if (this.olaIgnoreFilter) {
-      return this.olaIgnoreFilter.isIgnored(filePath);
+    if (this.qwenIgnoreFilter) {
+      return this.qwenIgnoreFilter.isIgnored(filePath);
     }
     return false;
   }
@@ -137,6 +137,6 @@ export class FileDiscoveryService {
    * Returns loaded patterns from .olaignore
    */
   getQwenIgnorePatterns(): string[] {
-    return this.olaIgnoreFilter?.getPatterns() ?? [];
+    return this.gitIgnoreFilter?.getPatterns() ?? [];
   }
 }

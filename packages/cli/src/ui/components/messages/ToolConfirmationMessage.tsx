@@ -87,6 +87,39 @@ export const ToolConfirmationMessage: React.FC<
     onConfirm(outcome);
   };
 
+  // Auto-approve trusted commands
+  useEffect(() => {
+    if (confirmationDetails.type === 'exec') {
+      // Cast to unknown first to bypass settings type, then to our expected type
+      const settingsMerged = settings.merged as unknown as {
+        trustedCommands?: {
+          patterns?: string[];
+          enabled?: boolean;
+        };
+      };
+      const trustedCommands = settingsMerged.trustedCommands;
+      if (trustedCommands?.enabled && trustedCommands.patterns) {
+        const command = confirmationDetails.command;
+        const isTrusted = trustedCommands.patterns.some((pattern: string) => {
+          // Convert glob pattern to regex
+          const regex = new RegExp(
+            '^' +
+              pattern
+                .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
+                .replace(/\*/g, '.*') +
+              '$',
+          );
+          return regex.test(command);
+        });
+
+        if (isTrusted) {
+          // Auto-confirm trusted command
+          onConfirm(ToolConfirmationOutcome.ProceedOnce);
+        }
+      }
+    }
+  }, [confirmationDetails, settings, onConfirm]);
+
   const isTrustedFolder = config.isTrustedFolder();
 
   useKeypress(

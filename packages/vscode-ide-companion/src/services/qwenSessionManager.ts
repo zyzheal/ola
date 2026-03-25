@@ -21,7 +21,7 @@ import type { QwenSession } from './qwenSessionReader.js';
  * when ACP methods are unavailable or fail.
  */
 export class QwenSessionManager {
-  private qwenDir: string;
+  private olaDir: string;
 
   constructor() {
     this.olaDir = path.join(os.homedir(), '.ola');

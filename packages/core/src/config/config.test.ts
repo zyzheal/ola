@@ -13,7 +13,7 @@ import { setGeminiMdFilename as mockSetGeminiMdFilename } from '../tools/memoryT
 import {
   DEFAULT_TELEMETRY_TARGET,
   DEFAULT_OTLP_ENDPOINT,
-  QwenLogger,
+  OlaLogger,
 } from '../telemetry/index.js';
 import type {
   ContentGenerator,
@@ -236,7 +236,7 @@ describe('Server Config (config.ts)', () => {
   beforeEach(() => {
     // Reset mocks if necessary
     vi.clearAllMocks();
-    vi.spyOn(QwenLogger.prototype, 'logStartSessionEvent').mockImplementation(
+    vi.spyOn(OlaLogger.prototype, 'logStartSessionEvent').mockImplementation(
       async () => undefined,
     );
 
@@ -692,7 +692,7 @@ describe('Server Config (config.ts)', () => {
       });
       await config.initialize();
 
-      expect(QwenLogger.prototype.logStartSessionEvent).toHaveBeenCalledOnce();
+      expect(OlaLogger.prototype.logStartSessionEvent).toHaveBeenCalledOnce();
     });
   });
 

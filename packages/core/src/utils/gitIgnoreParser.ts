@@ -10,6 +10,7 @@ import ignore from 'ignore';
 
 export interface GitIgnoreFilter {
   isIgnored(filePath: string): boolean;
+  getPatterns(): string[];
 }
 
 export class GitIgnoreParser implements GitIgnoreFilter {
@@ -185,5 +186,11 @@ export class GitIgnoreParser implements GitIgnoreFilter {
     } catch (_error) {
       return false;
     }
+  }
+
+  getPatterns(): string[] {
+    // GitIgnoreParser doesn't maintain a global pattern list
+    // Return empty array as this is primarily used for .olaignore files
+    return [];
   }
 }

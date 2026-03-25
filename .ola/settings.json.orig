@@ -1,0 +1,16 @@
+{
+  "trustedCommands": {
+    "patterns": [
+      "find *",
+      "grep *",
+      "sed *",
+      "git *",
+      "npm *",
+      "node *",
+      "ls *",
+      "cat *",
+      "chmod *"
+    ],
+    "enabled": true
+  }
+}

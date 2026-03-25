@@ -15,8 +15,8 @@ import { DefaultLight } from './default-light.js';
 import { DefaultDark } from './default.js';
 import { ShadesOfPurple } from './shades-of-purple.js';
 import { XCode } from './xcode.js';
-import { QwenLight } from './qwen-light.js';
-import { QwenDark } from './qwen-dark.js';
+import { OlaLight } from './ola-light.js';
+import { OlaDark } from './ola-dark.js';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
@@ -37,7 +37,7 @@ export interface ThemeDisplay {
   isCustom?: boolean;
 }
 
-export const DEFAULT_THEME: Theme = QwenDark;
+export const DEFAULT_THEME: Theme = OlaDark;
 
 class ThemeManager {
   private readonly availableThemes: Theme[];
@@ -55,8 +55,8 @@ class ThemeManager {
       GitHubDark,
       GitHubLight,
       GoogleCode,
-      QwenLight,
-      QwenDark,
+      OlaLight,
+      OlaDark,
       ShadesOfPurple,
       XCode,
       ANSI,
@@ -196,11 +196,11 @@ class ThemeManager {
     );
 
     // Separate Qwen themes
-    const _qwenThemes = builtInThemes.filter(
-      (theme) => theme.name === QwenLight.name || theme.name === QwenDark.name,
+    const olaThemes = builtInThemes.filter(
+      (theme) => theme.name === OlaLight.name || theme.name === OlaDark.name,
     );
     const otherBuiltInThemes = builtInThemes.filter(
-      (theme) => theme.name !== QwenLight.name && theme.name !== QwenDark.name,
+      (theme) => theme.name !== OlaLight.name && theme.name !== OlaDark.name,
     );
 
     // Sort other themes by type and then name

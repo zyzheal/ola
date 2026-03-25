@@ -6,7 +6,7 @@
 
 import { OpenAIContentGenerator } from '../core/openaiContentGenerator/index.js';
 import { DashScopeOpenAICompatibleProvider } from '../core/openaiContentGenerator/provider/dashscope.js';
-import type { IQwenOAuth2Client } from './qwenOAuth2.js';
+import type { IOlaOAuth2Client } from './olaOAuth2.js';
 import { SharedTokenManager } from './sharedTokenManager.js';
 import { type Config } from '../config/config.js';
 import type {
@@ -24,14 +24,14 @@ import { createDebugLogger } from '../utils/debugLogger.js';
 /**
  * Qwen Content Generator that uses Qwen OAuth tokens with automatic refresh
  */
-export class QwenContentGenerator extends OpenAIContentGenerator {
+export class OlaContentGenerator extends OpenAIContentGenerator {
   private readonly debugLogger = createDebugLogger('QWEN');
-  private qwenClient: IQwenOAuth2Client;
+  private qwenClient: IOlaOAuth2Client;
   private sharedManager: SharedTokenManager;
   private currentToken?: string;
 
   constructor(
-    qwenClient: IQwenOAuth2Client,
+    qwenClient: IOlaOAuth2Client,
     contentGeneratorConfig: ContentGeneratorConfig,
     cliConfig: Config,
   ) {
@@ -43,7 +43,7 @@ export class QwenContentGenerator extends OpenAIContentGenerator {
 
     // Initialize with DashScope provider
     super(contentGeneratorConfig, cliConfig, dashscopeProvider);
-    this.olaClient = qwenClient;
+    this.qwenClient = qwenClient;
     this.sharedManager = SharedTokenManager.getInstance();
 
     // Set default base URL, will be updated dynamically
@@ -88,7 +88,7 @@ export class QwenContentGenerator extends OpenAIContentGenerator {
     try {
       // Use SharedTokenManager for consistent token/endpoint pairing and automatic refresh
       const credentials = await this.sharedManager.getValidCredentials(
-        this.olaClient,
+        this.qwenClient,
       );
 
       if (!credentials.access_token) {
@@ -142,7 +142,7 @@ export class QwenContentGenerator extends OpenAIContentGenerator {
       if (this.isAuthError(error)) {
         // Use SharedTokenManager to properly refresh and persist the token
         // This ensures the refreshed token is saved to oauth_creds.json
-        await this.sharedManager.getValidCredentials(this.olaClient, true);
+        await this.sharedManager.getValidCredentials(this.qwenClient, true);
         return await attemptOperation();
       }
       throw error;

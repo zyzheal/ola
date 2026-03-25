@@ -5,8 +5,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import type { IQwenOAuth2Client } from './qwenOAuth2.js';
-import { type QwenCredentials, type ErrorData } from './qwenOAuth2.js';
+import type { IOlaOAuth2Client } from './olaOAuth2.js';
+import { type QwenCredentials, type ErrorData } from './olaOAuth2.js';
 import type {
   GenerateContentParameters,
   GenerateContentResponse,
@@ -16,7 +16,7 @@ import type {
   EmbedContentResponse,
 } from '@google/genai';
 import { FinishReason } from '@google/genai';
-import { QwenContentGenerator } from './qwenContentGenerator.js';
+import { OlaContentGenerator } from './olaContentGenerator.js';
 import { SharedTokenManager } from './sharedTokenManager.js';
 import type { Config } from '../config/config.js';
 import { AuthType } from '../core/contentGenerator.js';
@@ -126,7 +126,7 @@ vi.mock('./sharedTokenManager.js', () => ({
     }
 
     async getValidCredentials(
-      qwenClient: IQwenOAuth2Client,
+      qwenClient: IOlaOAuth2Client,
     ): Promise<QwenCredentials> {
       // If we're configured to throw an error, do so
       if (this.shouldThrowError && this.errorToThrow) {
@@ -290,9 +290,9 @@ const createMockResponse = (text: string): GenerateContentResponse =>
     codeExecutionResult: '',
   }) as GenerateContentResponse;
 
-describe('QwenContentGenerator', () => {
-  let mockQwenClient: IQwenOAuth2Client;
-  let qwenContentGenerator: QwenContentGenerator;
+describe('OlaContentGenerator', () => {
+  let mockQwenClient: IOlaOAuth2Client;
+  let qwenContentGenerator: OlaContentGenerator;
   let mockConfig: Config;
 
   const mockCredentials: QwenCredentials = {
@@ -325,7 +325,7 @@ describe('QwenContentGenerator', () => {
       getUsageStatisticsEnabled: vi.fn().mockReturnValue(false),
     } as unknown as Config;
 
-    // Mock QwenOAuth2Client
+    // Mock OlaOAuth2Client
     mockQwenClient = {
       getAccessToken: vi.fn(),
       getCredentials: vi.fn(),
@@ -335,7 +335,7 @@ describe('QwenContentGenerator', () => {
       pollDeviceToken: vi.fn(),
     };
 
-    // Create QwenContentGenerator instance
+    // Create OlaContentGenerator instance
     const contentGeneratorConfig = {
       model: 'qwen-turbo',
       apiKey: 'test-api-key',
@@ -344,7 +344,7 @@ describe('QwenContentGenerator', () => {
       timeout: 120000,
       maxRetries: 3,
     };
-    qwenContentGenerator = new QwenContentGenerator(
+    qwenContentGenerator = new OlaContentGenerator(
       mockQwenClient,
       contentGeneratorConfig,
       mockConfig,
@@ -588,7 +588,7 @@ describe('QwenContentGenerator', () => {
       );
       const originalGenerateContent = parentPrototype.generateContent;
       parentPrototype.generateContent = vi.fn().mockImplementation(function (
-        this: QwenContentGenerator,
+        this: OlaContentGenerator,
       ) {
         capturedBaseURL = (
           this as unknown as { pipeline: { client: { baseURL: string } } }
@@ -629,7 +629,7 @@ describe('QwenContentGenerator', () => {
       );
       const originalGenerateContent = parentPrototype.generateContent;
       parentPrototype.generateContent = vi.fn().mockImplementation(function (
-        this: QwenContentGenerator,
+        this: OlaContentGenerator,
       ) {
         capturedBaseURL = (
           this as unknown as { pipeline: { client: { baseURL: string } } }
@@ -668,7 +668,7 @@ describe('QwenContentGenerator', () => {
       );
       const originalGenerateContent = parentPrototype.generateContent;
       parentPrototype.generateContent = vi.fn().mockImplementation(function (
-        this: QwenContentGenerator,
+        this: OlaContentGenerator,
       ) {
         capturedBaseURL = (
           this as unknown as { pipeline: { client: { baseURL: string } } }
@@ -707,7 +707,7 @@ describe('QwenContentGenerator', () => {
       );
       const originalGenerateContent = parentPrototype.generateContent;
       parentPrototype.generateContent = vi.fn().mockImplementation(function (
-        this: QwenContentGenerator,
+        this: OlaContentGenerator,
       ) {
         capturedBaseURL = (
           this as unknown as { pipeline: { client: { baseURL: string } } }
@@ -1126,7 +1126,7 @@ describe('QwenContentGenerator', () => {
         .mockReturnValue(mockTokenManager);
 
       // Create new instance to pick up the mock
-      const newGenerator = new QwenContentGenerator(
+      const newGenerator = new OlaContentGenerator(
         mockQwenClient,
         { model: 'qwen-turbo', authType: AuthType.OLA_OAUTH },
         mockConfig,
@@ -1161,7 +1161,7 @@ describe('QwenContentGenerator', () => {
         .fn()
         .mockReturnValue(mockTokenManager);
 
-      const newGenerator = new QwenContentGenerator(
+      const newGenerator = new OlaContentGenerator(
         mockQwenClient,
         { model: 'qwen-turbo', authType: AuthType.OLA_OAUTH },
         mockConfig,
@@ -1194,7 +1194,7 @@ describe('QwenContentGenerator', () => {
         .fn()
         .mockReturnValue(mockTokenManager);
 
-      const newGenerator = new QwenContentGenerator(
+      const newGenerator = new OlaContentGenerator(
         mockQwenClient,
         { model: 'qwen-turbo', authType: AuthType.OLA_OAUTH },
         mockConfig,
@@ -1498,7 +1498,7 @@ describe('QwenContentGenerator', () => {
         .fn()
         .mockReturnValue(mockTokenManager);
 
-      const newGenerator = new QwenContentGenerator(
+      const newGenerator = new OlaContentGenerator(
         mockQwenClient,
         { model: 'qwen-turbo', authType: AuthType.OLA_OAUTH },
         mockConfig,
@@ -1519,7 +1519,7 @@ describe('QwenContentGenerator', () => {
         .fn()
         .mockReturnValue(mockTokenManager);
 
-      const newGenerator = new QwenContentGenerator(
+      const newGenerator = new OlaContentGenerator(
         mockQwenClient,
         { model: 'qwen-turbo', authType: AuthType.OLA_OAUTH },
         mockConfig,
@@ -1542,7 +1542,7 @@ describe('QwenContentGenerator', () => {
         .fn()
         .mockReturnValue(mockTokenManager);
 
-      const newGenerator = new QwenContentGenerator(
+      const newGenerator = new OlaContentGenerator(
         mockQwenClient,
         { model: 'qwen-turbo', authType: AuthType.OLA_OAUTH },
         mockConfig,
@@ -1563,7 +1563,7 @@ describe('QwenContentGenerator', () => {
         .fn()
         .mockReturnValue(mockTokenManager);
 
-      const newGenerator = new QwenContentGenerator(
+      const newGenerator = new OlaContentGenerator(
         mockQwenClient,
         { model: 'qwen-turbo', authType: AuthType.OLA_OAUTH },
         mockConfig,
@@ -1579,7 +1579,7 @@ describe('QwenContentGenerator', () => {
 
   describe('Constructor and Initialization', () => {
     it('should initialize with configured base URL when provided', () => {
-      const generator = new QwenContentGenerator(
+      const generator = new OlaContentGenerator(
         mockQwenClient,
         {
           model: 'qwen-turbo',
@@ -1599,7 +1599,7 @@ describe('QwenContentGenerator', () => {
     });
 
     it('should get SharedTokenManager instance', () => {
-      const generator = new QwenContentGenerator(
+      const generator = new OlaContentGenerator(
         mockQwenClient,
         { model: 'qwen-turbo', authType: AuthType.OLA_OAUTH },
         mockConfig,
@@ -1625,7 +1625,7 @@ describe('QwenContentGenerator', () => {
         .fn()
         .mockReturnValue(mockTokenManager);
 
-      const newGenerator = new QwenContentGenerator(
+      const newGenerator = new OlaContentGenerator(
         mockQwenClient,
         { model: 'qwen-turbo', authType: AuthType.OLA_OAUTH },
         mockConfig,
@@ -1654,7 +1654,7 @@ describe('QwenContentGenerator', () => {
         .fn()
         .mockReturnValue(mockTokenManager);
 
-      const newGenerator = new QwenContentGenerator(
+      const newGenerator = new OlaContentGenerator(
         mockQwenClient,
         { model: 'qwen-turbo', authType: AuthType.OLA_OAUTH },
         mockConfig,

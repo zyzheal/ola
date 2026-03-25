@@ -8,7 +8,7 @@ import { useState, useCallback, useEffect } from 'react';
 import {
   AuthType,
   qwenOAuth2Events,
-  QwenOAuth2Event,
+  OlaOAuth2Event,
   type DeviceAuthorizationData,
 } from 'ola-core';
 
@@ -80,19 +80,19 @@ export const useQwenAuth = (
     };
 
     // Add event listeners
-    qwenOAuth2Events.on(QwenOAuth2Event.AuthUri, handleDeviceAuth);
-    qwenOAuth2Events.on(QwenOAuth2Event.AuthProgress, handleAuthProgress);
+    qwenOAuth2Events.on(OlaOAuth2Event.AuthUri, handleDeviceAuth);
+    qwenOAuth2Events.on(OlaOAuth2Event.AuthProgress, handleAuthProgress);
 
     // Cleanup event listeners when component unmounts or auth finishes
     return () => {
-      qwenOAuth2Events.off(QwenOAuth2Event.AuthUri, handleDeviceAuth);
-      qwenOAuth2Events.off(QwenOAuth2Event.AuthProgress, handleAuthProgress);
+      qwenOAuth2Events.off(OlaOAuth2Event.AuthUri, handleDeviceAuth);
+      qwenOAuth2Events.off(OlaOAuth2Event.AuthProgress, handleAuthProgress);
     };
   }, [isQwenAuth, isAuthenticating]);
 
   const cancelQwenAuth = useCallback(() => {
     // Emit cancel event to stop polling
-    qwenOAuth2Events.emit(QwenOAuth2Event.AuthCancel);
+    qwenOAuth2Events.emit(OlaOAuth2Event.AuthCancel);
 
     setQwenAuthState({
       deviceAuth: null,

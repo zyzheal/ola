@@ -14,7 +14,7 @@ import {
   afterAll,
 } from 'vitest';
 import * as os from 'node:os';
-import { QwenLogger, TEST_ONLY } from './qwen-logger.js';
+import { OlaLogger, TEST_ONLY } from './ola-logger.js';
 import type { Config } from '../../config/config.js';
 import { AuthType } from '../../core/contentGenerator.js';
 import {
@@ -91,7 +91,7 @@ const makeFakeConfig = (overrides: Partial<Config> = {}): Config => {
   return defaults as Config;
 };
 
-describe('QwenLogger', () => {
+describe('OlaLogger', () => {
   let mockConfig: Config;
 
   beforeEach(() => {
@@ -104,7 +104,7 @@ describe('QwenLogger', () => {
     debugLoggerSpy.error.mockClear();
     // Clear singleton instance
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (QwenLogger as any).instance = undefined;
+    (OlaLogger as any).instance = undefined;
   });
 
   afterEach(() => {
@@ -114,31 +114,31 @@ describe('QwenLogger', () => {
 
   afterAll(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (QwenLogger as any).instance = undefined;
+    (OlaLogger as any).instance = undefined;
   });
 
   describe('getInstance', () => {
     it('returns undefined when usage statistics are disabled', () => {
       const config = makeFakeConfig({ getUsageStatisticsEnabled: () => false });
-      const logger = QwenLogger.getInstance(config);
+      const logger = OlaLogger.getInstance(config);
       expect(logger).toBeUndefined();
     });
 
     it('returns an instance when usage statistics are enabled', () => {
-      const logger = QwenLogger.getInstance(mockConfig);
-      expect(logger).toBeInstanceOf(QwenLogger);
+      const logger = OlaLogger.getInstance(mockConfig);
+      expect(logger).toBeInstanceOf(OlaLogger);
     });
 
     it('is a singleton', () => {
-      const logger1 = QwenLogger.getInstance(mockConfig);
-      const logger2 = QwenLogger.getInstance(mockConfig);
+      const logger1 = OlaLogger.getInstance(mockConfig);
+      const logger2 = OlaLogger.getInstance(mockConfig);
       expect(logger1).toBe(logger2);
     });
   });
 
   describe('createRumPayload', () => {
     it('includes os metadata in payload', async () => {
-      const logger = QwenLogger.getInstance(mockConfig)!;
+      const logger = OlaLogger.getInstance(mockConfig)!;
       const payload = await (
         logger as unknown as {
           createRumPayload(): Promise<RumPayload>;
@@ -156,7 +156,7 @@ describe('QwenLogger', () => {
     it('includes source when source.json exists with valid source', async () => {
       // Note: Testing source information requires actual file system operations
       // This test verifies that the payload structure is correct
-      const logger = QwenLogger.getInstance(mockConfig)!;
+      const logger = OlaLogger.getInstance(mockConfig)!;
 
       const payload = await (
         logger as unknown as { createRumPayload(): Promise<RumPayload> }
@@ -172,7 +172,7 @@ describe('QwenLogger', () => {
     });
 
     it('caches source info and does not read file on every payload creation', async () => {
-      const logger = QwenLogger.getInstance(mockConfig)!;
+      const logger = OlaLogger.getInstance(mockConfig)!;
 
       // Get the cached sourceInfo value
       const cachedSourceInfo = logger['sourceInfo'];
@@ -193,7 +193,7 @@ describe('QwenLogger', () => {
     it('does not include source when source.json does not exist', async () => {
       // Note: Testing source information requires actual file system operations
       // This test verifies the payload structure is correct
-      const logger = QwenLogger.getInstance(mockConfig)!;
+      const logger = OlaLogger.getInstance(mockConfig)!;
 
       const payload = await (
         logger as unknown as { createRumPayload(): Promise<RumPayload> }
@@ -205,7 +205,7 @@ describe('QwenLogger', () => {
     it('does not include source when source value is unknown', async () => {
       // Note: Testing source information requires actual file system operations
       // This test verifies the payload structure is correct
-      const logger = QwenLogger.getInstance(mockConfig)!;
+      const logger = OlaLogger.getInstance(mockConfig)!;
 
       const payload = await (
         logger as unknown as { createRumPayload(): Promise<RumPayload> }
@@ -217,7 +217,7 @@ describe('QwenLogger', () => {
     it('handles source.json parsing errors gracefully', async () => {
       // Note: Testing source information requires actual file system operations
       // This test verifies the payload structure is correct
-      const logger = QwenLogger.getInstance(mockConfig)!;
+      const logger = OlaLogger.getInstance(mockConfig)!;
 
       const payload = await (
         logger as unknown as { createRumPayload(): Promise<RumPayload> }
@@ -231,7 +231,7 @@ describe('QwenLogger', () => {
 
   describe('event queue management', () => {
     it('should handle event overflow gracefully', () => {
-      const logger = QwenLogger.getInstance(mockConfig)!;
+      const logger = OlaLogger.getInstance(mockConfig)!;
 
       // Fill the queue beyond capacity
       for (let i = 0; i < TEST_ONLY.MAX_EVENTS + 10; i++) {
@@ -252,7 +252,7 @@ describe('QwenLogger', () => {
     });
 
     it('should handle enqueue errors gracefully', () => {
-      const logger = QwenLogger.getInstance(mockConfig)!;
+      const logger = OlaLogger.getInstance(mockConfig)!;
 
       // Mock the events deque to throw an error
       const originalPush = logger['events'].push;
@@ -276,7 +276,7 @@ describe('QwenLogger', () => {
 
   describe('concurrent flush protection', () => {
     it('should handle flush requests and clear events', async () => {
-      const logger = QwenLogger.getInstance(mockConfig)!;
+      const logger = OlaLogger.getInstance(mockConfig)!;
 
       // Add some events
       logger.enqueueLogEvent({
@@ -296,7 +296,7 @@ describe('QwenLogger', () => {
 
   describe('failed event retry mechanism', () => {
     it('should flush and clear events (retry disabled in de-branded build)', async () => {
-      const logger = QwenLogger.getInstance(mockConfig)!;
+      const logger = OlaLogger.getInstance(mockConfig)!;
 
       // Add events up to retry limit
       for (let i = 0; i < TEST_ONLY.MAX_RETRY_EVENTS + 50; i++) {
@@ -314,7 +314,7 @@ describe('QwenLogger', () => {
     });
 
     it('should handle flush with full queue gracefully', async () => {
-      const logger = QwenLogger.getInstance(mockConfig)!;
+      const logger = OlaLogger.getInstance(mockConfig)!;
 
       // Fill the queue to capacity
       for (let i = 0; i < TEST_ONLY.MAX_EVENTS; i++) {
@@ -336,7 +336,7 @@ describe('QwenLogger', () => {
 
   describe('event handlers', () => {
     it('should log IDE connection events', () => {
-      const logger = QwenLogger.getInstance(mockConfig)!;
+      const logger = OlaLogger.getInstance(mockConfig)!;
       const enqueueSpy = vi.spyOn(logger, 'enqueueLogEvent');
 
       const event = new IdeConnectionEvent(IdeConnectionType.SESSION);
@@ -356,7 +356,7 @@ describe('QwenLogger', () => {
     });
 
     it('should log Kitty sequence overflow events', () => {
-      const logger = QwenLogger.getInstance(mockConfig)!;
+      const logger = OlaLogger.getInstance(mockConfig)!;
       const enqueueSpy = vi.spyOn(logger, 'enqueueLogEvent');
 
       const event = new KittySequenceOverflowEvent(1024, 'truncated...');
@@ -380,7 +380,7 @@ describe('QwenLogger', () => {
     });
 
     it('should flush start session events immediately', async () => {
-      const logger = QwenLogger.getInstance(mockConfig)!;
+      const logger = OlaLogger.getInstance(mockConfig)!;
       const flushSpy = vi.spyOn(logger, 'flushToRum').mockResolvedValue({});
 
       const testConfig = makeFakeConfig({
@@ -395,7 +395,7 @@ describe('QwenLogger', () => {
     });
 
     it('should re-read source info when starting a new session', async () => {
-      const logger = QwenLogger.getInstance(mockConfig)!;
+      const logger = OlaLogger.getInstance(mockConfig)!;
       const readSourceInfoSpy = vi.spyOn(
         logger as unknown as { readSourceInfo(): string },
         'readSourceInfo',
@@ -417,7 +417,7 @@ describe('QwenLogger', () => {
     });
 
     it('should flush end session events immediately', async () => {
-      const logger = QwenLogger.getInstance(mockConfig)!;
+      const logger = OlaLogger.getInstance(mockConfig)!;
       const flushSpy = vi.spyOn(logger, 'flushToRum').mockResolvedValue({});
 
       const event = new EndSessionEvent(mockConfig);
@@ -430,7 +430,7 @@ describe('QwenLogger', () => {
 
   describe('flush timing', () => {
     it('should not flush if interval has not passed', () => {
-      const logger = QwenLogger.getInstance(mockConfig)!;
+      const logger = OlaLogger.getInstance(mockConfig)!;
       const flushSpy = vi.spyOn(logger, 'flushToRum');
 
       // Add an event and try to flush immediately
@@ -447,7 +447,7 @@ describe('QwenLogger', () => {
     });
 
     it('should flush when interval has passed', () => {
-      const logger = QwenLogger.getInstance(mockConfig)!;
+      const logger = OlaLogger.getInstance(mockConfig)!;
       const flushSpy = vi.spyOn(logger, 'flushToRum').mockResolvedValue({});
 
       // Add an event
@@ -469,7 +469,7 @@ describe('QwenLogger', () => {
 
   describe('error handling', () => {
     it('should handle flush errors gracefully with debug mode', async () => {
-      const logger = QwenLogger.getInstance(mockConfig)!;
+      const logger = OlaLogger.getInstance(mockConfig)!;
 
       // Add an event first
       logger.enqueueLogEvent({

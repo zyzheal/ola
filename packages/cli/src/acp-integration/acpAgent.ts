@@ -10,7 +10,7 @@ import {
   AuthType,
   clearCachedCredentialFile,
   createDebugLogger,
-  QwenOAuth2Event,
+  OlaOAuth2Event,
   qwenOAuth2Events,
   MCPServerConfig,
   SessionService,
@@ -175,7 +175,7 @@ class QwenAgent implements Agent {
     };
 
     if (method === AuthType.OLA_OAUTH) {
-      qwenOAuth2Events.once(QwenOAuth2Event.AuthUri, authUriHandler);
+      qwenOAuth2Events.once(OlaOAuth2Event.AuthUri, authUriHandler);
     }
 
     await clearCachedCredentialFile();
@@ -188,7 +188,7 @@ class QwenAgent implements Agent {
       );
     } finally {
       if (method === AuthType.OLA_OAUTH) {
-        qwenOAuth2Events.off(QwenOAuth2Event.AuthUri, authUriHandler);
+        qwenOAuth2Events.off(OlaOAuth2Event.AuthUri, authUriHandler);
       }
     }
   }

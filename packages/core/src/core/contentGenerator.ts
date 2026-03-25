@@ -313,10 +313,10 @@ export async function createContentGenerator(
     baseGenerator = createOpenAIContentGenerator(generatorConfig, config);
   } else if (authType === AuthType.OLA_OAUTH) {
     const { getQwenOAuthClient: getQwenOauthClient } = await import(
-      '../qwen/qwenOAuth2.js'
+      '../ola/olaOAuth2.js'
     );
-    const { QwenContentGenerator } = await import(
-      '../qwen/qwenContentGenerator.js'
+    const { OlaContentGenerator } = await import(
+      '../ola/olaContentGenerator.js'
     );
 
     try {
@@ -324,7 +324,7 @@ export async function createContentGenerator(
         config,
         isInitialAuth ? { requireCachedCredentials: true } : undefined,
       );
-      baseGenerator = new QwenContentGenerator(
+      baseGenerator = new OlaContentGenerator(
         qwenClient,
         generatorConfig,
         config,

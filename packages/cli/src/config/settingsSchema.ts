@@ -338,6 +338,43 @@ const SETTINGS_SCHEMA = {
           'or set a specific language.',
         showInDialog: true,
       },
+      trustedCommands: {
+        type: 'object',
+        label: 'Trusted Commands',
+        category: 'General',
+        requiresRestart: false,
+        default: {
+          patterns: [] as string[],
+          enabled: false,
+        },
+        description:
+          'Commands that are automatically approved without confirmation.',
+        showInDialog: false,
+        properties: {
+          patterns: {
+            type: 'array',
+            label: 'Command Patterns',
+            category: 'General',
+            requiresRestart: false,
+            default: [] as string[],
+            description:
+              'Glob patterns for commands to trust (e.g., "find *", "git *").',
+            showInDialog: false,
+            items: {
+              type: 'string',
+            },
+          },
+          enabled: {
+            type: 'boolean',
+            label: 'Enable Trusted Commands',
+            category: 'General',
+            requiresRestart: false,
+            default: false,
+            description: 'Enable automatic approval of trusted commands.',
+            showInDialog: false,
+          },
+        },
+      },
       terminalBell: {
         type: 'boolean',
         label: 'Terminal Bell Notification',

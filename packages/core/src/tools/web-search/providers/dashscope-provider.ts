@@ -13,7 +13,7 @@ import type {
   WebSearchResultItem,
   DashScopeProviderConfig,
 } from '../types.js';
-import type { QwenCredentials } from '../../../qwen/qwenOAuth2.js';
+import type { QwenCredentials } from '../../../ola/olaOAuth2.js';
 
 interface DashScopeSearchItem {
   _id: string;

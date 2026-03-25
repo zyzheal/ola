@@ -234,7 +234,7 @@ export type TokenRefreshResponse = TokenRefreshData | ErrorData;
 /**
  * Qwen OAuth2 client interface
  */
-export interface IQwenOAuth2Client {
+export interface IOlaOAuth2Client {
   setCredentials(credentials: QwenCredentials): void;
   getCredentials(): QwenCredentials;
   getAccessToken(): Promise<{ token?: string }>;
@@ -253,7 +253,7 @@ export interface IQwenOAuth2Client {
 /**
  * Qwen OAuth2 client implementation
  */
-export class QwenOAuth2Client implements IQwenOAuth2Client {
+export class OlaOAuth2Client implements IOlaOAuth2Client {
   private credentials: QwenCredentials = {};
   private sharedManager: SharedTokenManager;
 
@@ -463,7 +463,7 @@ export class QwenOAuth2Client implements IQwenOAuth2Client {
   }
 }
 
-export enum QwenOAuth2Event {
+export enum OlaOAuth2Event {
   AuthUri = 'auth-uri',
   AuthProgress = 'auth-progress',
   AuthCancel = 'auth-cancel',
@@ -481,15 +481,15 @@ export type AuthResult =
     };
 
 /**
- * Global event emitter instance for QwenOAuth2 authentication events
+ * Global event emitter instance for OlaOAuth2 authentication events
  */
 export const qwenOAuth2Events = new EventEmitter();
 
 export async function getQwenOAuthClient(
   config: Config,
   options?: { requireCachedCredentials?: boolean },
-): Promise<QwenOAuth2Client> {
-  const client = new QwenOAuth2Client();
+): Promise<OlaOAuth2Client> {
+  const client = new OlaOAuth2Client();
 
   // Use shared token manager to get valid credentials with cross-session synchronization
   const sharedManager = SharedTokenManager.getInstance();
@@ -537,7 +537,7 @@ export async function getQwenOAuthClient(
       // Other error types (401, 429, etc.) have already emitted their specific events
       if (result.reason === 'timeout') {
         qwenOAuth2Events.emit(
-          QwenOAuth2Event.AuthProgress,
+          OlaOAuth2Event.AuthProgress,
           'timeout',
           'Authentication timed out. Please try again or select a different authentication method.',
         );
@@ -671,7 +671,7 @@ function showFallbackMessage(verificationUriComplete: string): void {
 }
 
 async function authWithQwenDeviceFlow(
-  client: QwenOAuth2Client,
+  client: OlaOAuth2Client,
   config: Config,
 ): Promise<AuthResult> {
   let isCancelled = false;
@@ -680,7 +680,7 @@ async function authWithQwenDeviceFlow(
   const cancelHandler = () => {
     isCancelled = true;
   };
-  qwenOAuth2Events.once(QwenOAuth2Event.AuthCancel, cancelHandler);
+  qwenOAuth2Events.once(OlaOAuth2Event.AuthCancel, cancelHandler);
 
   // Helper to check cancellation and return appropriate result
   const checkCancellation = (): AuthResult | null => {
@@ -689,7 +689,7 @@ async function authWithQwenDeviceFlow(
     }
     const message = 'Authentication cancelled by user.';
     debugLogger.debug('\n' + message);
-    qwenOAuth2Events.emit(QwenOAuth2Event.AuthProgress, 'error', message);
+    qwenOAuth2Events.emit(OlaOAuth2Event.AuthProgress, 'error', message);
     return { success: false, reason: 'cancelled', message };
   };
 
@@ -698,7 +698,7 @@ async function authWithQwenDeviceFlow(
     status: 'polling' | 'success' | 'error' | 'timeout' | 'rate_limit',
     message: string,
   ): void => {
-    qwenOAuth2Events.emit(QwenOAuth2Event.AuthProgress, status, message);
+    qwenOAuth2Events.emit(OlaOAuth2Event.AuthProgress, status, message);
   };
 
   // Helper to handle browser launch with error handling
@@ -743,7 +743,7 @@ async function authWithQwenDeviceFlow(
     }
 
     // Emit device authorization event for UI integration immediately
-    qwenOAuth2Events.emit(QwenOAuth2Event.AuthUri, deviceAuth);
+    qwenOAuth2Events.emit(OlaOAuth2Event.AuthUri, deviceAuth);
 
     if (config.isBrowserLaunchSuppressed() || !config.isInteractive()) {
       showFallbackMessage(deviceAuth.verification_uri_complete);
@@ -947,7 +947,7 @@ async function authWithQwenDeviceFlow(
     return { success: false, reason: 'error', message };
   } finally {
     // Clean up event listener
-    qwenOAuth2Events.off(QwenOAuth2Event.AuthCancel, cancelHandler);
+    qwenOAuth2Events.off(OlaOAuth2Event.AuthCancel, cancelHandler);
   }
 }
 

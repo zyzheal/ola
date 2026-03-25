@@ -8,7 +8,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import type { DeviceAuthorizationData } from 'ola-core';
 import { useQwenAuth } from './useQwenAuth.js';
-import { AuthType, qwenOAuth2Events, QwenOAuth2Event } from 'ola-core';
+import { AuthType, qwenOAuth2Events, OlaOAuth2Event } from 'ola-core';
 
 // Mock the qwenOAuth2Events
 vi.mock('ola-core', async () => {
@@ -21,14 +21,14 @@ vi.mock('ola-core', async () => {
   return {
     ...actual,
     qwenOAuth2Events: mockEmitter,
-    QwenOAuth2Event: {
+    OlaOAuth2Event: {
       AuthUri: 'authUri',
       AuthProgress: 'authProgress',
     },
   };
 });
 
-const mockQwenOAuth2Events = vi.mocked(qwenOAuth2Events);
+const mockOlaOAuth2Events = vi.mocked(qwenOAuth2Events);
 
 describe('useQwenAuth', () => {
   const mockDeviceAuth: DeviceAuthorizationData = {
@@ -61,9 +61,7 @@ describe('useQwenAuth', () => {
   });
 
   it('should initialize with default state when Qwen auth but not authenticating', () => {
-    const { result } = renderHook(() =>
-      useQwenAuth(AuthType.OLA_OAUTH, false),
-    );
+    const { result } = renderHook(() => useQwenAuth(AuthType.OLA_OAUTH, false));
 
     expect(result.current.qwenAuthState).toEqual({
       deviceAuth: null,
@@ -76,12 +74,12 @@ describe('useQwenAuth', () => {
   it('should set up event listeners when Qwen auth and authenticating', () => {
     renderHook(() => useQwenAuth(AuthType.OLA_OAUTH, true));
 
-    expect(mockQwenOAuth2Events.on).toHaveBeenCalledWith(
-      QwenOAuth2Event.AuthUri,
+    expect(mockOlaOAuth2Events.on).toHaveBeenCalledWith(
+      OlaOAuth2Event.AuthUri,
       expect.any(Function),
     );
-    expect(mockQwenOAuth2Events.on).toHaveBeenCalledWith(
-      QwenOAuth2Event.AuthProgress,
+    expect(mockOlaOAuth2Events.on).toHaveBeenCalledWith(
+      OlaOAuth2Event.AuthProgress,
       expect.any(Function),
     );
   });
@@ -89,11 +87,11 @@ describe('useQwenAuth', () => {
   it('should handle device auth event', () => {
     let handleDeviceAuth: (deviceAuth: DeviceAuthorizationData) => void;
 
-    mockQwenOAuth2Events.on.mockImplementation((event, handler) => {
-      if (event === QwenOAuth2Event.AuthUri) {
+    mockOlaOAuth2Events.on.mockImplementation((event, handler) => {
+      if (event === OlaOAuth2Event.AuthUri) {
         handleDeviceAuth = handler;
       }
-      return mockQwenOAuth2Events;
+      return mockOlaOAuth2Events;
     });
 
     const { result } = renderHook(() => useQwenAuth(AuthType.OLA_OAUTH, true));
@@ -112,11 +110,11 @@ describe('useQwenAuth', () => {
       message?: string,
     ) => void;
 
-    mockQwenOAuth2Events.on.mockImplementation((event, handler) => {
-      if (event === QwenOAuth2Event.AuthProgress) {
+    mockOlaOAuth2Events.on.mockImplementation((event, handler) => {
+      if (event === OlaOAuth2Event.AuthProgress) {
         handleAuthProgress = handler;
       }
-      return mockQwenOAuth2Events;
+      return mockOlaOAuth2Events;
     });
 
     const { result } = renderHook(() => useQwenAuth(AuthType.OLA_OAUTH, true));
@@ -137,11 +135,11 @@ describe('useQwenAuth', () => {
       message?: string,
     ) => void;
 
-    mockQwenOAuth2Events.on.mockImplementation((event, handler) => {
-      if (event === QwenOAuth2Event.AuthProgress) {
+    mockOlaOAuth2Events.on.mockImplementation((event, handler) => {
+      if (event === OlaOAuth2Event.AuthProgress) {
         handleAuthProgress = handler;
       }
-      return mockQwenOAuth2Events;
+      return mockOlaOAuth2Events;
     });
 
     const { result } = renderHook(() => useQwenAuth(AuthType.OLA_OAUTH, true));
@@ -162,11 +160,11 @@ describe('useQwenAuth', () => {
       message?: string,
     ) => void;
 
-    mockQwenOAuth2Events.on.mockImplementation((event, handler) => {
-      if (event === QwenOAuth2Event.AuthProgress) {
+    mockOlaOAuth2Events.on.mockImplementation((event, handler) => {
+      if (event === OlaOAuth2Event.AuthProgress) {
         handleAuthProgress = handler;
       }
-      return mockQwenOAuth2Events;
+      return mockOlaOAuth2Events;
     });
 
     const { result } = renderHook(() => useQwenAuth(AuthType.OLA_OAUTH, true));
@@ -187,11 +185,11 @@ describe('useQwenAuth', () => {
       message?: string,
     ) => void;
 
-    mockQwenOAuth2Events.on.mockImplementation((event, handler) => {
-      if (event === QwenOAuth2Event.AuthProgress) {
+    mockOlaOAuth2Events.on.mockImplementation((event, handler) => {
+      if (event === OlaOAuth2Event.AuthProgress) {
         handleAuthProgress = handler;
       }
-      return mockQwenOAuth2Events;
+      return mockOlaOAuth2Events;
     });
 
     const { result } = renderHook(() => useQwenAuth(AuthType.OLA_OAUTH, true));
@@ -215,11 +213,11 @@ describe('useQwenAuth', () => {
       message?: string,
     ) => void;
 
-    mockQwenOAuth2Events.on.mockImplementation((event, handler) => {
-      if (event === QwenOAuth2Event.AuthProgress) {
+    mockOlaOAuth2Events.on.mockImplementation((event, handler) => {
+      if (event === OlaOAuth2Event.AuthProgress) {
         handleAuthProgress = handler;
       }
-      return mockQwenOAuth2Events;
+      return mockOlaOAuth2Events;
     });
 
     const { result } = renderHook(() => useQwenAuth(AuthType.OLA_OAUTH, true));
@@ -247,12 +245,12 @@ describe('useQwenAuth', () => {
     // Change to non-Qwen auth
     rerender({ pendingAuthType: AuthType.USE_GEMINI, isAuthenticating: true });
 
-    expect(mockQwenOAuth2Events.off).toHaveBeenCalledWith(
-      QwenOAuth2Event.AuthUri,
+    expect(mockOlaOAuth2Events.off).toHaveBeenCalledWith(
+      OlaOAuth2Event.AuthUri,
       expect.any(Function),
     );
-    expect(mockQwenOAuth2Events.off).toHaveBeenCalledWith(
-      QwenOAuth2Event.AuthProgress,
+    expect(mockOlaOAuth2Events.off).toHaveBeenCalledWith(
+      OlaOAuth2Event.AuthProgress,
       expect.any(Function),
     );
   });
@@ -267,29 +265,27 @@ describe('useQwenAuth', () => {
     // Stop authentication
     rerender({ isAuthenticating: false });
 
-    expect(mockQwenOAuth2Events.off).toHaveBeenCalledWith(
-      QwenOAuth2Event.AuthUri,
+    expect(mockOlaOAuth2Events.off).toHaveBeenCalledWith(
+      OlaOAuth2Event.AuthUri,
       expect.any(Function),
     );
-    expect(mockQwenOAuth2Events.off).toHaveBeenCalledWith(
-      QwenOAuth2Event.AuthProgress,
+    expect(mockOlaOAuth2Events.off).toHaveBeenCalledWith(
+      OlaOAuth2Event.AuthProgress,
       expect.any(Function),
     );
   });
 
   it('should clean up event listeners on unmount', () => {
-    const { unmount } = renderHook(() =>
-      useQwenAuth(AuthType.OLA_OAUTH, true),
-    );
+    const { unmount } = renderHook(() => useQwenAuth(AuthType.OLA_OAUTH, true));
 
     unmount();
 
-    expect(mockQwenOAuth2Events.off).toHaveBeenCalledWith(
-      QwenOAuth2Event.AuthUri,
+    expect(mockOlaOAuth2Events.off).toHaveBeenCalledWith(
+      OlaOAuth2Event.AuthUri,
       expect.any(Function),
     );
-    expect(mockQwenOAuth2Events.off).toHaveBeenCalledWith(
-      QwenOAuth2Event.AuthProgress,
+    expect(mockOlaOAuth2Events.off).toHaveBeenCalledWith(
+      OlaOAuth2Event.AuthProgress,
       expect.any(Function),
     );
   });
@@ -297,11 +293,11 @@ describe('useQwenAuth', () => {
   it('should reset state when switching from Qwen auth to another auth type', () => {
     let handleDeviceAuth: (deviceAuth: DeviceAuthorizationData) => void;
 
-    mockQwenOAuth2Events.on.mockImplementation((event, handler) => {
-      if (event === QwenOAuth2Event.AuthUri) {
+    mockOlaOAuth2Events.on.mockImplementation((event, handler) => {
+      if (event === OlaOAuth2Event.AuthUri) {
         handleDeviceAuth = handler;
       }
-      return mockQwenOAuth2Events;
+      return mockOlaOAuth2Events;
     });
 
     const { result, rerender } = renderHook(
@@ -334,11 +330,11 @@ describe('useQwenAuth', () => {
   it('should reset state when authentication stops', () => {
     let handleDeviceAuth: (deviceAuth: DeviceAuthorizationData) => void;
 
-    mockQwenOAuth2Events.on.mockImplementation((event, handler) => {
-      if (event === QwenOAuth2Event.AuthUri) {
+    mockOlaOAuth2Events.on.mockImplementation((event, handler) => {
+      if (event === OlaOAuth2Event.AuthUri) {
         handleDeviceAuth = handler;
       }
-      return mockQwenOAuth2Events;
+      return mockOlaOAuth2Events;
     });
 
     const { result, rerender } = renderHook(
@@ -366,11 +362,11 @@ describe('useQwenAuth', () => {
   it('should handle cancelQwenAuth function', () => {
     let handleDeviceAuth: (deviceAuth: DeviceAuthorizationData) => void;
 
-    mockQwenOAuth2Events.on.mockImplementation((event, handler) => {
-      if (event === QwenOAuth2Event.AuthUri) {
+    mockOlaOAuth2Events.on.mockImplementation((event, handler) => {
+      if (event === OlaOAuth2Event.AuthUri) {
         handleDeviceAuth = handler;
       }
-      return mockQwenOAuth2Events;
+      return mockOlaOAuth2Events;
     });
 
     const { result } = renderHook(() => useQwenAuth(AuthType.OLA_OAUTH, true));
@@ -398,7 +394,7 @@ describe('useQwenAuth', () => {
       useQwenAuth(AuthType.OLA_OAUTH, true),
     );
     expect(qwenResult.current.qwenAuthState.authStatus).toBe('idle');
-    expect(mockQwenOAuth2Events.on).toHaveBeenCalled();
+    expect(mockOlaOAuth2Events.on).toHaveBeenCalled();
 
     // Test with other auth types - should not set up event listeners
     const { result: geminiResult } = renderHook(() =>
@@ -416,6 +412,6 @@ describe('useQwenAuth', () => {
     const { result } = renderHook(() => useQwenAuth(AuthType.OLA_OAUTH, true));
 
     expect(result.current.qwenAuthState.authStatus).toBe('idle');
-    expect(mockQwenOAuth2Events.on).toHaveBeenCalled();
+    expect(mockOlaOAuth2Events.on).toHaveBeenCalled();
   });
 });

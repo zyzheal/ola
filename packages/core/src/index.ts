@@ -160,7 +160,7 @@ export type {
 // Telemetry
 // ============================================================================
 
-export { QwenLogger } from './telemetry/qwen-logger/qwen-logger.js';
+export { OlaLogger } from './telemetry/ola-logger/ola-logger.js';
 export * from './telemetry/index.js';
 export {
   logAuth,
@@ -240,7 +240,7 @@ export * from './utils/yaml-parser.js';
 // OAuth & Authentication
 // ============================================================================
 
-export * from './qwen/qwenOAuth2.js';
+export * from './ola/olaOAuth2.js';
 
 // ============================================================================
 // Testing Utilities
