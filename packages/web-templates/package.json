@@ -1,7 +1,7 @@
 {
   "name": "ola-web-templates",
   "version": "0.13.0",
-  "description": "Web templates bundled as embeddable JS/CSS strings",
+  "description": "Web templates bundled as embeddable JS/CSS strings - 洞察报告和 HTML 导出模板（完整中文支持）",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/your-org/ai-platform.git"
@@ -20,7 +20,17 @@
     "build:templates": "node build.mjs"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "ola",
+    "web-templates",
+    "insight",
+    "export-html",
+    "react",
+    "可视化",
+    "中文支持"
   ],
   "dependencies": {},
   "devDependencies": {

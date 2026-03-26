@@ -16,34 +16,34 @@ export function AtAGlance({ qualitative }: { qualitative: QualitativeData }) {
 
   return (
     <div className="at-a-glance">
-      <div className="glance-title">At a Glance</div>
+      <div className="glance-title">一览</div>
       <div className="glance-sections">
         <div className="glance-section">
-          <strong>What&apos;s working:</strong>{' '}
+          <strong>✅ 进展顺利：</strong>{' '}
           <MarkdownText>{atAGlance.whats_working}</MarkdownText>
           <a href="#section-wins" className="see-more">
-            Impressive Things You Did →
+            你完成的出色工作 →
           </a>
         </div>
         <div className="glance-section">
-          <strong>What&apos;s hindering you:</strong>{' '}
+          <strong>⚠️ 遇到阻碍：</strong>{' '}
           <MarkdownText>{atAGlance.whats_hindering}</MarkdownText>
           <a href="#section-friction" className="see-more">
-            Where Things Go Wrong →
+            问题出在哪里 →
           </a>
         </div>
         <div className="glance-section">
-          <strong>Quick wins to try:</strong>{' '}
+          <strong>💡 快速尝试：</strong>{' '}
           <MarkdownText>{atAGlance.quick_wins}</MarkdownText>
           <a href="#section-features" className="see-more">
-            Features to Try →
+            值得尝试的功能 →
           </a>
         </div>
         <div className="glance-section">
-          <strong>Ambitious workflows:</strong>{' '}
+          <strong>🚀 高级工作流：</strong>{' '}
           <MarkdownText>{atAGlance.ambitious_workflows}</MarkdownText>
           <a href="#section-horizon" className="see-more">
-            On the Horizon →
+            未来展望 →
           </a>
         </div>
       </div>
@@ -54,13 +54,13 @@ export function AtAGlance({ qualitative }: { qualitative: QualitativeData }) {
 export function NavToc() {
   return (
     <nav className="nav-toc">
-      <a href="#section-work">What You Work On</a>
-      <a href="#section-usage">How You Use OLA</a>
-      <a href="#section-wins">Impressive Things</a>
-      <a href="#section-friction">Where Things Go Wrong</a>
-      <a href="#section-features">Features to Try</a>
-      <a href="#section-patterns">New Usage Patterns</a>
-      <a href="#section-horizon">On the Horizon</a>
+      <a href="#section-work">你的工作内容</a>
+      <a href="#section-usage">你如何使用 OLA</a>
+      <a href="#section-wins">出色成果</a>
+      <a href="#section-friction">问题所在</a>
+      <a href="#section-features">尝试功能</a>
+      <a href="#section-patterns">新使用模式</a>
+      <a href="#section-horizon">未来展望</a>
     </nav>
   );
 }
@@ -87,7 +87,7 @@ export function ProjectAreas({
         id="section-work"
         className="text-xl font-semibold text-slate-900 mt-8 mb-4"
       >
-        What You Work On
+        你的工作内容
       </h2>
 
       {Array.isArray(projectAreas?.areas) && projectAreas.areas.length > 0 && (
@@ -97,7 +97,7 @@ export function ProjectAreas({
               <div className="area-header">
                 <span className="area-name">{area.name}</span>
                 <span className="area-count">
-                  ~{area.session_count} sessions
+                  约 {area.session_count} 次会话
                 </span>
               </div>
               <div className="area-desc">
@@ -119,14 +119,14 @@ export function ProjectAreas({
         {topGoals && Object.keys(topGoals).length > 0 && (
           <HorizontalBarChart
             data={topGoals}
-            title="What You Wanted"
+            title="你的目标"
             color="#0ea5e9"
           />
         )}
         {topToolsObj && Object.keys(topToolsObj).length > 0 && (
           <HorizontalBarChart
             data={topToolsObj}
-            title="Top Tools Used"
+            title="常用工具"
             color="#6366f1"
           />
         )}
@@ -151,7 +151,7 @@ export function InteractionStyle({
         id="section-usage"
         className="text-xl font-semibold text-slate-900 mt-8 mb-4"
       >
-        How You Use OLA
+        你如何使用 OLA
       </h2>
       <div className="narrative">
         <p>
@@ -159,7 +159,7 @@ export function InteractionStyle({
         </p>
         {interactionStyle.key_pattern && (
           <div className="key-insight">
-            <strong>Key pattern:</strong>{' '}
+            <strong>关键模式：</strong>{' '}
             <MarkdownText>{interactionStyle.key_pattern}</MarkdownText>
           </div>
         )}
@@ -189,7 +189,7 @@ export function ImpressiveWorkflows({
         id="section-wins"
         className="text-xl font-semibold text-slate-900 mt-8 mb-4"
       >
-        Impressive Things You Did
+        你完成的出色成果
       </h2>
       {impressiveWorkflows.intro && (
         <p className="section-intro">
@@ -220,7 +220,7 @@ export function ImpressiveWorkflows({
         {primarySuccess && Object.keys(primarySuccess).length > 0 && (
           <HorizontalBarChart
             data={primarySuccess}
-            title="What Helped Most (Qwen's Capabilities)"
+            title="最有帮助的功能"
             color="#3b82f6"
             allowedKeys={[
               'fast_accurate_search',
@@ -235,7 +235,7 @@ export function ImpressiveWorkflows({
         {outcomes && Object.keys(outcomes).length > 0 && (
           <HorizontalBarChart
             data={outcomes}
-            title="Outcomes"
+            title="成果"
             color="#8b5cf6"
             allowedKeys={[
               'fully_achieved',
@@ -253,9 +253,19 @@ export function ImpressiveWorkflows({
 
 // Format label for display (capitalize and replace underscores with spaces)
 function formatLabel(label: string) {
-  if (label === 'unclear_from_transcript') {
-    return 'Unclear';
+  // 成果翻译
+  const translations: Record<string, string> = {
+    unclear_from_transcript: '不明确',
+    fully_achieved: '完全达成',
+    mostly_achieved: '大部分达成',
+    partially_achieved: '部分达成',
+    not_achieved: '未达成',
+  };
+
+  if (translations[label]) {
+    return translations[label];
   }
+
   return label
     .split('_')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -413,7 +423,7 @@ export function FrictionPoints({
         id="section-friction"
         className="text-xl font-semibold text-slate-900 mt-8 mb-4"
       >
-        Where Things Go Wrong
+        问题出在哪里
       </h2>
       {frictionPoints.intro && (
         <p className="section-intro">
@@ -454,7 +464,7 @@ export function FrictionPoints({
         {friction && Object.keys(friction).length > 0 && (
           <HorizontalBarChart
             data={friction}
-            title="Primary Friction Types"
+            title="主要摩擦类型"
             color="#ef4444"
             allowedKeys={[
               'misunderstood_request',
@@ -468,7 +478,7 @@ export function FrictionPoints({
         {satisfaction && Object.keys(satisfaction).length > 0 && (
           <HorizontalBarChart
             data={satisfaction}
-            title="Inferred Satisfaction (model-estimated)"
+            title="推断满意度（模型估算）"
             color="#10b981"
             allowedKeys={[
               'happy',
@@ -522,9 +532,9 @@ function QwenMdAdditionsSection({
 
   return (
     <div className="qwen-md-section">
-      <h3>Suggested QWEN.md Additions</h3>
+      <h3>建议的 QWEN.md 补充</h3>
       <p className="text-xs text-slate-500 mb-3">
-        Just copy this into OLA to add it to your QWEN.md.
+        选中后复制到 OLA，即可添加到你的 QWEN.md。
       </p>
 
       <div className="qwen-md-actions" style={{ marginBottom: '12px' }}>
@@ -533,7 +543,7 @@ function QwenMdAdditionsSection({
           onClick={handleCopyAll}
           disabled={checkedCount === 0}
         >
-          {copiedAll ? 'Copied All!' : `Copy All Checked (${checkedCount})`}
+          {copiedAll ? '已全部复制！' : `复制所有选中项 (${checkedCount})`}
         </button>
       </div>
 
@@ -551,7 +561,7 @@ function QwenMdAdditionsSection({
               <MarkdownText>{item.why}</MarkdownText>
             </div>
           </div>
-          <CopyButton text={item.addition} />
+          <CopyButton text={item.addition} label="复制" />
         </div>
       ))}
     </div>
@@ -572,7 +582,7 @@ export function Improvements({
         id="section-features"
         className="text-xl font-semibold text-slate-900 mt-8 mb-4"
       >
-        Existing OLA Features to Try
+        值得尝试的 OLA 功能
       </h2>
 
       {/* QWEN.md Additions */}
@@ -581,9 +591,7 @@ export function Improvements({
           <QwenMdAdditionsSection additions={improvements.Qwen_md_additions} />
         )}
 
-      <p className="text-xs text-slate-500 mb-3">
-        Just copy this into OLA and it&apos;ll set it up for you.
-      </p>
+      <p className="text-xs text-slate-500 mb-3">复制到 OLA 即可自动配置。</p>
 
       {/* Features to Try */}
       <div className="features-section">
@@ -595,14 +603,14 @@ export function Improvements({
                 <MarkdownText>{feat.one_liner}</MarkdownText>
               </div>
               <div className="feature-why">
-                <strong>Why for you:</strong>{' '}
+                <strong>为什么适合你：</strong>{' '}
                 <MarkdownText>{feat.why_for_you}</MarkdownText>
               </div>
               <div className="feature-examples">
                 <div className="feature-example">
                   <div className="example-code-row">
                     <code className="example-code">{feat.example_code}</code>
-                    <CopyButton text={feat.example_code} />
+                    <CopyButton text={feat.example_code} label="复制" />
                   </div>
                 </div>
               </div>
@@ -614,10 +622,10 @@ export function Improvements({
         id="section-patterns"
         className="text-xl font-semibold text-slate-900 mt-8 mb-4"
       >
-        New Ways to Use OLA
+        使用 OLA 的新方式
       </h2>
       <p className="text-xs text-slate-500 mb-3">
-        Just copy this into OLA and it&apos;ll walk you through it.
+        复制到 OLA，它会引导你完成。
       </p>
 
       <div className="patterns-section">
@@ -632,10 +640,10 @@ export function Improvements({
                 <MarkdownText>{pat.detail}</MarkdownText>
               </div>
               <div className="copyable-prompt-section">
-                <div className="prompt-label">Paste into OLA:</div>
+                <div className="prompt-label">粘贴到 OLA：</div>
                 <div className="copyable-prompt-row">
                   <code className="copyable-prompt">{pat.copyable_prompt}</code>
-                  <CopyButton text={pat.copyable_prompt} />
+                  <CopyButton text={pat.copyable_prompt} label="复制" />
                 </div>
               </div>
             </div>
@@ -659,7 +667,7 @@ export function FutureOpportunities({
         id="section-horizon"
         className="text-xl font-semibold text-slate-900 mt-8 mb-4"
       >
-        On the Horizon
+        未来展望
       </h2>
       {futureOpportunities.intro && (
         <p className="section-intro">
@@ -676,11 +684,11 @@ export function FutureOpportunities({
                 <MarkdownText>{opp.whats_possible}</MarkdownText>
               </div>
               <div className="horizon-tip">
-                <strong>Getting started:</strong>{' '}
+                <strong>如何开始：</strong>{' '}
                 <MarkdownText>{opp.how_to_try}</MarkdownText>
               </div>
               <div className="pattern-prompt">
-                <div className="prompt-label">Paste into OLA:</div>
+                <div className="prompt-label">粘贴到 OLA：</div>
                 <div
                   style={{
                     display: 'flex',
@@ -689,7 +697,7 @@ export function FutureOpportunities({
                   }}
                 >
                   <code style={{ flex: 1 }}>{opp.copyable_prompt}</code>
-                  <CopyButton text={opp.copyable_prompt} />
+                  <CopyButton text={opp.copyable_prompt} label="复制" />
                 </div>
               </div>
             </div>

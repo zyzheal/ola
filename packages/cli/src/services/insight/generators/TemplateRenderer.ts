@@ -11,11 +11,11 @@ export class TemplateRenderer {
   // Render the complete HTML file
   async renderInsightHTML(insights: InsightData): Promise<string> {
     const html = `<!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OLA Insights</title>
+    <title>OLA 洞察报告</title>
     <style>
       ${INSIGHT_CSS}
     </style>

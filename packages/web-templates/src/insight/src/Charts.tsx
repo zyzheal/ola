@@ -36,25 +36,25 @@ export function ActiveHoursChart({
 }) {
   const phases = [
     {
-      label: 'Morning',
+      label: '早晨',
       time: '06:00 - 12:00',
       hours: [6, 7, 8, 9, 10, 11],
       color: '#fbbf24', // amber-400
     },
     {
-      label: 'Afternoon',
+      label: '下午',
       time: '12:00 - 18:00',
       hours: [12, 13, 14, 15, 16, 17],
       color: '#0ea5e9', // sky-500
     },
     {
-      label: 'Evening',
+      label: '傍晚',
       time: '18:00 - 22:00',
       hours: [18, 19, 20, 21],
       color: '#6366f1', // indigo-500
     },
     {
-      label: 'Night',
+      label: '夜间',
       time: '22:00 - 06:00',
       hours: [22, 23, 0, 1, 2, 3, 4, 5],
       color: '#475569', // slate-600
@@ -74,7 +74,7 @@ export function ActiveHoursChart({
   return (
     <div className={`${cardClass} h-full flex flex-col min-h-[320px]`}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className={sectionTitleClass}>Active Hours</h3>
+        <h3 className={sectionTitleClass}>活跃时段</h3>
       </div>
       <div className="flex-1 flex flex-col justify-center gap-4">
         {data.map((item) => (
@@ -128,8 +128,8 @@ export function HeatmapSection({
   return (
     <div className={`${cardClass} mt-4 md:mt-6`}>
       <div className="mb-3">
-        <h3 className={sectionTitleClass}>Activity Heatmap</h3>
-        <p className="text-xs text-slate-500">Showing past year of activity</p>
+        <h3 className={sectionTitleClass}>活动热力图</h3>
+        <p className="text-xs text-slate-500">显示过去一年的活动</p>
       </div>
       <div className="heatmap-container">
         <div className="min-w-[720px] rounded-xl bg-white/70">
@@ -180,18 +180,18 @@ function ActivityHeatmap({
   const startY = 20;
 
   const months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
+    '1 月',
+    '2 月',
+    '3 月',
+    '4 月',
+    '5 月',
+    '6 月',
+    '7 月',
+    '8 月',
+    '9 月',
+    '10 月',
+    '11 月',
+    '12 月',
   ];
 
   // Calculate start day of week (0 = Sunday, 1 = Monday, etc.)
@@ -260,7 +260,7 @@ function ActivityHeatmap({
             data-count={value}
           >
             <title>
-              {dateKey}: {value} activities
+              {dateKey}: {value} 次活动
             </title>
           </rect>
         );
@@ -282,7 +282,7 @@ function HeatmapLegend() {
 
   return (
     <div className="flex items-center gap-2 mt-4">
-      <span className="text-xs text-slate-500">Less</span>
+      <span className="text-xs text-slate-500">少</span>
       {colors.map((color, index) => (
         <span
           key={index}
@@ -294,7 +294,7 @@ function HeatmapLegend() {
           }}
         />
       ))}
-      <span className="text-xs text-slate-500">More</span>
+      <span className="text-xs text-slate-500">多</span>
     </div>
   );
 }

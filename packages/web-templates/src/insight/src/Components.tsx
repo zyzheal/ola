@@ -23,7 +23,7 @@ export function MarkdownText({ children }: { children: string }) {
 
 export function CopyButton({
   text,
-  label = 'Copy',
+  label = '复制',
 }: {
   text: string;
   label?: string;
@@ -39,7 +39,7 @@ export function CopyButton({
 
   return (
     <button className="copy-btn" onClick={handleCopy}>
-      {copied ? 'Copied!' : label}
+      {copied ? '已复制！' : label}
     </button>
   );
 }

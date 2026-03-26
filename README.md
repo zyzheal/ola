@@ -226,6 +226,64 @@ npm run build:vscode
 npm run build:all
 ```
 
+## 📦 打包产物
+
+### 生成的文件
+
+构建后会在以下位置生成产物：
+
+```
+dist/                              # 根目录构建产物
+├── cli.js                         # 打包后的 CLI (单个文件，约 5MB)
+├── src/                           # 资源文件
+│   ├── i18n/locales/*.js          # 国际化语言包
+│   └── commands/extensions/examples/  # 扩展示例
+├── bundled/                       # 内置技能
+│   └── review/SKILL.md            # /review 等内置技能
+└── vendor/                        # 二进制工具
+    ├── ripgrep/                   # 代码搜索工具 (rg)
+    └── tree-sitter/               # 代码解析器 (WASM)
+
+packages/*/dist/                   # 各子包构建产物
+packages/vscode-ide-companion/*.vsix  # VSCode 扩展安装包
+```
+
+### 包依赖关系
+
+```
+ola (CLI)
+├── ola-core                       # 核心库
+├── ola-web-templates              # Web 模板
+└── @ai-platform/webui (可选)      # Web UI 组件
+
+@ai-platform/webui
+└── (独立，无内部依赖)
+
+@ai-platform/sdk                   # TypeScript SDK
+└── (独立，无内部依赖)
+
+vscode-ide-companion
+└── @ai-platform/webui             # 依赖 Web UI
+```
+
+### 打包流程
+
+```bash
+# 1. TypeScript 编译
+tsc --build
+
+# 2. 复制资源文件 (.md, .json, .sb)
+node ../../scripts/copy_files.js
+
+# 3. 复制内置技能和二进制工具
+node ../../scripts/copy_bundle_assets.js
+
+# 4. esbuild 打包 (可选，生成单个 cli.js)
+node esbuild.config.js
+```
+
+详细目录结构和打包说明请参考 [目录结构文档](./docs/developers/DIRECTORY_STRUCTURE.md)。
+
 ## 📚 文档
 
 | 文档                                      | 说明               |

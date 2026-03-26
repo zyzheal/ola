@@ -24,7 +24,33 @@ AI Platform Code Assistant - 基于 ola 二次开发的 AI 编码助手
 | ---------------------- | ------------------ |
 | [USAGE.md](./USAGE.md) | 基本使用与命令参考 |
 
-### 开发管理
+### 开发指南
+
+| 文档                                                                     | 说明               |
+| ------------------------------------------------------------------------ | ------------------ |
+| [developers/DIRECTORY_STRUCTURE.md](./developers/DIRECTORY_STRUCTURE.md) | 目录结构与打包产物 |
+| [developers/architecture.md](./developers/architecture.md)               | 架构设计           |
+| [developers/contributing.md](./developers/contributing.md)               | 贡献指南           |
+| [developers/roadmap.md](./developers/roadmap.md)                         | 开发路线图         |
+
+### SDK 文档
+
+| 文档                                                           | 说明           |
+| -------------------------------------------------------------- | -------------- |
+| [developers/sdk-typescript.md](./developers/sdk-typescript.md) | TypeScript SDK |
+| [developers/sdk-java.md](./developers/sdk-java.md)             | Java SDK       |
+
+### 工具文档
+
+| 文档                                                                   | 说明         |
+| ---------------------------------------------------------------------- | ------------ |
+| [developers/tools/introduction.md](./developers/tools/introduction.md) | 工具介绍     |
+| [developers/tools/shell.md](./developers/tools/shell.md)               | Shell 工具   |
+| [developers/tools/file-system.md](./developers/tools/file-system.md)   | 文件系统工具 |
+| [developers/tools/web-fetch.md](./developers/tools/web-fetch.md)       | Web 抓取工具 |
+| [developers/tools/mcp-server.md](./developers/tools/mcp-server.md)     | MCP 服务器   |
+
+### 上游管理
 
 | 文档                                               | 说明           |
 | -------------------------------------------------- | -------------- |

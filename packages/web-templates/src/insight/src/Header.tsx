@@ -15,12 +15,12 @@ export function Header({
   return (
     <header className="mb-8 space-y-3 text-center">
       <h1 className="text-3xl font-semibold text-slate-900 md:text-4xl">
-        OLA Insights
+        OLA 洞察报告
       </h1>
       <p className="text-sm text-slate-600">
         {totalMessages
-          ? `${totalMessages} messages across ${totalSessions} sessions`
-          : 'Your personalized coding journey and patterns'}
+          ? `${totalMessages} 条消息，${totalSessions} 次会话`
+          : '你的个性化编码旅程和模式'}
         {dateRangeStr && ` | ${dateRangeStr}`}
       </p>
     </header>
@@ -54,25 +54,25 @@ export function StatsRow({ data }: { data: InsightData }) {
     <div className="stats-row">
       <div className="stat">
         <div className="stat-value">{totalMessages}</div>
-        <div className="stat-label">Messages</div>
+        <div className="stat-label">消息数</div>
       </div>
       <div className="stat">
         <div className="stat-value">
           +{totalLinesAdded}/-{totalLinesRemoved}
         </div>
-        <div className="stat-label">Lines</div>
+        <div className="stat-label">代码行</div>
       </div>
       <div className="stat">
         <div className="stat-value">{totalFiles}</div>
-        <div className="stat-label">Files</div>
+        <div className="stat-label">文件数</div>
       </div>
       <div className="stat">
         <div className="stat-value">{daysSpan}</div>
-        <div className="stat-label">Days</div>
+        <div className="stat-label">天数</div>
       </div>
       <div className="stat">
         <div className="stat-value">{msgsPerDay}</div>
-        <div className="stat-label">Msgs/Day</div>
+        <div className="stat-label">消息/天</div>
       </div>
     </div>
   );
