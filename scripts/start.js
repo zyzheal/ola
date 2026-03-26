@@ -62,6 +62,8 @@ const env = {
   ...process.env,
   CLI_VERSION: pkg.version,
   DEV: 'true',
+  // Always set OLA_CODE_NO_RELAUNCH to skip child process relaunch for faster startup
+  OLA_CODE_NO_RELAUNCH: 'true',
 };
 
 if (process.env.DEBUG) {

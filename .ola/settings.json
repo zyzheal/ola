@@ -1,4 +1,5 @@
 {
+  "$version": 3,
   "trustedCommands": {
     "patterns": [
       "find *",
@@ -13,5 +14,21 @@
     ],
     "enabled": true
   },
-  "$version": 3
+  "tools": {
+    "approvalMode": "auto-edit",
+    "useRipgrep": false
+  },
+  "permissions": {
+    "allow": ["Bash(cargo build *)", "Bash(npm run *)"]
+  },
+  "advanced": {
+    "autoConfigureMemory": false,
+    "runtimeOutputDir": ".ola"
+  },
+  "general": {
+    "enableAutoUpdate": false
+  },
+  "ide": {
+    "enabled": false
+  }
 }

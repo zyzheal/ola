@@ -32,27 +32,30 @@ const argv = yargs(hideBin(process.argv)).option('q', {
   default: false,
 }).argv;
 
-let qwenSandbox = process.env.QWEN_SANDBOX;
+// Support both OLA_ and QWEN_ prefixes for backward compatibility
+// Note: 'false' string should be treated as falsy for sandbox disabling
+let olaSandbox = process.env.OLA_SANDBOX || process.env.QWEN_SANDBOX;
+if (olaSandbox === 'false') olaSandbox = undefined;
 
-if (!qwenSandbox) {
-  const userSettingsFile = join(os.homedir(), '.qwen', 'settings.json');
+if (!olaSandbox) {
+  const userSettingsFile = join(os.homedir(), '.ola', 'settings.json');
   if (existsSync(userSettingsFile)) {
     const settings = JSON.parse(
       stripJsonComments(readFileSync(userSettingsFile, 'utf-8')),
     );
     if (settings.sandbox) {
-      qwenSandbox = settings.sandbox;
+      olaSandbox = settings.sandbox;
     }
   }
 }
 
-if (!qwenSandbox) {
+if (!olaSandbox) {
   let currentDir = process.cwd();
   while (true) {
-    const qwenEnv = join(currentDir, '.qwen', '.env');
+    const olaEnv = join(currentDir, '.ola', '.env');
     const regularEnv = join(currentDir, '.env');
-    if (existsSync(qwenEnv)) {
-      dotenv.config({ path: qwenEnv, quiet: true });
+    if (existsSync(olaEnv)) {
+      dotenv.config({ path: olaEnv, quiet: true });
       break;
     } else if (existsSync(regularEnv)) {
       dotenv.config({ path: regularEnv, quiet: true });
@@ -64,10 +67,10 @@ if (!qwenSandbox) {
     }
     currentDir = parentDir;
   }
-  qwenSandbox = process.env.QWEN_SANDBOX;
+  olaSandbox = process.env.OLA_SANDBOX || process.env.QWEN_SANDBOX;
 }
 
-qwenSandbox = (qwenSandbox || '').toLowerCase();
+olaSandbox = (olaSandbox || '').toLowerCase();
 
 const commandExists = (cmd) => {
   // Use 'where.exe' (not 'where') on Windows because PowerShell aliases
@@ -90,23 +93,23 @@ const commandExists = (cmd) => {
 };
 
 let command = '';
-if (['1', 'true'].includes(qwenSandbox)) {
+if (['1', 'true'].includes(olaSandbox)) {
   if (commandExists('docker')) {
     command = 'docker';
   } else if (commandExists('podman')) {
     command = 'podman';
   } else {
     console.error(
-      'ERROR: install docker or podman or specify command in QWEN_SANDBOX',
+      'ERROR: install docker or podman or specify command in OLA_SANDBOX',
     );
     process.exit(1);
   }
-} else if (qwenSandbox && !['0', 'false'].includes(qwenSandbox)) {
-  if (commandExists(qwenSandbox)) {
-    command = qwenSandbox;
+} else if (olaSandbox && !['0', 'false'].includes(olaSandbox)) {
+  if (commandExists(olaSandbox)) {
+    command = olaSandbox;
   } else {
     console.error(
-      `ERROR: missing sandbox command '${qwenSandbox}' (from QWEN_SANDBOX)`,
+      `ERROR: missing sandbox command '${olaSandbox}' (from OLA_SANDBOX)`,
     );
     process.exit(1);
   }

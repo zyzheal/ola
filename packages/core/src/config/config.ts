@@ -773,161 +773,53 @@ export class Config {
       throw Error('Config was already initialized');
     }
     this.initialized = true;
+    const initStartTime = Date.now();
     this.debugLogger.info('Config initialization started');
 
-    // Initialize centralized FileDiscoveryService
+    // Initialize centralized FileDiscoveryService (synchronous, fast)
     this.getFileService();
-    if (this.getCheckpointingEnabled()) {
-      await this.getGitService();
-    }
+
+    // Initialize prompt registry (synchronous, fast)
     this.promptRegistry = new PromptRegistry();
-    this.extensionManager.setConfig(this);
-    await this.extensionManager.refreshCache();
-    this.debugLogger.debug('Extension manager initialized');
 
-    // Initialize hook system if enabled
-    if (this.enableHooks) {
-      this.hookSystem = new HookSystem(this);
-      await this.hookSystem.initialize();
-      this.debugLogger.debug('Hook system initialized');
+    // Parallel initialization of independent components
+    const initPromises: Array<Promise<void>> = [];
 
-      // Initialize MessageBus for hook execution
-      this.messageBus = new MessageBus();
-
-      // Subscribe to HOOK_EXECUTION_REQUEST to execute hooks
-      this.messageBus.subscribe<HookExecutionRequest>(
-        MessageBusType.HOOK_EXECUTION_REQUEST,
-        async (request: HookExecutionRequest) => {
-          try {
-            const hookSystem = this.hookSystem;
-            if (!hookSystem) {
-              this.messageBus?.publish({
-                type: MessageBusType.HOOK_EXECUTION_RESPONSE,
-                correlationId: request.correlationId,
-                success: false,
-                error: new Error('Hook system not initialized'),
-              } as HookExecutionResponse);
-              return;
-            }
-
-            // Execute the appropriate hook based on eventName
-            let result;
-            const input = request.input || {};
-            switch (request.eventName) {
-              case 'UserPromptSubmit':
-                result = await hookSystem.fireUserPromptSubmitEvent(
-                  (input['prompt'] as string) || '',
-                );
-                break;
-              case 'Stop':
-                result = await hookSystem.fireStopEvent(
-                  (input['stop_hook_active'] as boolean) || false,
-                  (input['last_assistant_message'] as string) || '',
-                );
-                break;
-              case 'PreToolUse': {
-                result = await hookSystem.firePreToolUseEvent(
-                  (input['tool_name'] as string) || '',
-                  (input['tool_input'] as Record<string, unknown>) || {},
-                  (input['tool_use_id'] as string) || '',
-                  (input['permission_mode'] as PermissionMode | undefined) ??
-                    PermissionMode.Default,
-                );
-                break;
-              }
-              case 'PostToolUse':
-                result = await hookSystem.firePostToolUseEvent(
-                  (input['tool_name'] as string) || '',
-                  (input['tool_input'] as Record<string, unknown>) || {},
-                  (input['tool_response'] as Record<string, unknown>) || {},
-                  (input['tool_use_id'] as string) || '',
-                  (input['permission_mode'] as PermissionMode) || 'default',
-                );
-                break;
-              case 'PostToolUseFailure':
-                result = await hookSystem.firePostToolUseFailureEvent(
-                  (input['tool_use_id'] as string) || '',
-                  (input['tool_name'] as string) || '',
-                  (input['tool_input'] as Record<string, unknown>) || {},
-                  (input['error'] as string) || '',
-                  input['is_interrupt'] as boolean | undefined,
-                  (input['permission_mode'] as PermissionMode) || 'default',
-                );
-                break;
-              case 'Notification':
-                result = await hookSystem.fireNotificationEvent(
-                  (input['message'] as string) || '',
-                  (input['notification_type'] as NotificationType) ||
-                    'permission_prompt',
-                  (input['title'] as string) || undefined,
-                );
-                break;
-              case 'PermissionRequest':
-                result = await hookSystem.firePermissionRequestEvent(
-                  (input['tool_name'] as string) || '',
-                  (input['tool_input'] as Record<string, unknown>) || {},
-                  (input['permission_mode'] as PermissionMode) ||
-                    PermissionMode.Default,
-                  (input['permission_suggestions'] as
-                    | PermissionSuggestion[]
-                    | undefined) || undefined,
-                );
-                break;
-              case 'SubagentStart':
-                result = await hookSystem.fireSubagentStartEvent(
-                  (input['agent_id'] as string) || '',
-                  (input['agent_type'] as string) || '',
-                  (input['permission_mode'] as PermissionMode) ||
-                    PermissionMode.Default,
-                );
-                break;
-              case 'SubagentStop':
-                result = await hookSystem.fireSubagentStopEvent(
-                  (input['agent_id'] as string) || '',
-                  (input['agent_type'] as string) || '',
-                  (input['agent_transcript_path'] as string) || '',
-                  (input['last_assistant_message'] as string) || '',
-                  (input['stop_hook_active'] as boolean) || false,
-                  (input['permission_mode'] as PermissionMode) ||
-                    PermissionMode.Default,
-                );
-                break;
-              default:
-                this.debugLogger.warn(
-                  `Unknown hook event: ${request.eventName}`,
-                );
-                result = undefined;
-            }
-
-            // Send response
-            this.messageBus?.publish({
-              type: MessageBusType.HOOK_EXECUTION_RESPONSE,
-              correlationId: request.correlationId,
-              success: true,
-              output: result,
-            } as HookExecutionResponse);
-          } catch (error) {
-            this.debugLogger.warn(`Hook execution failed: ${error}`);
-            this.messageBus?.publish({
-              type: MessageBusType.HOOK_EXECUTION_RESPONSE,
-              correlationId: request.correlationId,
-              success: false,
-              error: error instanceof Error ? error : new Error(String(error)),
-            } as HookExecutionResponse);
-          }
-        },
+    // Git service (only if checkpointing enabled)
+    if (this.getCheckpointingEnabled()) {
+      initPromises.push(
+        (async () => {
+          await this.getGitService();
+        })(),
       );
+    }
 
-      this.debugLogger.debug('MessageBus initialized with hook subscription');
+    // Extension manager setup
+    this.extensionManager.setConfig(this);
+    initPromises.push(
+      this.extensionManager.refreshCache().then(() => {
+        this.debugLogger.debug('Extension manager initialized');
+      }),
+    );
+
+    // Hook system initialization (if enabled)
+    if (this.enableHooks) {
+      initPromises.push(this.initializeHookSystem());
     } else {
       this.debugLogger.debug('Hook system disabled, skipping initialization');
     }
 
-    this.subagentManager = new SubagentManager(this);
-    this.skillManager = new SkillManager(this);
-    await this.skillManager.startWatching();
-    this.debugLogger.debug('Skill manager initialized');
+    // Skill manager initialization
+    initPromises.push(
+      (async () => {
+        this.subagentManager = new SubagentManager(this);
+        this.skillManager = new SkillManager(this);
+        await this.skillManager.startWatching();
+        this.debugLogger.debug('Skill manager initialized');
+      })(),
+    );
 
+    // Permission manager initialization (synchronous)
     this.permissionManager = new PermissionManager(this);
     this.permissionManager.initialize();
     this.debugLogger.debug('Permission manager initialized');
@@ -937,11 +829,14 @@ export class Config {
       this.subagentManager.loadSessionSubagents(this.sessionSubagents);
     }
 
-    await this.extensionManager.refreshCache();
+    // Memory refresh and tool registry creation (must be sequential due to dependencies)
+    await Promise.allSettled(initPromises);
 
+    // Refresh hierarchical memory (depends on file service, independent from above)
     await this.refreshHierarchicalMemory();
     this.debugLogger.debug('Hierarchical memory loaded');
 
+    // Create tool registry (depends on extension manager and skill manager)
     this.toolRegistry = await this.createToolRegistry(
       options?.sendSdkMcpMessage,
     );
@@ -949,17 +844,163 @@ export class Config {
       `Tool registry initialized with ${this.toolRegistry.getAllToolNames().length} tools`,
     );
 
+    // Initialize Gemini client (depends on content generator being ready)
     await this.geminiClient.initialize();
     this.debugLogger.info('Gemini client initialized');
 
     // Detect and capture runtime model snapshot (from CLI/ENV/credentials)
     this.modelsConfig.detectAndCaptureRuntimeModel();
 
+    // Log session start and completion
     logStartSession(this, new StartSessionEvent(this));
-    this.debugLogger.info('Config initialization completed');
+
+    const initDuration = Date.now() - initStartTime;
+    this.debugLogger.info(
+      `Config initialization completed in ${initDuration}ms`,
+    );
+  }
+
+  /**
+   * Initialize the hook system with message bus and subscriptions.
+   * Separated from main initialize for better parallelization.
+   */
+  private async initializeHookSystem(): Promise<void> {
+    this.hookSystem = new HookSystem(this);
+    await this.hookSystem.initialize();
+    this.debugLogger.debug('Hook system initialized');
+
+    // Initialize MessageBus for hook execution
+    this.messageBus = new MessageBus();
+
+    // Subscribe to HOOK_EXECUTION_REQUEST to execute hooks
+    this.messageBus.subscribe<HookExecutionRequest>(
+      MessageBusType.HOOK_EXECUTION_REQUEST,
+      async (request: HookExecutionRequest) => {
+        try {
+          const hookSystem = this.hookSystem;
+          if (!hookSystem) {
+            this.messageBus?.publish({
+              type: MessageBusType.HOOK_EXECUTION_RESPONSE,
+              correlationId: request.correlationId,
+              success: false,
+              error: new Error('Hook system not initialized'),
+            } as HookExecutionResponse);
+            return;
+          }
+
+          // Execute the appropriate hook based on eventName
+          let result;
+          const input = request.input || {};
+          switch (request.eventName) {
+            case 'UserPromptSubmit':
+              result = await hookSystem.fireUserPromptSubmitEvent(
+                (input['prompt'] as string) || '',
+              );
+              break;
+            case 'Stop':
+              result = await hookSystem.fireStopEvent(
+                (input['stop_hook_active'] as boolean) || false,
+                (input['last_assistant_message'] as string) || '',
+              );
+              break;
+            case 'PreToolUse': {
+              result = await hookSystem.firePreToolUseEvent(
+                (input['tool_name'] as string) || '',
+                (input['tool_input'] as Record<string, unknown>) || {},
+                (input['tool_use_id'] as string) || '',
+                (input['permission_mode'] as PermissionMode | undefined) ??
+                  PermissionMode.Default,
+              );
+              break;
+            }
+            case 'PostToolUse':
+              result = await hookSystem.firePostToolUseEvent(
+                (input['tool_name'] as string) || '',
+                (input['tool_input'] as Record<string, unknown>) || {},
+                (input['tool_response'] as Record<string, unknown>) || {},
+                (input['tool_use_id'] as string) || '',
+                (input['permission_mode'] as PermissionMode) || 'default',
+              );
+              break;
+            case 'PostToolUseFailure':
+              result = await hookSystem.firePostToolUseFailureEvent(
+                (input['tool_use_id'] as string) || '',
+                (input['tool_name'] as string) || '',
+                (input['tool_input'] as Record<string, unknown>) || {},
+                (input['error'] as string) || '',
+                input['is_interrupt'] as boolean | undefined,
+                (input['permission_mode'] as PermissionMode) || 'default',
+              );
+              break;
+            case 'Notification':
+              result = await hookSystem.fireNotificationEvent(
+                (input['message'] as string) || '',
+                (input['notification_type'] as NotificationType) ||
+                  'permission_prompt',
+                (input['title'] as string) || undefined,
+              );
+              break;
+            case 'PermissionRequest':
+              result = await hookSystem.firePermissionRequestEvent(
+                (input['tool_name'] as string) || '',
+                (input['tool_input'] as Record<string, unknown>) || {},
+                (input['permission_mode'] as PermissionMode) ||
+                  PermissionMode.Default,
+                (input['permission_suggestions'] as
+                  | PermissionSuggestion[]
+                  | undefined) || undefined,
+              );
+              break;
+            case 'SubagentStart':
+              result = await hookSystem.fireSubagentStartEvent(
+                (input['agent_id'] as string) || '',
+                (input['agent_type'] as string) || '',
+                (input['permission_mode'] as PermissionMode) ||
+                  PermissionMode.Default,
+              );
+              break;
+            case 'SubagentStop':
+              result = await hookSystem.fireSubagentStopEvent(
+                (input['agent_id'] as string) || '',
+                (input['agent_type'] as string) || '',
+                (input['agent_transcript_path'] as string) || '',
+                (input['last_assistant_message'] as string) || '',
+                (input['stop_hook_active'] as boolean) || false,
+                (input['permission_mode'] as PermissionMode) ||
+                  PermissionMode.Default,
+              );
+              break;
+            default:
+              this.debugLogger.warn(`Unknown hook event: ${request.eventName}`);
+              result = undefined;
+          }
+
+          // Send response
+          this.messageBus?.publish({
+            type: MessageBusType.HOOK_EXECUTION_RESPONSE,
+            correlationId: request.correlationId,
+            success: true,
+            output: result,
+          } as HookExecutionResponse);
+        } catch (error) {
+          this.debugLogger.warn(`Hook execution failed: ${error}`);
+          this.messageBus?.publish({
+            type: MessageBusType.HOOK_EXECUTION_RESPONSE,
+            correlationId: request.correlationId,
+            success: false,
+            error: error instanceof Error ? error : new Error(String(error)),
+          } as HookExecutionResponse);
+        }
+      },
+    );
+
+    this.debugLogger.debug('MessageBus initialized with hook subscription');
   }
 
   async refreshHierarchicalMemory(): Promise<void> {
+    const memoryStartTime = Date.now();
+    this.debugLogger.debug('Starting hierarchical memory refresh...');
+
     const { memoryContent, fileCount } = await loadServerHierarchicalMemory(
       this.getWorkingDir(),
       this.shouldLoadMemoryFromIncludeDirectories()
@@ -969,6 +1010,11 @@ export class Config {
       this.getExtensionContextFilePaths(),
       this.isTrustedFolder(),
       this.getImportFormat(),
+    );
+
+    const memoryDuration = Date.now() - memoryStartTime;
+    this.debugLogger.info(
+      `Hierarchical memory loaded: ${fileCount} files in ${memoryDuration}ms`,
     );
     this.setUserMemory(memoryContent);
     this.setGeminiMdFileCount(fileCount);
@@ -2088,6 +2134,9 @@ export class Config {
     sendSdkMcpMessage?: SendSdkMcpMessage,
     options?: { skipDiscovery?: boolean },
   ): Promise<ToolRegistry> {
+    const registryStartTime = Date.now();
+    this.debugLogger.debug('Starting tool registry creation...');
+
     const registry = new ToolRegistry(
       this,
       this.eventEmitter,
@@ -2182,9 +2231,12 @@ export class Config {
     if (!options?.skipDiscovery) {
       await registry.discoverAllTools();
     }
-    this.debugLogger.debug(
-      `ToolRegistry created: ${JSON.stringify(registry.getAllToolNames())} (${registry.getAllToolNames().length} tools)`,
+
+    const registryDuration = Date.now() - registryStartTime;
+    this.debugLogger.info(
+      `Tool registry created: ${registry.getAllToolNames().length} tools in ${registryDuration}ms`,
     );
+
     return registry;
   }
 }

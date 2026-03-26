@@ -28,8 +28,8 @@ const OLA_LOCK_FILENAME = 'oauth_creds.lock';
 
 // Token and Cache Configuration
 const TOKEN_REFRESH_BUFFER_MS = 30 * 1000; // 30 seconds
-const LOCK_TIMEOUT_MS = 10000; // 10 seconds lock timeout
-const CACHE_CHECK_INTERVAL_MS = 5000; // 5 seconds cache check interval (increased from 1 second)
+const LOCK_TIMEOUT_MS = 5000; // 5 seconds lock timeout (reduced from 10s for faster startup)
+const CACHE_CHECK_INTERVAL_MS = 1000; // 1 second cache check interval (reduced from 5s for faster startup)
 
 // Lock acquisition configuration (can be overridden for testing)
 interface LockConfig {
@@ -40,9 +40,9 @@ interface LockConfig {
 }
 
 const DEFAULT_LOCK_CONFIG: LockConfig = {
-  maxAttempts: 20, // Reduced from 50 to prevent excessive waiting
-  attemptInterval: 100, // Reduced from 200ms to check more frequently
-  maxInterval: 2000, // Maximum interval for exponential backoff
+  maxAttempts: 15, // Reduced from 20 for faster failure detection
+  attemptInterval: 50, // Reduced from 100ms for faster lock acquisition
+  maxInterval: 500, // Reduced from 2000ms for faster startup
 };
 
 /**
@@ -211,8 +211,12 @@ export class SharedTokenManager {
     forceRefresh = false,
   ): Promise<QwenCredentials> {
     try {
-      // Check if credentials file has been updated by other sessions
-      await this.checkAndReloadIfNeeded(qwenClient);
+      // On first startup, skip the cross-process file check to speed up initialization
+      // The file will be read directly in performTokenRefresh if refresh is needed
+      // Only check for cross-process updates if we already have cached credentials
+      if (this.memoryCache.lastCheck > 0) {
+        await this.checkAndReloadIfNeeded(qwenClient);
+      }
 
       // Return valid cached credentials if available (unless force refresh is requested)
       if (
@@ -279,7 +283,12 @@ export class SharedTokenManager {
     const now = Date.now();
 
     // Limit check frequency to avoid excessive disk I/O
-    if (now - this.memoryCache.lastCheck < CACHE_CHECK_INTERVAL_MS) {
+    // On first startup (lastCheck = 0), skip the file check to speed up initialization
+    // The file will be read directly in performTokenRefresh if needed
+    if (
+      this.memoryCache.lastCheck > 0 &&
+      now - this.memoryCache.lastCheck < CACHE_CHECK_INTERVAL_MS
+    ) {
       return;
     }
 
@@ -337,10 +346,12 @@ export class SharedTokenManager {
     try {
       const filePath = this.getCredentialFilePath();
 
+      // Use shorter timeout for file stat operation (1s instead of 3s)
+      // This is just checking if file exists and getting modification time
       const stats = await this.withTimeout(
         fs.stat(filePath),
-        3000,
-        'File operation',
+        1000, // Reduced from 3000ms for faster startup
+        'File stat operation',
       );
       const fileModTime = stats.mtimeMs;
 
@@ -375,11 +386,18 @@ export class SharedTokenManager {
 
   /**
    * Force a file check without time-based throttling (used during refresh operations)
+   * Uses shorter timeout for faster startup
    */
   private async forceFileCheck(qwenClient?: IOlaOAuth2Client): Promise<void> {
     try {
       const filePath = this.getCredentialFilePath();
-      const stats = await fs.stat(filePath);
+
+      // Use withTimeout for consistency and faster failure (1s instead of indefinite)
+      const stats = await this.withTimeout(
+        fs.stat(filePath),
+        1000, // 1 second timeout for faster startup
+        'File stat operation',
+      );
       const fileModTime = stats.mtimeMs;
 
       // Reload credentials if file has been modified since last cache
@@ -413,13 +431,21 @@ export class SharedTokenManager {
 
   /**
    * Load credentials from the file system into memory cache and sync with qwenClient
+   * Uses timeout for faster failure on slow file systems
    */
   private async reloadCredentialsFromFile(
     qwenClient?: IOlaOAuth2Client,
   ): Promise<void> {
     try {
       const filePath = this.getCredentialFilePath();
-      const content = await fs.readFile(filePath, 'utf-8');
+
+      // Add timeout to file read operation (2s should be enough for credential file)
+      const content = await this.withTimeout(
+        fs.readFile(filePath, 'utf-8'),
+        2000, // 2 second timeout
+        'Credential file read',
+      );
+
       const parsedData = JSON.parse(content);
       const credentials = validateCredentials(parsedData);
 

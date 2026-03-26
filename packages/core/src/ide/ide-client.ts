@@ -659,7 +659,11 @@ export class IdeClient {
         .map((file) => file.toString())
         .filter((file) => fileRegex.test(file));
     } catch (e) {
-      debugLogger.debug('Failed to read IDE connection directory:', e);
+      // ENOENT means no IDE connections - this is normal and should be silent
+      // Other errors are unexpected, log at debug level
+      if ((e as NodeJS.ErrnoException).code !== 'ENOENT') {
+        debugLogger.debug('Failed to read IDE connection directory:', e);
+      }
       return [];
     }
 

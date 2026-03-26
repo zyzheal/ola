@@ -228,7 +228,7 @@ export class Storage {
   }
 
   getExtensionsConfigPath(): string {
-    return path.join(this.getExtensionsDir(), 'qwen-extension.json');
+    return path.join(this.getExtensionsDir(), 'ola-extension.json');
   }
 
   getUserSkillsDirs(): string[] {

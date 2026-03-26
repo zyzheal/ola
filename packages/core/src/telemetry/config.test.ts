@@ -143,10 +143,7 @@ describe('telemetry/config helpers', () => {
     });
 
     it('throws on unknown target values', async () => {
-      const env = { OLA_TELEMETRY_TARGET: 'unknown' } as Record<
-        string,
-        string
-      >;
+      const env = { OLA_TELEMETRY_TARGET: 'unknown' } as Record<string, string>;
       await expect(resolveTelemetrySettings({ env })).rejects.toThrow(
         /Invalid telemetry target/i,
       );

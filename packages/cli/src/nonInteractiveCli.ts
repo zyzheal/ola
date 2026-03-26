@@ -138,6 +138,10 @@ export async function runNonInteractive(
     let totalApiDurationMs = 0;
     const startTime = Date.now();
 
+    debugLogger.debug(
+      `[runNonInteractive] Starting with session: ${sessionId}`,
+    );
+
     const stdoutErrorHandler = (err: NodeJS.ErrnoException) => {
       if (err.code === 'EPIPE') {
         process.stdout.removeListener('error', stdoutErrorHandler);
@@ -161,10 +165,14 @@ export async function runNonInteractive(
       process.on('SIGTERM', shutdownHandler);
 
       // Emit systemMessage first (always the first message in JSON mode)
+      const buildSystemStartTime = Date.now();
       const systemMessage = await buildSystemMessage(
         config,
         sessionId,
         permissionMode,
+      );
+      debugLogger.debug(
+        `[runNonInteractive] buildSystemMessage completed in ${Date.now() - buildSystemStartTime}ms`,
       );
       adapter.emitMessage(systemMessage);
 

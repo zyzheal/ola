@@ -125,11 +125,7 @@ async function getGeminiMdFilePathsInternalForEachDir(
 
   for (const geminiMdFilename of geminiMdFilenames) {
     const resolvedHome = path.resolve(userHomePath);
-    const globalMemoryPath = path.join(
-      resolvedHome,
-      OLA_DIR,
-      geminiMdFilename,
-    );
+    const globalMemoryPath = path.join(resolvedHome, OLA_DIR, geminiMdFilename);
 
     // This part that finds the global file always runs.
     try {

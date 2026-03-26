@@ -215,8 +215,8 @@ export default {
   // ============================================================================
   // Агенты - Мастер создания
   // ============================================================================
-  'Project Level (.qwen/agents/)': 'Уровень проекта (.qwen/agents/)',
-  'User Level (~/.qwen/agents/)': 'Уровень пользователя (~/.qwen/agents/)',
+  'Project Level (.ola/agents/)': 'Уровень проекта (.ola/agents/)',
+  'User Level (~/.ola/agents/)': 'Уровень пользователя (~/.ola/agents/)',
   '✅ Subagent Created Successfully!': '✅ Подагент успешно создан!',
   'Subagent "{{name}}" has been saved to {{level}} level.':
     'Подагент "{{name}}" сохранен на уровне {{level}}.',
@@ -352,7 +352,7 @@ export default {
   'Load Memory From Include Directories':
     'Загружать память из включенных директорий',
   'Respect .gitignore': 'Учитывать .gitignore',
-  'Respect .qwenignore': 'Учитывать .qwenignore',
+  'Respect .olaignore': 'Учитывать .olaignore',
   'Enable Recursive File Search': 'Включить рекурсивный поиск файлов',
   'Disable Fuzzy Search': 'Отключить нечеткий поиск',
   'Interactive Shell (PTY)': 'Интерактивный терминал (PTY)',
@@ -1099,8 +1099,8 @@ export default {
     'Не удалось авторизоваться. Сообщение: {{message}}',
   'Authenticated successfully with {{authType}} credentials.':
     'Успешно авторизовано с учетными данными {{authType}}.',
-  'Invalid QWEN_DEFAULT_AUTH_TYPE value: "{{value}}". Valid values are: {{validValues}}':
-    'Неверное значение QWEN_DEFAULT_AUTH_TYPE: "{{value}}". Допустимые значения: {{validValues}}',
+  'Invalid OLA_DEFAULT_AUTH_TYPE value: "{{value}}". Valid values are: {{validValues}}':
+    'Неверное значение OLA_DEFAULT_AUTH_TYPE: "{{value}}". Допустимые значения: {{validValues}}',
   'OpenAI Configuration Required': 'Требуется конфигурация OpenAI',
   'Please enter your OpenAI configuration. You can get an API key from':
     'Пожалуйста, введите конфигурацию OpenAI. Вы можете получить ключ API на',
@@ -1165,11 +1165,11 @@ export default {
   'From project settings': 'Из настроек проекта',
   'From session': 'Из сессии',
   'Project settings (local)': 'Настройки проекта (локальные)',
-  'Saved in .qwen/settings.local.json': 'Сохранено в .qwen/settings.local.json',
+  'Saved in .ola/settings.local.json': 'Сохранено в .ola/settings.local.json',
   'Project settings': 'Настройки проекта',
-  'Checked in at .qwen/settings.json': 'Зафиксировано в .qwen/settings.json',
+  'Checked in at .ola/settings.json': 'Зафиксировано в .ola/settings.json',
   'User settings': 'Пользовательские настройки',
-  'Saved in at ~/.qwen/settings.json': 'Сохранено в ~/.qwen/settings.json',
+  'Saved in at ~/.ola/settings.json': 'Сохранено в ~/.ola/settings.json',
   'Add a new rule…': 'Добавить новое правило…',
   'Add {{type}} permission rule': 'Добавить правило разрешения {{type}}',
   'Permission rules are a tool name, optionally followed by a specifier in parentheses.':

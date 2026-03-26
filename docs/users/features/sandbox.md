@@ -7,13 +7,13 @@ This document explains how to run OLA inside a sandbox to reduce risk when tools
 Before using sandboxing, you need to install and set up OLA:
 
 ```bash
-npm install -g @ola/ola
+npm install -g ola
 ```
 
 To verify the installation
 
 ```bash
-qwen --version
+ola --version
 ```
 
 ## Overview of sandboxing
@@ -29,7 +29,10 @@ The benefits of sandboxing include:
 
 > [!note]
 >
-> **Naming note:** Some sandbox-related environment variables may have used the `GEMINI_*` prefix historically. All new environment variables use the `QWEN_*` prefix.
+> **Environment Variable Prefix:**
+>
+> - New environment variables use the `OLA_*` prefix (e.g., `OLA_SANDBOX`, `OLA_SANDBOX_IMAGE`)
+> - For backward compatibility, the `QWEN_*` prefix is also supported during the transition period
 
 ## Sandboxing methods
 
@@ -65,11 +68,11 @@ The container sandbox mounts your workspace and your `~/.qwen` directory into th
 
 ```bash
 # Enable sandboxing with command flag
-qwen -s -p "analyze the code structure"
+ola -s -p "analyze the code structure"
 
 # Or enable sandboxing for your shell session (recommended for CI / scripts)
-export QWEN_SANDBOX=true   # true auto-picks a provider (see notes below)
-qwen -p "run the test suite"
+export OLA_SANDBOX=true   # true auto-picks a provider (see notes below)
+ola -p "run the test suite"
 
 # Configure in settings.json
 {
@@ -83,28 +86,28 @@ qwen -p "run the test suite"
 >
 > **Provider selection notes:**
 >
-> - On **macOS**, `QWEN_SANDBOX=true` typically selects `sandbox-exec` (Seatbelt) if available.
-> - On **Linux/Windows**, `QWEN_SANDBOX=true` requires `docker` or `podman` to be installed.
-> - To force a provider, set `QWEN_SANDBOX=docker|podman|sandbox-exec`.
+> - On **macOS**, `OLA_SANDBOX=true` typically selects `sandbox-exec` (Seatbelt) if available.
+> - On **Linux/Windows**, `OLA_SANDBOX=true` requires `docker` or `podman` to be installed.
+> - To force a provider, set `OLA_SANDBOX=docker|podman|sandbox-exec`.
 
 ## Configuration
 
 ### Enable sandboxing (in order of precedence)
 
-1. **Environment variable**: `QWEN_SANDBOX=true|false|docker|podman|sandbox-exec`
+1. **Environment variable**: `OLA_SANDBOX=true|false|docker|podman|sandbox-exec` (or `QWEN_SANDBOX` for backward compatibility)
 2. **Command flag / argument**: `-s`, `--sandbox`, or `--sandbox=<provider>`
 3. **Settings file**: `tools.sandbox` in your `settings.json` (e.g., `{"tools": {"sandbox": true}}`).
 
 > [!important]
 >
-> If `QWEN_SANDBOX` is set, it **overrides** the CLI flag and `settings.json`.
+> If `OLA_SANDBOX` (or `QWEN_SANDBOX`) is set, it **overrides** the CLI flag and `settings.json`.
 
 ### Configure the sandbox image (Docker/Podman)
 
 - **CLI flag**: `--sandbox-image <image>`
-- **Environment variable**: `QWEN_SANDBOX_IMAGE=<image>`
+- **Environment variable**: `OLA_SANDBOX_IMAGE=<image>` (or `QWEN_SANDBOX_IMAGE` for backward compatibility)
 
-If you don’t set either, OLA uses the default image configured in the CLI package (for example `ghcr.io/qwenlm/ola:<version>`).
+If you don't set either, OLA uses the default image configured in the CLI package (for example `ghcr.io/your-org/ola:<version>`).
 
 ### macOS Seatbelt profiles
 
@@ -150,7 +153,7 @@ export SANDBOX_FLAGS="--flag1 --flag2=value"
 
 If you want to restrict outbound network access to an allowlist, you can run a local proxy alongside the sandbox:
 
-- Set `QWEN_SANDBOX_PROXY_COMMAND=<command>`
+- Set `OLA_SANDBOX_PROXY_COMMAND=<command>`
 - The command must start a proxy server that listens on `:::8877`
 
 This is especially useful with `*-proxied` Seatbelt profiles.
@@ -199,7 +202,7 @@ RUN apt-get update && \
 Then rebuild the sandbox image:
 
 ```bash
-QWEN_SANDBOX=docker BUILD_SANDBOX=1 qwen -s
+OLA_SANDBOX=docker BUILD_SANDBOX=1 ola -s
 ```
 
 For more details on customizing the sandbox, see [Customizing the sandbox environment](/developers/tools/sandbox).
@@ -212,19 +215,19 @@ For more details on customizing the sandbox, see [Customizing the sandbox enviro
 ### Debug mode
 
 ```bash
-DEBUG=1 qwen -s -p "debug command"
+DEBUG=1 ola -s -p "debug command"
 ```
 
-**Note:** If you have `DEBUG=true` in a project's `.env` file, it won't affect the CLI due to automatic exclusion. Use `.qwen/.env` files for OLA-specific debug settings.
+**Note:** If you have `DEBUG=true` in a project's `.env` file, it won't affect the CLI due to automatic exclusion. Use `.ola/.env` files for OLA-specific debug settings.
 
 ### Inspect sandbox
 
 ```bash
 # Check environment
-qwen -s -p "run shell command: env | grep SANDBOX"
+ola -s -p "run shell command: env | grep SANDBOX"
 
 # List mounts
-qwen -s -p "run shell command: mount | grep workspace"
+ola -s -p "run shell command: mount | grep workspace"
 ```
 
 ## Security notes
@@ -239,3 +242,51 @@ qwen -s -p "run shell command: mount | grep workspace"
 - [Configuration](../configuration/settings): Full configuration options.
 - [Commands](../features/commands): Available commands.
 - [Troubleshooting](../support/troubleshooting): General troubleshooting.
+- [Language Settings](../configuration/language): How to change the interface language.
+
+---
+
+## Language / 语言设置
+
+By default, OLA uses **Chinese (中文)** as the interface language.
+
+To change the language, set the `OLA_CODE_LANG` environment variable:
+
+```bash
+# English
+export OLA_CODE_LANG=en
+
+# Chinese (default)
+export OLA_CODE_LANG=zh
+
+# Japanese
+export OLA_CODE_LANG=ja
+
+# German
+export OLA_CODE_LANG=de
+
+# Portuguese
+export OLA_CODE_LANG=pt
+
+# Russian
+export OLA_CODE_LANG=ru
+```
+
+Or configure in `settings.json`:
+
+```json
+{
+  "general": {
+    "language": "zh"
+  }
+}
+```
+
+**Supported languages / 支持的语言:**
+
+- `zh` - 中文 (Chinese) - **Default / 默认**
+- `en` - English
+- `ja` - 日本語 (Japanese)
+- `de` - Deutsch (German)
+- `pt` - Português (Portuguese)
+- `ru` - Русский (Russian)

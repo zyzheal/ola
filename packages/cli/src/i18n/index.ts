@@ -70,7 +70,8 @@ export function detectSystemLanguage(): SupportedLanguage {
     // Fallback to default
   }
 
-  return 'en';
+  // Default to Chinese (zh) instead of English
+  return 'zh';
 }
 
 // Translation loading

@@ -122,7 +122,7 @@ vi.mock('../tools/memoryTool', () => ({
   getCurrentGeminiMdFilename: vi.fn(() => 'QWEN.md'), // Mock the original filename
   getAllGeminiMdFilenames: vi.fn(() => ['QWEN.md', 'AGENTS.md']),
   DEFAULT_CONTEXT_FILENAME: 'QWEN.md',
-  OLA_CONFIG_DIR: '.qwen',
+  OLA_CONFIG_DIR: '.ola',
 }));
 
 vi.mock('../core/contentGenerator.js');

@@ -17,6 +17,7 @@
 import Parser from 'web-tree-sitter';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readPackageUpSync } from 'read-package-up';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -24,6 +25,68 @@ import { fileURLToPath } from 'node:url';
 
 const __filename_ = fileURLToPath(import.meta.url);
 const __dirname_ = path.dirname(__filename_);
+
+// Cache for package root directory
+let _packageRootCache: string | null = null;
+
+/**
+ * Get the package root directory (packages/core) by finding the nearest package.json
+ * that contains the name 'ola-core'. This ensures we always find the correct
+ * package root regardless of where the code is running from.
+ */
+function getPackageRoot(): string {
+  if (_packageRootCache) {
+    return _packageRootCache;
+  }
+
+  // Try to find package.json starting from current file's directory
+  let currentDir = __dirname_;
+  const maxDepth = 10; // Prevent infinite loops
+  let depth = 0;
+
+  while (depth < maxDepth) {
+    const result = readPackageUpSync({ cwd: currentDir });
+    if (result && result.packageJson) {
+      // Check if this is the ola-core package
+      if (result.packageJson.name === 'ola-core') {
+        _packageRootCache = path.dirname(result.path!);
+        return _packageRootCache;
+      }
+
+      // If we reached the workspace root, stop searching
+      if (result.packageJson.workspaces) {
+        break;
+      }
+    }
+
+    // Move up one directory
+    const parentDir = path.dirname(currentDir);
+    if (parentDir === currentDir) {
+      // Reached filesystem root
+      break;
+    }
+    currentDir = parentDir;
+    depth++;
+  }
+
+  // Fallback: use a reasonable default
+  // For bundled code in dist/cli.js, vendor is at dist/vendor/
+  // For source code, vendor is at packages/core/vendor/
+  if (__filename_.includes(path.join('dist', 'cli.js'))) {
+    // Bundled mode - vendor is at the same level as cli.js
+    _packageRootCache = path.dirname(__filename_);
+  } else {
+    // Source/transpiled mode - go up to packages/core/
+    const inSrcUtils = __filename_.includes(path.join('src', 'utils'));
+    const levelsUp = !inSrcUtils ? 0 : __filename_.endsWith('.ts') ? 2 : 3;
+    _packageRootCache = path.join(
+      __dirname_,
+      ...Array<string>(levelsUp).fill('..'),
+    );
+  }
+
+  return _packageRootCache;
+}
 
 /**
  * Root commands considered read-only by default (no sub-command analysis needed
@@ -563,21 +626,12 @@ let initPromise: Promise<void> | null = null;
 
 /**
  * Resolve the path to a WASM file inside vendor/tree-sitter/.
- * Handles three deployment scenarios:
- *   - Source (src/utils/*.ts): 2 levels up to package root
- *   - Transpiled (dist/src/utils/*.js): 3 levels up
- *   - Bundle (dist/cli.js): vendor at same level (0 levels)
+ * Uses dynamic package root detection for reliable path resolution
+ * across different deployment scenarios (source, transpiled, bundled).
  */
 function resolveWasmPath(filename: string): string {
-  const inSrcUtils = __filename_.includes(path.join('src', 'utils'));
-  const levelsUp = !inSrcUtils ? 0 : __filename_.endsWith('.ts') ? 2 : 3;
-  return path.join(
-    __dirname_,
-    ...Array<string>(levelsUp).fill('..'),
-    'vendor',
-    'tree-sitter',
-    filename,
-  );
+  const packageRoot = getPackageRoot();
+  return path.join(packageRoot, 'vendor', 'tree-sitter', filename);
 }
 
 /**

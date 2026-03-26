@@ -280,8 +280,13 @@ IMPORTANT: Always use the ${ToolNames.TODO_WRITE} tool to plan and track tasks t
 
 ${(function () {
   // Determine sandbox status based on environment variables
-  const isSandboxExec = process.env['SANDBOX'] === 'sandbox-exec';
-  const isGenericSandbox = !!process.env['SANDBOX']; // Check if SANDBOX is set to any non-empty value
+  // Support both OLA_ and QWEN_ prefixes for backward compatibility
+  const isSandboxExec =
+    process.env['OLA_SANDBOX'] === 'sandbox-exec' ||
+    process.env['QWEN_SANDBOX'] === 'sandbox-exec';
+  const isGenericSandbox = !!(
+    process.env['OLA_SANDBOX'] || process.env['QWEN_SANDBOX']
+  );
 
   if (isSandboxExec) {
     return `

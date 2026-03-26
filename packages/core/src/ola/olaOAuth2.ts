@@ -489,6 +489,9 @@ export async function getQwenOAuthClient(
   config: Config,
   options?: { requireCachedCredentials?: boolean },
 ): Promise<OlaOAuth2Client> {
+  const authStartTime = Date.now();
+  debugLogger.debug('Starting ola OAuth authentication...');
+
   const client = new OlaOAuth2Client();
 
   // Use shared token manager to get valid credentials with cross-session synchronization
@@ -496,8 +499,15 @@ export async function getQwenOAuthClient(
 
   try {
     // Try to get valid credentials from shared cache first
+    debugLogger.debug('Attempting to retrieve cached credentials...');
     const credentials = await sharedManager.getValidCredentials(client);
     client.setCredentials(credentials);
+
+    const authDuration = Date.now() - authStartTime;
+    debugLogger.info(
+      `ola OAuth authentication completed in ${authDuration}ms (using cached credentials)`,
+    );
+
     return client;
   } catch (error: unknown) {
     // Handle specific token manager errors
@@ -531,6 +541,7 @@ export async function getQwenOAuthClient(
 
     // If we couldn't obtain valid credentials via SharedTokenManager, fall back to
     // interactive device authorization (unless explicitly forbidden above).
+    debugLogger.debug('Starting device authorization flow...');
     const result = await authWithQwenDeviceFlow(client, config);
     if (!result.success) {
       // Only emit timeout event if the failure reason is actually timeout
@@ -563,8 +574,44 @@ export async function getQwenOAuthClient(
       throw new Error(errorMessage);
     }
 
+    const authDuration = Date.now() - authStartTime;
+    debugLogger.info(
+      `ola OAuth authentication completed in ${authDuration}ms (device flow)`,
+    );
+
     return client;
   }
+}
+
+/**
+ * Get cached OAuth credentials without triggering device flow.
+ * This is a faster path for initial startup when we just need to check
+ * if we have valid credentials.
+ *
+ * @param config - The config instance
+ * @returns Valid credentials if available, null otherwise
+ */
+export async function getCachedQwenCredentials(
+  _config: Config,
+): Promise<QwenCredentials | null> {
+  const client = new OlaOAuth2Client();
+  const sharedManager = SharedTokenManager.getInstance();
+
+  try {
+    // Try to get credentials without forcing refresh or device flow
+    // This will only return if we have valid cached credentials
+    const credentials = await sharedManager.getValidCredentials(client, false);
+
+    // Check if credentials are valid (not expired)
+    if (credentials && sharedManager['isTokenValid'](credentials)) {
+      return credentials;
+    }
+  } catch (error) {
+    // Ignore errors - this is a fast path check
+    debugLogger.debug('No cached credentials available:', error);
+  }
+
+  return null;
 }
 
 /**

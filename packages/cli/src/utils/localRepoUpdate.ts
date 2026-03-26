@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { spawn , execSync as cpExecSync } from 'node:child_process';
+import { spawn, execSync as cpExecSync } from 'node:child_process';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { createDebugLogger } from 'ola-core';

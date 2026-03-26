@@ -198,10 +198,7 @@ describe('IDEServer', () => {
     await ideServer.start(mockContext);
     const replaceMock = mockContext.environmentVariableCollection.replace;
 
-    expect(replaceMock).toHaveBeenCalledWith(
-      'OLA_CODE_IDE_WORKSPACE_PATH',
-      '',
-    );
+    expect(replaceMock).toHaveBeenCalledWith('OLA_CODE_IDE_WORKSPACE_PATH', '');
 
     const port = getPortFromMock(replaceMock);
     const expectedLockFile = path.join(
@@ -295,12 +292,7 @@ describe('IDEServer', () => {
     await ideServer.start(mockContext);
     const replaceMock = mockContext.environmentVariableCollection.replace;
     const port = getPortFromMock(replaceMock);
-    const lockFile = path.join(
-      '/home/test',
-      '.ola',
-      'ide',
-      `${port}.lock`,
-    );
+    const lockFile = path.join('/home/test', '.ola', 'ide', `${port}.lock`);
     expect(fs.writeFile).toHaveBeenCalledWith(lockFile, expect.any(String));
 
     await ideServer.stop();

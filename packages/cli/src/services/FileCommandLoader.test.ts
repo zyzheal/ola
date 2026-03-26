@@ -526,10 +526,7 @@ describe('FileCommandLoader', () => {
       const projectCommandsDir = new Storage(
         process.cwd(),
       ).getProjectCommandsDir();
-      const extensionDir = path.join(
-        process.cwd(),
-        '.qwen/extensions/test-ext',
-      );
+      const extensionDir = path.join(process.cwd(), '.ola/extensions/test-ext');
 
       mock({
         [userCommandsDir]: {
@@ -539,7 +536,7 @@ describe('FileCommandLoader', () => {
           'project.toml': 'prompt = "Project command"',
         },
         [extensionDir]: {
-          'qwen-extension.json': JSON.stringify({
+          'ola-extension.json': JSON.stringify({
             name: 'test-ext',
             version: '1.0.0',
           }),
@@ -579,14 +576,11 @@ describe('FileCommandLoader', () => {
       const projectCommandsDir = new Storage(
         process.cwd(),
       ).getProjectCommandsDir();
-      const extensionDir = path.join(
-        process.cwd(),
-        '.qwen/extensions/test-ext',
-      );
+      const extensionDir = path.join(process.cwd(), '.ola/extensions/test-ext');
 
       mock({
         [extensionDir]: {
-          'qwen-extension.json': JSON.stringify({
+          'ola-extension.json': JSON.stringify({
             name: 'test-ext',
             version: '1.0.0',
           }),
@@ -677,16 +671,16 @@ describe('FileCommandLoader', () => {
     it('only loads commands from active extensions', async () => {
       const extensionDir1 = path.join(
         process.cwd(),
-        '.qwen/extensions/active-ext',
+        '.ola/extensions/active-ext',
       );
       const extensionDir2 = path.join(
         process.cwd(),
-        '.qwen/extensions/inactive-ext',
+        '.ola/extensions/inactive-ext',
       );
 
       mock({
         [extensionDir1]: {
-          'qwen-extension.json': JSON.stringify({
+          'ola-extension.json': JSON.stringify({
             name: 'active-ext',
             version: '1.0.0',
           }),
@@ -695,7 +689,7 @@ describe('FileCommandLoader', () => {
           },
         },
         [extensionDir2]: {
-          'qwen-extension.json': JSON.stringify({
+          'ola-extension.json': JSON.stringify({
             name: 'inactive-ext',
             version: '1.0.0',
           }),
@@ -736,12 +730,12 @@ describe('FileCommandLoader', () => {
     it('handles missing extension commands directory gracefully', async () => {
       const extensionDir = path.join(
         process.cwd(),
-        '.qwen/extensions/no-commands',
+        '.ola/extensions/no-commands',
       );
 
       mock({
         [extensionDir]: {
-          'qwen-extension.json': JSON.stringify({
+          'ola-extension.json': JSON.stringify({
             name: 'no-commands',
             version: '1.0.0',
           }),
@@ -768,11 +762,11 @@ describe('FileCommandLoader', () => {
     });
 
     it('handles nested command structure in extensions', async () => {
-      const extensionDir = path.join(process.cwd(), '.qwen/extensions/a');
+      const extensionDir = path.join(process.cwd(), '.ola/extensions/a');
 
       mock({
         [extensionDir]: {
-          'qwen-extension.json': JSON.stringify({
+          'ola-extension.json': JSON.stringify({
             name: 'a',
             version: '1.0.0',
           }),

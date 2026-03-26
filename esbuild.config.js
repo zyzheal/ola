@@ -67,11 +67,17 @@ esbuild
       'process.env.CLI_VERSION': JSON.stringify(pkg.version),
       // Make global available for compatibility
       global: 'globalThis',
+      // Optimize React for production
+      'process.env.NODE_ENV': '"production"',
     },
     loader: { '.node': 'file' },
     metafile: true,
     write: true,
     keepNames: true,
+    // Enable optimizations for better runtime performance
+    minify: true,
+    treeShaking: true,
+    ignoreAnnotations: true,
   })
   .then(({ metafile }) => {
     if (process.env.DEV === 'true') {

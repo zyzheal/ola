@@ -78,7 +78,10 @@ export function checkHasEditorType(editor: EditorType): boolean {
 }
 
 export function allowEditorTypeInSandbox(editor: EditorType): boolean {
-  const notUsingSandbox = !process.env['SANDBOX'];
+  // Support both OLA_ and QWEN_ prefixes for backward compatibility
+  const notUsingSandbox = !(
+    process.env['OLA_SANDBOX'] || process.env['QWEN_SANDBOX']
+  );
   if (
     ['vscode', 'vscodium', 'windsurf', 'cursor', 'zed', 'trae'].includes(editor)
   ) {

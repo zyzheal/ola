@@ -144,7 +144,16 @@ export async function startInteractiveUI(
   workspaceRoot: string = process.cwd(),
   initializationResult: InitializationResult,
 ) {
+  const uiStartTime = Date.now();
+  debugLogger.debug(
+    '[startInteractiveUI] Starting interactive UI rendering...',
+  );
+
   const version = await getCliVersion();
+  debugLogger.debug(
+    `[startInteractiveUI] CLI version: ${version}, took ${Date.now() - uiStartTime}ms`,
+  );
+
   setWindowTitle(basename(workspaceRoot), settings);
 
   // Create wrapper component to use hooks inside render
@@ -179,6 +188,9 @@ export async function startInteractiveUI(
     );
   };
 
+  const renderStartTime = Date.now();
+  debugLogger.debug('[startInteractiveUI] Starting Ink render...');
+
   const instance = render(
     process.env['DEBUG'] ? (
       <React.StrictMode>
@@ -191,6 +203,13 @@ export async function startInteractiveUI(
       exitOnCtrlC: false,
       isScreenReaderEnabled: config.getScreenReader(),
     },
+  );
+
+  debugLogger.debug(
+    `[startInteractiveUI] Ink render completed in ${Date.now() - renderStartTime}ms`,
+  );
+  debugLogger.debug(
+    `[startInteractiveUI] Total UI startup time: ${Date.now() - uiStartTime}ms`,
   );
 
   // Check for updates only if enableAutoUpdate is not explicitly disabled.
@@ -223,6 +242,10 @@ export async function main() {
     );
     process.exit(1);
   }
+
+  debugLogger.debug(
+    `[main] argv.promptInteractive = ${JSON.stringify(argv.promptInteractive)}, argv.prompt = ${JSON.stringify(argv.prompt)}, argv.query = ${JSON.stringify(argv.query)}`,
+  );
 
   const isDebugMode = cliConfig.isDebugMode(argv);
 
@@ -320,9 +343,16 @@ export async function main() {
       );
       process.exit(0);
     } else {
-      // Relaunch app so we always have a child process that can be internally
-      // restarted if needed.
-      await relaunchAppInChildProcess(memoryArgs, []);
+      // Skip relaunch in interactive mode for faster startup.
+      // The child process relaunch is mainly needed for internal restarts
+      // (e.g., memory configuration changes), which is not common in interactive mode.
+      // Only relaunch if memoryArgs are provided (autoConfigureMemory enabled).
+      if (memoryArgs.length > 0) {
+        // Relaunch app so we always have a child process that can be internally
+        // restarted if needed.
+        await relaunchAppInChildProcess(memoryArgs, []);
+      }
+      // Otherwise, continue without relaunch for faster interactive startup.
     }
   }
 
@@ -426,6 +456,10 @@ export async function main() {
     ];
 
     // Render UI, passing necessary config values. Check that there is no command line question.
+    debugLogger.debug(
+      `[main] config.isInteractive() = ${config.isInteractive()}, process.stdin.isTTY = ${process.stdin.isTTY}`,
+    );
+
     if (config.isInteractive()) {
       // Need kitty detection to be complete before we can start the interactive UI.
       await kittyProtocolDetectionComplete;
@@ -504,7 +538,16 @@ export async function main() {
 
     debugLogger.debug(`Session ID: ${config.getSessionId()}`);
 
+    const aiStartTime = Date.now();
+    debugLogger.debug(
+      `Starting AI request for prompt: "${input.substring(0, 50)}..."`,
+    );
+
     await runNonInteractive(nonInteractiveConfig, settings, input, prompt_id);
+
+    const aiDuration = Date.now() - aiStartTime;
+    debugLogger.debug(`AI request completed in ${aiDuration}ms`);
+
     // Call cleanup before process.exit, which causes cleanup to not run
     await runExitCleanup();
     process.exit(0);

@@ -6,6 +6,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+// Set OLA_CODE_NO_RELAUNCH to skip child process relaunch for faster startup
+// This is automatically set by scripts/start.js but needs to be set here for
+// direct dist/cli.js execution
+if (!process.env['OLA_CODE_NO_RELAUNCH']) {
+  process.env['OLA_CODE_NO_RELAUNCH'] = 'true';
+}
+
 import './src/gemini.js';
 import { main } from './src/gemini.js';
 import { FatalError } from 'ola-core';
