@@ -19,7 +19,7 @@ export type { SupportedLanguage };
 export { getLanguageNameFromLocale };
 
 // State
-let currentLanguage: SupportedLanguage = 'en';
+let currentLanguage: SupportedLanguage = 'zh'; // 默认使用中文
 let translations: Record<string, string | string[]> = {};
 
 // Cache
@@ -70,7 +70,7 @@ export function detectSystemLanguage(): SupportedLanguage {
     // Fallback to default
   }
 
-  // Default to Chinese (zh) instead of English
+  // 默认使用中文 (zh)
   return 'zh';
 }
 

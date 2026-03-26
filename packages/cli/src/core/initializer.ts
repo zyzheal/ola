@@ -34,11 +34,11 @@ export async function initializeApp(
   config: Config,
   settings: LoadedSettings,
 ): Promise<InitializationResult> {
-  // Initialize i18n system
+  // Initialize i18n system - 默认使用中文
   const languageSetting =
     process.env['OLA_CODE_LANG'] ||
     (settings.merged.general?.language as string) ||
-    'auto';
+    'zh'; // 默认使用中文而不是 'auto'
   await initializeI18n(languageSetting as SupportedLanguage | 'auto');
 
   // Use authType from modelsConfig which respects CLI --auth-type argument
