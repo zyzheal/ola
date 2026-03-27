@@ -1,0 +1,59 @@
+2026-03-26T14:56:13.118Z [WARN] [SETTINGS] Unknown setting 'gitCoAuthor' will be ignored in /Users/heal/.ola/settings.json.
+2026-03-26T14:56:13.118Z [WARN] [SETTINGS] Unknown setting 'trustedCommands' will be ignored in /Users/heal/devops/ai-platform-design/implementation/tools/.ola/settings.json.
+2026-03-26T14:56:13.118Z [DEBUG] Hook system disabled, skipping initialization
+2026-03-26T14:56:13.119Z [DEBUG] Permission manager initialized
+2026-03-26T14:56:13.118Z [INFO] [SKILL_MANAGER] Starting skill directory watchers...
+2026-03-26T14:56:13.118Z [DEBUG] [STARTUP] [main] config.isInteractive() = false, process.stdin.isTTY = undefined
+2026-03-26T14:56:13.119Z [DEBUG] Extension manager initialized
+2026-03-26T14:56:13.118Z [INFO] Config initialization started
+2026-03-26T14:56:13.119Z [INFO] [SKILL_MANAGER] Refreshing skills cache...
+2026-03-26T14:56:13.119Z [DEBUG] [SKILL_MANAGER] Loading project level skills from: /Users/heal/devops/ai-platform-design/implementation/tools/.ola/skills
+2026-03-26T14:56:13.119Z [DEBUG] [SKILL_MANAGER] Loading skills from directory: /Users/heal/devops/ai-platform-design/implementation/tools/.ola/skills
+2026-03-26T14:56:13.120Z [DEBUG] [SKILL_MANAGER] Cannot read skills directory /Users/heal/devops/ai-platform-design/implementation/tools/.ola/skills: ENOENT: no such file or directory, scandir '/Users/heal/devops/ai-platform-design/implementation/tools/.ola/skills'
+2026-03-26T14:56:13.120Z [DEBUG] [SKILL_MANAGER] Loading project level skills from: /Users/heal/devops/ai-platform-design/implementation/tools/.agents/skills
+2026-03-26T14:56:13.120Z [DEBUG] [SKILL_MANAGER] Loading skills from directory: /Users/heal/devops/ai-platform-design/implementation/tools/.agents/skills
+2026-03-26T14:56:13.120Z [DEBUG] [SKILL_MANAGER] Cannot read skills directory /Users/heal/devops/ai-platform-design/implementation/tools/.agents/skills: ENOENT: no such file or directory, scandir '/Users/heal/devops/ai-platform-design/implementation/tools/.agents/skills'
+2026-03-26T14:56:13.120Z [DEBUG] [SKILL_MANAGER] Loaded 0 project level skills
+2026-03-26T14:56:13.120Z [DEBUG] [SKILL_MANAGER] Loading user level skills from: /Users/heal/.ola/skills
+2026-03-26T14:56:13.120Z [DEBUG] [SKILL_MANAGER] Loading skills from directory: /Users/heal/.ola/skills
+2026-03-26T14:56:13.120Z [DEBUG] [SKILL_MANAGER] Loaded 0 project level skills
+2026-03-26T14:56:13.120Z [DEBUG] [SKILL_MANAGER] Found 0 entries in /Users/heal/.ola/skills
+2026-03-26T14:56:13.120Z [DEBUG] [SKILL_MANAGER] Loading user level skills from: /Users/heal/.agents/skills
+2026-03-26T14:56:13.120Z [DEBUG] [SKILL_MANAGER] Loading skills from directory: /Users/heal/.agents/skills
+2026-03-26T14:56:13.120Z [DEBUG] [SKILL_MANAGER] Cannot read skills directory /Users/heal/.agents/skills: ENOENT: no such file or directory, scandir '/Users/heal/.agents/skills'
+2026-03-26T14:56:13.120Z [DEBUG] [SKILL_MANAGER] Loaded 0 user level skills
+2026-03-26T14:56:13.120Z [DEBUG] [SKILL_MANAGER] Loaded 0 user level skills
+2026-03-26T14:56:13.120Z [DEBUG] [SKILL_MANAGER] Loaded 0 extension-level skills from 0 extensions
+2026-03-26T14:56:13.120Z [DEBUG] [SKILL_MANAGER] Loading bundled skills from: /Users/heal/devops/ai-platform-design/implementation/tools/packages/core/dist/src/skills/bundled
+2026-03-26T14:56:13.120Z [DEBUG] [SKILL_MANAGER] Loading skills from directory: /Users/heal/devops/ai-platform-design/implementation/tools/packages/core/dist/src/skills/bundled
+2026-03-26T14:56:13.120Z [DEBUG] [SKILL_MANAGER] Loaded 0 extension level skills
+2026-03-26T14:56:13.120Z [DEBUG] [SKILL_MANAGER] Found 1 entries in /Users/heal/devops/ai-platform-design/implementation/tools/packages/core/dist/src/skills/bundled
+2026-03-26T14:56:13.121Z [DEBUG] [SKILL_MANAGER] Successfully parsed skill: review (bundled) from /Users/heal/devops/ai-platform-design/implementation/tools/packages/core/dist/src/skills/bundled/review/SKILL.md
+2026-03-26T14:56:13.121Z [DEBUG] [SKILL_MANAGER] Loaded 1 bundled skills
+2026-03-26T14:56:13.121Z [DEBUG] [SKILL_MANAGER] Loaded 1 bundled level skills
+2026-03-26T14:56:13.121Z [INFO] [SKILL_MANAGER] Skills cache refreshed: 1 total skills loaded
+2026-03-26T14:56:13.121Z [INFO] [SKILL_MANAGER] Skill directory watchers started
+2026-03-26T14:56:13.121Z [DEBUG] Skill manager initialized
+2026-03-26T14:56:13.122Z [DEBUG] Starting hierarchical memory refresh...
+2026-03-26T14:56:13.122Z [DEBUG] [MEMORY_DISCOVERY] Loading server hierarchical memory for CWD: /Users/heal/devops/ai-platform-design/implementation/tools (importFormat: tree)
+2026-03-26T14:56:13.122Z [DEBUG] [MEMORY_DISCOVERY] Searching for QWEN.md starting from CWD: /Users/heal/devops/ai-platform-design/implementation/tools
+2026-03-26T14:56:13.123Z [DEBUG] [MEMORY_DISCOVERY] Determined project root: /Users/heal/devops/ai-platform-design/implementation/tools
+2026-03-26T14:56:13.123Z [DEBUG] [MEMORY_DISCOVERY] Searching for AGENTS.md starting from CWD: /Users/heal/devops/ai-platform-design/implementation/tools
+2026-03-26T14:56:13.123Z [DEBUG] [MEMORY_DISCOVERY] Determined project root: /Users/heal/devops/ai-platform-design/implementation/tools
+2026-03-26T14:56:13.124Z [DEBUG] [MEMORY_DISCOVERY] Final ordered QWEN.md,AGENTS.md paths to read: ["/Users/heal/devops/ai-platform-design/implementation/tools/AGENTS.md","/Users/heal/devops/ai-platform-design/implementation/tools/.ola/output-language.md"]
+2026-03-26T14:56:13.138Z [DEBUG] [MEMORY_DISCOVERY] Successfully read and processed imports: /Users/heal/devops/ai-platform-design/implementation/tools/AGENTS.md (Length: 8043)
+2026-03-26T14:56:13.138Z [INFO] Hierarchical memory loaded: 1 files in 16ms
+2026-03-26T14:56:13.138Z [DEBUG] [MEMORY_DISCOVERY] Successfully read and processed imports: /Users/heal/devops/ai-platform-design/implementation/tools/.ola/output-language.md (Length: 806)
+2026-03-26T14:56:13.138Z [DEBUG] Hierarchical memory loaded
+2026-03-26T14:56:13.139Z [DEBUG] [SKILL_MANAGER] Listing skills
+2026-03-26T14:56:13.138Z [DEBUG] Starting tool registry creation...
+2026-03-26T14:56:13.139Z [DEBUG] [SKILL_MANAGER] Using cached skills
+2026-03-26T14:56:13.139Z [DEBUG] [SKILL_MANAGER] Processing 0 user level skills
+2026-03-26T14:56:13.139Z [INFO] [SKILL_MANAGER] Listed 1 unique skills
+2026-03-26T14:56:13.139Z [DEBUG] [SKILL_MANAGER] Processing 1 bundled level skills
+2026-03-26T14:56:13.139Z [DEBUG] [SKILL_MANAGER] Processing 0 project level skills
+2026-03-26T14:56:13.140Z [INFO] Tool registry initialized with 13 tools
+2026-03-26T14:56:13.139Z [DEBUG] [SKILL_MANAGER] Processing 0 extension level skills
+2026-03-26T14:56:13.140Z [INFO] Tool registry created: 13 tools in 2ms
+2026-03-26T14:56:13.151Z [INFO] Gemini client initialized
+2026-03-26T14:56:13.152Z [INFO] Config initialization completed in 34ms

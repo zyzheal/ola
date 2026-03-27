@@ -82,9 +82,6 @@ export class ModelsConfig {
   // Flag for strict model provider selection
   private strictModelProviderSelection: boolean = false;
 
-  // One-shot flag for qwen-oauth credential caching
-  private requireCachedQwenCredentialsOnce: boolean = false;
-
   // One-shot flag indicating credentials were manually set via updateCredentials()
   // When true, syncAfterAuthRefresh should NOT override these credentials with
   // modelProviders defaults (even if the model ID matches a registry entry).
@@ -172,7 +169,6 @@ export class ModelsConfig {
     generationConfig: Partial<ContentGeneratorConfig>;
     generationConfigSources: ContentGeneratorConfigSources;
     strictModelProviderSelection: boolean;
-    requireCachedQwenCredentialsOnce: boolean;
     hasManualCredentials: boolean;
     activeRuntimeModelSnapshotId: string | undefined;
   } {
@@ -183,7 +179,6 @@ export class ModelsConfig {
         this.generationConfigSources,
       ),
       strictModelProviderSelection: this.strictModelProviderSelection,
-      requireCachedQwenCredentialsOnce: this.requireCachedQwenCredentialsOnce,
       hasManualCredentials: this.hasManualCredentials,
       activeRuntimeModelSnapshotId: this.activeRuntimeModelSnapshotId,
     };
@@ -202,8 +197,6 @@ export class ModelsConfig {
     this._generationConfig = snapshot.generationConfig;
     this.generationConfigSources = snapshot.generationConfigSources;
     this.strictModelProviderSelection = snapshot.strictModelProviderSelection;
-    this.requireCachedQwenCredentialsOnce =
-      snapshot.requireCachedQwenCredentialsOnce;
     this.hasManualCredentials = snapshot.hasManualCredentials;
     this.activeRuntimeModelSnapshotId = snapshot.activeRuntimeModelSnapshotId;
   }
@@ -268,16 +261,7 @@ export class ModelsConfig {
       }
     }
 
-    // Force qwen-oauth to the front (if requested / defaulted in).
-    const orderedAuthTypes: AuthType[] = [];
-    if (uniqueAuthTypes.includes(AuthType.OLA_OAUTH)) {
-      orderedAuthTypes.push(AuthType.OLA_OAUTH);
-    }
-    for (const authType of uniqueAuthTypes) {
-      if (authType !== AuthType.OLA_OAUTH) {
-        orderedAuthTypes.push(authType);
-      }
-    }
+    const orderedAuthTypes: AuthType[] = [...uniqueAuthTypes];
 
     // Get runtime model option
     const runtimeOption = this.getRuntimeModelOption();
@@ -309,26 +293,6 @@ export class ModelsConfig {
     newModel: string,
     metadata?: ModelSwitchMetadata,
   ): Promise<void> {
-    // Special case: qwen-oauth model switch - hot update in place
-    // coder-model supports vision capabilities and can be hot-updated
-    if (
-      this.currentAuthType === AuthType.OLA_OAUTH &&
-      newModel === DEFAULT_OLA_MODEL
-    ) {
-      this.strictModelProviderSelection = false;
-      this._generationConfig.model = newModel;
-      this.generationConfigSources['model'] = {
-        kind: 'programmatic',
-        detail: metadata?.reason || 'setModel',
-      };
-
-      // Notify Config to update contentGeneratorConfig
-      if (this.onModelChange) {
-        await this.onModelChange(AuthType.OLA_OAUTH, false);
-      }
-      return;
-    }
-
     // If model exists in registry, use full switch logic
     if (
       this.currentAuthType &&
@@ -361,7 +325,7 @@ export class ModelsConfig {
   async switchModel(
     authType: AuthType,
     modelId: string,
-    options?: { requireCachedCredentials?: boolean },
+    _options?: { requireCachedCredentials?: boolean },
   ): Promise<void> {
     // Check if this is a RuntimeModelSnapshot reference
     const runtimeModelSnapshotId = this.extractRuntimeModelSnapshotId(modelId);
@@ -371,9 +335,6 @@ export class ModelsConfig {
     }
 
     const rollbackSnapshot = this.createStateSnapshotForRollback();
-    if (authType === AuthType.OLA_OAUTH && options?.requireCachedCredentials) {
-      this.requireCachedQwenCredentialsOnce = true;
-    }
 
     try {
       const isAuthTypeChange = authType !== this.currentAuthType;
@@ -670,15 +631,6 @@ export class ModelsConfig {
   }
 
   /**
-   * Check and consume the one-shot cached credentials flag
-   */
-  consumeRequireCachedCredentialsFlag(): boolean {
-    const value = this.requireCachedQwenCredentialsOnce;
-    this.requireCachedQwenCredentialsOnce = false;
-    return value;
-  }
-
-  /**
    * Apply resolved model config to generation config
    */
   private applyResolvedModelDefaults(model: ResolvedModelConfig): void {
@@ -696,25 +648,10 @@ export class ModelsConfig {
     };
 
     // Clear credentials to avoid reusing previous model's API key
-
-    // For Qwen OAuth, apiKey must always be a placeholder. It will be dynamically
-    // replaced when building requests. Do not preserve any previous key or read
-    // from envKey.
-    //
-    // (OpenAI client instantiation requires an apiKey even though it will be
-    // replaced later.)
-    if (this.currentAuthType === AuthType.OLA_OAUTH) {
-      this._generationConfig.apiKey = 'OLA_OAUTH_DYNAMIC_TOKEN';
-      this.generationConfigSources['apiKey'] = {
-        kind: 'computed',
-        detail: 'Qwen OAuth placeholder token',
-      };
-      this._generationConfig.apiKeyEnvKey = undefined;
-      delete this.generationConfigSources['apiKeyEnvKey'];
-    } else {
-      this._generationConfig.apiKey = undefined;
-      this._generationConfig.apiKeyEnvKey = undefined;
-    }
+    this._generationConfig.apiKey = undefined;
+    this._generationConfig.apiKeyEnvKey = undefined;
+    delete this.generationConfigSources['apiKey'];
+    delete this.generationConfigSources['apiKeyEnvKey'];
 
     // Read API key from environment variable if envKey is specified
     if (model.envKey !== undefined) {
@@ -807,12 +744,6 @@ export class ModelsConfig {
     const authType = this.currentAuthType;
     if (!authType) {
       return true;
-    }
-
-    // For Qwen OAuth, model switches within the same authType can always be hot-updated
-    // (coder-model supports vision capabilities and doesn't require ContentGenerator recreation)
-    if (authType === AuthType.OLA_OAUTH) {
-      return false;
     }
 
     // Get previous and current model configs

@@ -9,9 +9,16 @@ import { useState, useEffect } from 'react';
 import { Box, Text } from 'ink';
 import Link from 'ink-link';
 import { theme } from '../semantic-colors.js';
-import type { DeviceAuthorizationData } from 'ola-core';
 import { useKeypress } from '../hooks/useKeypress.js';
 import { t } from '../../i18n/index.js';
+
+export interface DeviceAuthorizationData {
+  verification_uri: string;
+  verification_uri_complete: string;
+  user_code: string;
+  expires_in: number;
+  device_code: string;
+}
 
 interface QwenOAuthProgressProps {
   onTimeout: () => void;

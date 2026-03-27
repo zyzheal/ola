@@ -8,7 +8,6 @@ import {
   AuthType,
   type Config,
   type AvailableModel as CoreAvailableModel,
-  OLA_OAUTH_MODELS,
 } from 'ola-core';
 import { t } from '../../i18n/index.js';
 
@@ -19,25 +18,12 @@ export type AvailableModel = {
   isVision?: boolean;
 };
 
-const CACHED_OLA_OAUTH_MODELS: AvailableModel[] = OLA_OAUTH_MODELS.map(
-  (model) => ({
-    id: model.id,
-    label: model.name ?? model.id,
-    description: model.description,
-    isVision: model.capabilities?.vision ?? false,
-  }),
-);
-
-function getQwenOAuthModels(): readonly AvailableModel[] {
-  return CACHED_OLA_OAUTH_MODELS;
-}
-
 /**
  * Get available Qwen models
  * coder-model now has vision capabilities by default.
  */
 export function getFilteredQwenModels(): AvailableModel[] {
-  return [...getQwenOAuthModels()];
+  return [];
 }
 
 /**
@@ -112,9 +98,6 @@ export function getAvailableModelsForAuthType(
 
   // Fall back to environment variables for specific auth types (no config provided)
   switch (authType) {
-    case AuthType.OLA_OAUTH: {
-      return [...getQwenOAuthModels()];
-    }
     case AuthType.USE_OPENAI: {
       const openAIModel = getOpenAIAvailableModelFromEnv();
       return openAIModel ? [openAIModel] : [];

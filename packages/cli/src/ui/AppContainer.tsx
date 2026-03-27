@@ -448,7 +448,6 @@ export const AppContainer = (props: AppContainerProps) => {
     isAuthDialogOpen,
     isAuthenticating,
     pendingAuthType,
-    olaAuthState,
     handleAuthSelect,
     handleCodingPlanSubmit,
     openAuthDialog,
@@ -1469,8 +1468,6 @@ export const AppContainer = (props: AppContainerProps) => {
       authError,
       isAuthDialogOpen,
       pendingAuthType,
-      // Qwen OAuth state
-      olaAuthState,
       editorError,
       isEditorDialogOpen,
       debugMessage,
@@ -1569,8 +1566,6 @@ export const AppContainer = (props: AppContainerProps) => {
       authError,
       isAuthDialogOpen,
       pendingAuthType,
-      // Qwen OAuth state
-      olaAuthState,
       editorError,
       isEditorDialogOpen,
       debugMessage,

@@ -265,50 +265,6 @@ describe('AuthDialog', () => {
   });
 
   describe('OLA_DEFAULT_AUTH_TYPE environment variable', () => {
-    it('should select the auth type specified by OLA_DEFAULT_AUTH_TYPE', () => {
-      // OLA_OAUTH is the only valid AuthType that can be selected via env var
-      // API-KEY is not an AuthType enum value, so it cannot be selected this way
-      process.env['OLA_DEFAULT_AUTH_TYPE'] = AuthType.OLA_OAUTH;
-
-      const settings: LoadedSettings = new LoadedSettings(
-        {
-          settings: {
-            security: { auth: { selectedType: undefined } },
-            ui: { customThemes: {} },
-            mcpServers: {},
-          },
-          originalSettings: {
-            security: { auth: { selectedType: undefined } },
-            ui: { customThemes: {} },
-            mcpServers: {},
-          },
-          path: '',
-        },
-        {
-          settings: {},
-          originalSettings: {},
-          path: '',
-        },
-        {
-          settings: { ui: { customThemes: {} }, mcpServers: {} },
-          originalSettings: { ui: { customThemes: {} }, mcpServers: {} },
-          path: '',
-        },
-        {
-          settings: { ui: { customThemes: {} }, mcpServers: {} },
-          originalSettings: { ui: { customThemes: {} }, mcpServers: {} },
-          path: '',
-        },
-        true,
-        new Set(),
-      );
-
-      const { lastFrame } = renderAuthDialog(settings);
-
-      // OLA_OAUTH is the first option, so it should be selected
-      expect(lastFrame()).toContain('ola OAuth');
-    });
-
     it('should fall back to default if OLA_DEFAULT_AUTH_TYPE is not set', () => {
       const settings: LoadedSettings = new LoadedSettings(
         {
@@ -345,8 +301,8 @@ describe('AuthDialog', () => {
 
       const { lastFrame } = renderAuthDialog(settings);
 
-      // Default is ola OAuth (first option)
-      expect(lastFrame()).toContain('ola OAuth');
+      // Default is API Key option
+      expect(lastFrame()).toContain('API Key');
     });
 
     it('should show an error and fall back to default if OLA_DEFAULT_AUTH_TYPE is invalid', () => {
@@ -387,13 +343,12 @@ describe('AuthDialog', () => {
 
       const { lastFrame } = renderAuthDialog(settings);
 
-      // Since the auth dialog doesn't show OLA_DEFAULT_AUTH_TYPE errors anymore,
-      // it will just show the default ola OAuth option
-      expect(lastFrame()).toContain('ola OAuth');
+      // Falls back to API Key option
+      expect(lastFrame()).toContain('API Key');
     });
   });
 
-  it('should prevent exiting when no auth method is selected and show error message', async () => {
+  it('should allow exiting when API Key option is available (default)', async () => {
     const handleAuthSelect = vi.fn();
     const settings: LoadedSettings = new LoadedSettings(
       {
@@ -428,7 +383,7 @@ describe('AuthDialog', () => {
       new Set(),
     );
 
-    const { lastFrame, stdin, unmount } = renderAuthDialog(
+    const { stdin, unmount } = renderAuthDialog(
       settings,
       {},
       { handleAuthSelect },
@@ -436,21 +391,16 @@ describe('AuthDialog', () => {
     );
     await wait();
 
-    // Simulate pressing escape key
+    // Simulate pressing escape key - should exit since API Key option is available
     stdin.write('\u001b'); // ESC key
     await wait();
 
-    // Should show error message instead of calling handleAuthSelect
-    await vi.waitFor(() => {
-      const frame = lastFrame();
-      expect(frame).toContain('You must select an auth method');
-      expect(frame).toContain('Press Ctrl+C again to exit');
-    });
-    expect(handleAuthSelect).not.toHaveBeenCalled();
+    // Should call handleAuthSelect with undefined to exit
+    expect(handleAuthSelect).toHaveBeenCalledWith(undefined);
     unmount();
   });
 
-  it('should not exit if there is already an error message', async () => {
+  it('should allow exiting when there is an error message but API Key option is available', async () => {
     const handleAuthSelect = vi.fn();
     const settings: LoadedSettings = new LoadedSettings(
       {
@@ -495,12 +445,12 @@ describe('AuthDialog', () => {
 
     expect(lastFrame()).toContain('Initial error');
 
-    // Simulate pressing escape key
+    // Simulate pressing escape key - should still exit since API Key option is available
     stdin.write('\u001b'); // ESC key
     await wait();
 
-    // Should not call handleAuthSelect
-    expect(handleAuthSelect).not.toHaveBeenCalled();
+    // Should call handleAuthSelect with undefined to exit
+    expect(handleAuthSelect).toHaveBeenCalledWith(undefined);
     unmount();
   });
 

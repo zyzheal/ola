@@ -29,8 +29,6 @@ export {
   DEFAULT_MODELS,
   MODEL_GENERATION_CONFIG_FIELDS,
   PROVIDER_SOURCED_FIELDS,
-  OLA_OAUTH_ALLOWED_MODELS,
-  OLA_OAUTH_MODELS,
 } from './constants.js';
 
 // Model configuration resolver

@@ -4,16 +4,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { promises as fs } from 'node:fs';
-import * as os from 'os';
-import * as path from 'path';
 import { BaseWebSearchProvider } from '../base-provider.js';
 import type {
   WebSearchResult,
   WebSearchResultItem,
   DashScopeProviderConfig,
 } from '../types.js';
-import type { QwenCredentials } from '../../../ola/olaOAuth2.js';
 
 interface DashScopeSearchItem {
   _id: string;
@@ -58,30 +54,6 @@ interface DashScopeSearchResponse {
   success: boolean;
 }
 
-// File System Configuration
-const OLA_DIR = '.ola';
-const OLA_CREDENTIAL_FILENAME = 'oauth_creds.json';
-
-/**
- * Get the path to the cached OAuth credentials file.
- */
-function getQwenCachedCredentialPath(): string {
-  return path.join(os.homedir(), OLA_DIR, OLA_CREDENTIAL_FILENAME);
-}
-
-/**
- * Load cached Qwen OAuth credentials from disk.
- */
-async function loadQwenCredentials(): Promise<QwenCredentials | null> {
-  try {
-    const keyFile = getQwenCachedCredentialPath();
-    const creds = await fs.readFile(keyFile, 'utf-8');
-    return JSON.parse(creds) as QwenCredentials;
-  } catch {
-    return null;
-  }
-}
-
 /**
  * Web search provider using Alibaba Cloud DashScope API.
  */
@@ -93,49 +65,24 @@ export class DashScopeProvider extends BaseWebSearchProvider {
   }
 
   isAvailable(): boolean {
-    // DashScope provider is only available when auth type is OLA_OAUTH
-    // This ensures it's only used when OAuth credentials are available
-    return this.config.authType === 'qwen-oauth';
+    // DashScope provider is available when API key is configured
+    return !!this.config.apiKey;
   }
 
   /**
    * Get the access token and API endpoint for authentication and web search.
-   * Tries OAuth credentials first, falls back to apiKey if OAuth is not available.
-   * Returns both token and endpoint to avoid loading credentials multiple times.
    */
   private async getAuthConfig(): Promise<{
     accessToken: string | null;
     apiEndpoint: string;
   }> {
-    // Load credentials once
-    const credentials = await loadQwenCredentials();
+    // Get access token from config
+    const accessToken = this.config.apiKey || null;
 
-    // Get access token: try OAuth credentials first, fallback to apiKey
-    let accessToken: string | null = null;
-    if (credentials?.access_token) {
-      // Check if token is not expired
-      if (credentials.expiry_date && credentials.expiry_date > Date.now()) {
-        accessToken = credentials.access_token;
-      }
-    }
-    if (!accessToken) {
-      accessToken = this.config.apiKey || null;
-    }
-
-    // Get API endpoint: use resource_url from credentials
-    if (!credentials?.resource_url) {
-      throw new Error(
-        'No resource_url found in credentials. Please authenticate using OAuth',
-      );
-    }
-
-    // Normalize the URL: add protocol if missing
-    const baseUrl = credentials.resource_url.startsWith('http')
-      ? credentials.resource_url
-      : `https://${credentials.resource_url}`;
-    // Remove trailing slash if present
-    const normalizedBaseUrl = baseUrl.replace(/\/$/, '');
-    const apiEndpoint = `${normalizedBaseUrl}/api/v1/indices/plugin/web_search`;
+    // Get API endpoint from config or use default
+    const apiEndpoint =
+      this.config.baseUrl ||
+      'https://dashscope.aliyuncs.com/api/v1/indices/plugin/web_search';
 
     return { accessToken, apiEndpoint };
   }
@@ -144,11 +91,11 @@ export class DashScopeProvider extends BaseWebSearchProvider {
     query: string,
     signal: AbortSignal,
   ): Promise<WebSearchResult> {
-    // Get access token and API endpoint (loads credentials once)
+    // Get access token and API endpoint
     const { accessToken, apiEndpoint } = await this.getAuthConfig();
     if (!accessToken) {
       throw new Error(
-        'No access token available. Please authenticate using OAuth',
+        'No API key available. Please configure DASHSCOPE_API_KEY or use apiKey in settings.',
       );
     }
 

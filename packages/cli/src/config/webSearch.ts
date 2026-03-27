@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { AuthType } from 'ola-core';
 import type { WebSearchProviderConfig } from 'ola-core';
 import type { Settings } from './settings.js';
 
@@ -40,10 +39,8 @@ export interface WebSearchConfig {
 export function buildWebSearchConfig(
   argv: WebSearchCliArgs,
   settings: Settings,
-  authType?: string,
+  _authType?: string,
 ): WebSearchConfig | undefined {
-  const isQwenOAuth = authType === AuthType.OLA_OAUTH;
-
   // Step 1: Collect providers from settings or command line/env
   let providers: WebSearchProviderConfig[] = [];
   let userDefault: string | undefined;
@@ -74,14 +71,6 @@ export function buildWebSearchConfig(
         apiKey: googleKey,
         searchEngineId: googleEngineId,
       } as WebSearchProviderConfig);
-    }
-  }
-
-  // Step 2: Ensure dashscope is available for qwen-oauth users
-  if (isQwenOAuth) {
-    const hasDashscope = providers.some((p) => p.type === 'dashscope');
-    if (!hasDashscope) {
-      providers.push({ type: 'dashscope' } as WebSearchProviderConfig);
     }
   }
 

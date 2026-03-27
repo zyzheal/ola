@@ -88,26 +88,13 @@ describe('createContentGeneratorConfig', () => {
     getProxy: () => undefined,
   } as unknown as Config;
 
-  it('should preserve provided fields and set authType for OLA_OAUTH', () => {
-    const cfg = createContentGeneratorConfig(mockConfig, AuthType.OLA_OAUTH, {
-      model: 'coder-model',
-      apiKey: 'OLA_OAUTH_DYNAMIC_TOKEN',
+  it('should preserve provided fields and set authType', () => {
+    const cfg = createContentGeneratorConfig(mockConfig, AuthType.USE_GEMINI, {
+      model: 'test-model',
+      apiKey: 'test-key',
     });
-    expect(cfg.authType).toBe(AuthType.OLA_OAUTH);
-    expect(cfg.model).toBe('coder-model');
-    expect(cfg.apiKey).toBe('OLA_OAUTH_DYNAMIC_TOKEN');
-  });
-
-  it('should not warn or fallback for OLA_OAUTH (resolution handled by ModelConfigResolver)', () => {
-    const warnSpy = vi
-      .spyOn(console, 'warn')
-      .mockImplementation(() => undefined);
-    const cfg = createContentGeneratorConfig(mockConfig, AuthType.OLA_OAUTH, {
-      model: 'some-random-model',
-    });
-    expect(cfg.model).toBe('some-random-model');
-    expect(cfg.apiKey).toBeUndefined();
-    expect(warnSpy).not.toHaveBeenCalled();
-    warnSpy.mockRestore();
+    expect(cfg.authType).toBe(AuthType.USE_GEMINI);
+    expect(cfg.model).toBe('test-model');
+    expect(cfg.apiKey).toBe('test-key');
   });
 });

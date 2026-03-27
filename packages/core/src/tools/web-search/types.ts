@@ -133,6 +133,7 @@ export interface GoogleProviderConfig {
 export interface DashScopeProviderConfig {
   type: 'dashscope';
   apiKey?: string;
+  baseUrl?: string;
   uid?: string;
   appId?: string;
   maxResults?: number;
@@ -140,8 +141,6 @@ export interface DashScopeProviderConfig {
   timeout?: number;
   /**
    * Optional auth type to determine provider availability.
-   * If set to 'qwen-oauth', the provider will be available.
-   * If set to other values or undefined, the provider will check auth type dynamically.
    */
   authType?: string;
 }

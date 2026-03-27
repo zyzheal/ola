@@ -6,19 +6,9 @@
 
 import { describe, it, expect } from 'vitest';
 import { AuthType } from 'ola-core';
-import {
-  formatAcpModelId,
-  parseAcpBaseModelId,
-  parseAcpModelOption,
-} from './acpModelUtils.js';
+import { parseAcpBaseModelId, parseAcpModelOption } from './acpModelUtils.js';
 
 describe('acpModelUtils', () => {
-  it('formats modelId(authType)', () => {
-    expect(formatAcpModelId('qwen3', AuthType.OLA_OAUTH)).toBe(
-      `qwen3(${AuthType.OLA_OAUTH})`,
-    );
-  });
-
   it('extracts base model id when string ends with parentheses', () => {
     expect(parseAcpBaseModelId(`qwen3(${AuthType.USE_OPENAI})`)).toBe('qwen3');
   });

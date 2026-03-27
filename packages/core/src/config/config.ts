@@ -16,7 +16,8 @@ import { ProxyAgent, setGlobalDispatcher } from 'undici';
 import type {
   ContentGenerator,
   ContentGeneratorConfig,
-} from '../core/contentGenerator.js';
+
+  AuthType} from '../core/contentGenerator.js';
 import type { ContentGeneratorConfigSources } from '../core/contentGenerator.js';
 import type { MCPOAuthConfig } from '../mcp/oauth-provider.js';
 import type { ShellExecutionConfig } from '../services/shellExecutionService.js';
@@ -28,7 +29,6 @@ import { ArenaAgentClient } from '../agents/arena/ArenaAgentClient.js';
 import { BaseLlmClient } from '../core/baseLlmClient.js';
 import { GeminiClient } from '../core/client.js';
 import {
-  AuthType,
   createContentGenerator,
   resolveContentGeneratorConfigWithSources,
 } from '../core/contentGenerator.js';
@@ -1065,19 +1065,9 @@ export class Config {
    * Refresh authentication and rebuild ContentGenerator.
    */
   async refreshAuth(authMethod: AuthType, isInitialAuth?: boolean) {
-    // Backward compatibility: migrate legacy 'qwen-oauth' string to AuthType.OLA_OAUTH
-    // This handles cases where settings.json still contains the old value
-    if ((authMethod as string) === 'qwen-oauth') {
-      authMethod = AuthType.OLA_OAUTH;
-    }
-
     // Sync modelsConfig state for this auth refresh
     const modelId = this.modelsConfig.getModel();
     this.modelsConfig.syncAfterAuthRefresh(authMethod, modelId);
-
-    // Check and consume cached credentials flag
-    const requireCached =
-      this.modelsConfig.consumeRequireCachedCredentialsFlag();
 
     const { config, sources } = resolveContentGeneratorConfigWithSources(
       this,
@@ -1092,7 +1082,7 @@ export class Config {
     this.contentGenerator = await createContentGenerator(
       newContentGeneratorConfig,
       this,
-      requireCached ? true : isInitialAuth,
+      isInitialAuth,
     );
     // Only assign to instance properties after successful initialization
     this.contentGeneratorConfig = newContentGeneratorConfig;
@@ -1230,57 +1220,14 @@ export class Config {
    */
   private async handleModelChange(
     authType: AuthType,
-    requiresRefresh: boolean,
+    _requiresRefresh: boolean,
   ): Promise<void> {
     if (!this.contentGeneratorConfig) {
       return;
     }
 
-    // Hot update path: only supported for qwen-oauth.
-    // For other auth types we always refresh to recreate the ContentGenerator.
-    //
-    // Rationale:
-    // - Non-qwen providers may need to re-validate credentials / baseUrl / envKey.
-    // - ModelsConfig.applyResolvedModelDefaults can clear or change credentials sources.
-    // - Refresh keeps runtime behavior consistent and centralized.
-    if (authType === AuthType.OLA_OAUTH && !requiresRefresh) {
-      const { config, sources } = resolveContentGeneratorConfigWithSources(
-        this,
-        authType,
-        this.modelsConfig.getGenerationConfig(),
-        this.modelsConfig.getGenerationConfigSources(),
-        {
-          strictModelProvider:
-            this.modelsConfig.isStrictModelProviderSelection(),
-        },
-      );
-
-      // Hot-update fields (qwen-oauth models share the same auth + client).
-      this.contentGeneratorConfig.model = config.model;
-      this.contentGeneratorConfig.samplingParams = config.samplingParams;
-      this.contentGeneratorConfig.contextWindowSize = config.contextWindowSize;
-      this.contentGeneratorConfig.enableCacheControl =
-        config.enableCacheControl;
-
-      if ('model' in sources) {
-        this.contentGeneratorConfigSources['model'] = sources['model'];
-      }
-      if ('samplingParams' in sources) {
-        this.contentGeneratorConfigSources['samplingParams'] =
-          sources['samplingParams'];
-      }
-      if ('enableCacheControl' in sources) {
-        this.contentGeneratorConfigSources['enableCacheControl'] =
-          sources['enableCacheControl'];
-      }
-      if ('contextWindowSize' in sources) {
-        this.contentGeneratorConfigSources['contextWindowSize'] =
-          sources['contextWindowSize'];
-      }
-      return;
-    }
-
-    // Full refresh path
+    // Always refresh to recreate the ContentGenerator.
+    // This ensures credentials / baseUrl / envKey are properly re-validated.
     await this.refreshAuth(authType);
   }
 

@@ -7,8 +7,10 @@
 // React import not needed for test files
 import { render } from 'ink-testing-library';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { QwenOAuthProgress } from './QwenOAuthProgress.js';
-import type { DeviceAuthorizationData } from 'ola-core';
+import {
+  QwenOAuthProgress,
+  type DeviceAuthorizationData,
+} from './QwenOAuthProgress.js';
 import { useKeypress } from '../hooks/useKeypress.js';
 import type { Key } from '../contexts/KeypressContext.js';
 

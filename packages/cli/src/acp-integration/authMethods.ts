@@ -18,16 +18,6 @@ export function buildAuthMethods(): AuthMethod[] {
         args: ['--auth-type=openai'],
       },
     },
-    {
-      id: AuthType.OLA_OAUTH,
-      name: 'Qwen OAuth',
-      description:
-        'OAuth authentication for Qwen models with free daily requests',
-      _meta: {
-        type: 'terminal',
-        args: ['--auth-type=qwen-oauth'],
-      },
-    },
   ];
 }
 
@@ -38,14 +28,7 @@ export function filterAuthMethodsById(
   return authMethods.filter((method) => method.id === authMethodId);
 }
 
-export function pickAuthMethodsForDetails(details?: string): AuthMethod[] {
+export function pickAuthMethodsForDetails(_details?: string): AuthMethod[] {
   const authMethods = buildAuthMethods();
-  if (!details) {
-    return authMethods;
-  }
-  if (details.includes('qwen-oauth') || details.includes('Qwen OAuth')) {
-    const narrowed = filterAuthMethodsById(authMethods, AuthType.OLA_OAUTH);
-    return narrowed.length ? narrowed : authMethods;
-  }
   return authMethods;
 }

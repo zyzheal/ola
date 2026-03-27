@@ -5,8 +5,6 @@
  */
 
 import type { GenerateContentResponse } from '@google/genai';
-import { AuthType } from '../core/contentGenerator.js';
-import { isQwenQuotaExceededError } from './quotaErrorDetection.js';
 import { createDebugLogger } from './debugLogger.js';
 import { getErrorStatus } from './errors.js';
 
@@ -77,7 +75,6 @@ export async function retryWithBackoff<T>(
     maxAttempts,
     initialDelayMs,
     maxDelayMs,
-    authType,
     shouldRetryOnError,
     shouldRetryOnContent,
   } = {
@@ -107,15 +104,6 @@ export async function retryWithBackoff<T>(
       return result;
     } catch (error) {
       const errorStatus = getErrorStatus(error);
-
-      // Check for quota exceeded error - throw immediately without retry
-      if (authType === AuthType.OLA_OAUTH && isQwenQuotaExceededError(error)) {
-        throw new Error(
-          `Quota exceeded: Your free daily quota has been reached.\n\n` +
-            `To continue using AI Platform Code Assistant without waiting, upgrade to a paid plan:\n` +
-            `  Please contact your platform administrator for quota upgrade options.`,
-        );
-      }
 
       // Check if we've exhausted retries or shouldn't retry
       if (attempt >= maxAttempts || !shouldRetryOnError(error as Error)) {

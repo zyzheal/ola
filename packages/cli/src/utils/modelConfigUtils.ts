@@ -46,10 +46,6 @@ export interface ResolvedCliGenerationConfig {
 }
 
 export function getAuthTypeFromEnv(): AuthType | undefined {
-  if (process.env['OLA_OAUTH']) {
-    return AuthType.OLA_OAUTH;
-  }
-
   if (
     process.env['OPENAI_API_KEY'] &&
     process.env['OPENAI_MODEL'] &&

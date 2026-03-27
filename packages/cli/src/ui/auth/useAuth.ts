@@ -20,7 +20,6 @@ export interface OpenAICredentials {
   baseUrl?: string;
   model?: string;
 }
-import { useOlaAuth } from '../hooks/useOlaAuth.js';
 import { AuthState, MessageType } from '../types.js';
 import type { HistoryItem } from '../types.js';
 import { t } from '../../i18n/index.js';
@@ -31,8 +30,6 @@ import {
   CODING_PLAN_ENV_KEY,
 } from '../../constants/codingPlan.js';
 import { backupSettingsFile } from '../../utils/settingsUtils.js';
-
-export type { OlaAuthState } from '../hooks/useOlaAuth.js';
 
 export const useAuthCommand = (
   settings: LoadedSettings,
@@ -52,11 +49,6 @@ export const useAuthCommand = (
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(unAuthenticated);
   const [pendingAuthType, setPendingAuthType] = useState<AuthType | undefined>(
     undefined,
-  );
-
-  const { olaAuthState, cancelOlaAuth } = useOlaAuth(
-    pendingAuthType,
-    isAuthenticating,
   );
 
   const onAuthError = useCallback(
@@ -116,9 +108,8 @@ export const useAuthCommand = (
           );
         }
 
-        // Only update credentials if not switching to OLA_OAUTH,
-        // so that OpenAI credentials are preserved when switching to OLA_OAUTH.
-        if (authType !== AuthType.OLA_OAUTH && credentials) {
+        // Update credentials for the selected auth type
+        if (credentials) {
           if (credentials?.apiKey != null) {
             settings.setValue(
               authTypeScope,
@@ -265,10 +256,6 @@ export const useAuthCommand = (
   }, []);
 
   const cancelAuthentication = useCallback(() => {
-    if (isAuthenticating && pendingAuthType === AuthType.OLA_OAUTH) {
-      cancelOlaAuth();
-    }
-
     // Log authentication cancellation
     if (isAuthenticating && pendingAuthType) {
       const authEvent = new AuthEvent(pendingAuthType, 'manual', 'cancelled');
@@ -279,7 +266,7 @@ export const useAuthCommand = (
     setIsAuthenticating(false);
     setIsAuthDialogOpen(true);
     setAuthError(null);
-  }, [isAuthenticating, pendingAuthType, cancelOlaAuth, config]);
+  }, [isAuthenticating, pendingAuthType, config]);
 
   /**
    * Handle coding plan submission - generates configs from template and stores api-key
@@ -432,7 +419,6 @@ export const useAuthCommand = (
     if (
       defaultAuthType &&
       ![
-        AuthType.OLA_OAUTH,
         AuthType.USE_OPENAI,
         AuthType.USE_ANTHROPIC,
         AuthType.USE_GEMINI,
@@ -445,7 +431,6 @@ export const useAuthCommand = (
           {
             value: defaultAuthType,
             validValues: [
-              AuthType.OLA_OAUTH,
               AuthType.USE_OPENAI,
               AuthType.USE_ANTHROPIC,
               AuthType.USE_GEMINI,
@@ -465,7 +450,6 @@ export const useAuthCommand = (
     isAuthDialogOpen,
     isAuthenticating,
     pendingAuthType,
-    olaAuthState,
     handleAuthSelect,
     handleCodingPlanSubmit,
     openAuthDialog,

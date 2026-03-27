@@ -1,0 +1,191 @@
+[
+  {
+    "sessionId": "9292ff16-7639-4343-bb83-bf78c669b042",
+    "messageId": 0,
+    "type": "user",
+    "message": "如何打包插件",
+    "timestamp": "2026-03-26T14:21:36.626Z"
+  },
+  {
+    "sessionId": "9292ff16-7639-4343-bb83-bf78c669b042",
+    "messageId": 1,
+    "type": "user",
+    "message": "当前cli的程序都依赖本地哪些文件",
+    "timestamp": "2026-03-26T14:22:39.175Z"
+  },
+  {
+    "sessionId": "9292ff16-7639-4343-bb83-bf78c669b042",
+    "messageId": 2,
+    "type": "user",
+    "message": "整个目录都可以打出哪些包",
+    "timestamp": "2026-03-26T14:23:50.415Z"
+  },
+  {
+    "sessionId": "9292ff16-7639-4343-bb83-bf78c669b042",
+    "messageId": 3,
+    "type": "user",
+    "message": "Web 模板有哪些功能",
+    "timestamp": "2026-03-26T14:24:54.055Z"
+  },
+  {
+    "sessionId": "9292ff16-7639-4343-bb83-bf78c669b042",
+    "messageId": 4,
+    "type": "user",
+    "message": "如何使用",
+    "timestamp": "2026-03-26T14:25:43.924Z"
+  },
+  {
+    "sessionId": "9292ff16-7639-4343-bb83-bf78c669b042",
+    "messageId": 5,
+    "type": "user",
+    "message": "可以显示中文吗",
+    "timestamp": "2026-03-26T14:28:28.301Z"
+  },
+  {
+    "sessionId": "9292ff16-7639-4343-bb83-bf78c669b042",
+    "messageId": 6,
+    "type": "user",
+    "message": "需要",
+    "timestamp": "2026-03-26T14:30:03.632Z"
+  },
+  {
+    "sessionId": "9292ff16-7639-4343-bb83-bf78c669b042",
+    "messageId": 7,
+    "type": "user",
+    "message": "复制这些内容到 OLA 即可添加到你的 QWEN.md 这里不对",
+    "timestamp": "2026-03-26T14:38:41.347Z"
+  },
+  {
+    "sessionId": "9292ff16-7639-4343-bb83-bf78c669b042",
+    "messageId": 8,
+    "type": "user",
+    "message": "修正README，将目录结构与打包依赖进行分析生成的产物都详细介绍并更新对应文档中的md",
+    "timestamp": "2026-03-26T14:41:10.576Z"
+  },
+  {
+    "sessionId": "9292ff16-7639-4343-bb83-bf78c669b042",
+    "messageId": 9,
+    "type": "user",
+    "message": "提交代码到仓库",
+    "timestamp": "2026-03-26T14:45:46.490Z"
+  },
+  {
+    "sessionId": "9292ff16-7639-4343-bb83-bf78c669b042",
+    "messageId": 10,
+    "type": "user",
+    "message": "推送",
+    "timestamp": "2026-03-26T14:47:17.408Z"
+  },
+  {
+    "sessionId": "9292ff16-7639-4343-bb83-bf78c669b042",
+    "messageId": 11,
+    "type": "user",
+    "message": "当前还是英文  ╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮\n  │ ?  Shell cd /Users/heal/devops/ai-platform-design/implementation/tools && git add packages/web-templates/src/ packages/cli/src/services/insight/generators/TemplateRenderer.ts (添加 Web 模板组件… ← │\n  │                                                                                                                                                                                                      │\n  │   cd /Users/heal/devops/ai-platform-design/implementation/tools && git add packages/web-templates/src/ packages/cli/src/services/insight/generators/TemplateRenderer.ts                              │\n  │                                                                                                                                                                                                      │\n  │ Allow execution of: 'git'?                                                                                                                                                                           │\n  │                                                                                                                                                                                                      │\n  │ › 1. Yes, allow once                                                                                                                                                                                 │\n  │   2. Always allow in this project [Bash(git add *)]                                                                                                                                                  │\n  │   3. Always allow for this user [Bash(git add *)]                                                                                                                                                    │\n  │   4. No, suggest changes (esc)",
+    "timestamp": "2026-03-26T14:48:46.224Z"
+  },
+  {
+    "sessionId": "9292ff16-7639-4343-bb83-bf78c669b042",
+    "messageId": 12,
+    "type": "user",
+    "message": "放到代码里默认为中文",
+    "timestamp": "2026-03-26T14:49:58.745Z"
+  },
+  {
+    "sessionId": "9292ff16-7639-4343-bb83-bf78c669b042",
+    "messageId": 13,
+    "type": "user",
+    "message": "/quit",
+    "timestamp": "2026-03-26T14:53:52.330Z"
+  },
+  {
+    "sessionId": "056cce3e-3a27-4074-b22f-ead811f59ad0",
+    "messageId": 0,
+    "type": "user",
+    "message": "如何安装到本地",
+    "timestamp": "2026-03-26T14:55:00.612Z"
+  },
+  {
+    "sessionId": "056cce3e-3a27-4074-b22f-ead811f59ad0",
+    "messageId": 1,
+    "type": "user",
+    "message": "需要",
+    "timestamp": "2026-03-26T14:55:29.978Z"
+  },
+  {
+    "sessionId": "056cce3e-3a27-4074-b22f-ead811f59ad0",
+    "messageId": 2,
+    "type": "user",
+    "message": "需要删除OAuth 登录（推荐）：在界面中按提示登录，每天 1000 次免费请求",
+    "timestamp": "2026-03-26T14:56:40.869Z"
+  },
+  {
+    "sessionId": "056cce3e-3a27-4074-b22f-ead811f59ad0",
+    "messageId": 3,
+    "type": "user",
+    "message": "最多可以开启多少个子agent",
+    "timestamp": "2026-03-26T15:04:43.265Z"
+  },
+  {
+    "sessionId": "056cce3e-3a27-4074-b22f-ead811f59ad0",
+    "messageId": 4,
+    "type": "user",
+    "message": "最多可以开启多少个子agent",
+    "timestamp": "2026-03-26T15:05:13.924Z"
+  },
+  {
+    "sessionId": "056cce3e-3a27-4074-b22f-ead811f59ad0",
+    "messageId": 5,
+    "type": "user",
+    "message": "开启5个子agent进行OAuth 移除工作",
+    "timestamp": "2026-03-26T15:05:50.931Z"
+  },
+  {
+    "sessionId": "056cce3e-3a27-4074-b22f-ead811f59ad0",
+    "messageId": 6,
+    "type": "user",
+    "message": "继续开启5个子agent完全移除",
+    "timestamp": "2026-03-26T15:10:46.379Z"
+  },
+  {
+    "sessionId": "056cce3e-3a27-4074-b22f-ead811f59ad0",
+    "messageId": 7,
+    "type": "user",
+    "message": "交互的时候还是出现了非中文情况：  │ Allow execution of: 'npm'?                                                                                                                                                                           │\n  │                                                                                                                                                                                                      │\n  │ › 1. Yes, allow once                                                                                                                                                                                 │\n  │   2. Always allow in this project [Bash(npm run *)]                                                                                                                                                  │\n  │   3. Always allow for this user [Bash(npm run *)]                                                                                                                                                    │\n  │   4. No, suggest changes (esc)",
+    "timestamp": "2026-03-27T00:12:28.508Z"
+  },
+  {
+    "sessionId": "056cce3e-3a27-4074-b22f-ead811f59ad0",
+    "messageId": 8,
+    "type": "user",
+    "message": "重新编译当前系统",
+    "timestamp": "2026-03-27T00:14:06.519Z"
+  },
+  {
+    "sessionId": "056cce3e-3a27-4074-b22f-ead811f59ad0",
+    "messageId": 9,
+    "type": "user",
+    "message": "将构建后的cli进行全局按照到本地",
+    "timestamp": "2026-03-27T00:15:55.316Z"
+  },
+  {
+    "sessionId": "056cce3e-3a27-4074-b22f-ead811f59ad0",
+    "messageId": 10,
+    "type": "user",
+    "message": "/quit",
+    "timestamp": "2026-03-27T00:16:57.016Z"
+  },
+  {
+    "sessionId": "3777ddc9-db5f-44f2-af1b-9e7f92ccbaba",
+    "messageId": 0,
+    "type": "user",
+    "message": "将本地改动提交到仓库",
+    "timestamp": "2026-03-27T00:17:17.655Z"
+  },
+  {
+    "sessionId": "3777ddc9-db5f-44f2-af1b-9e7f92ccbaba",
+    "messageId": 1,
+    "type": "user",
+    "message": "确认",
+    "timestamp": "2026-03-27T00:17:55.918Z"
+  }
+]

@@ -158,9 +158,8 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
       modelsByAuthTypeMap.get(authType)!.push(model);
     }
 
-    // Fixed order: ola-oauth first, then others in a stable order
+    // Fixed order: openai first, then others in a stable order
     const authTypeOrder: AuthType[] = [
-      AuthType.OLA_OAUTH,
       AuthType.USE_OPENAI,
       AuthType.USE_ANTHROPIC,
       AuthType.USE_GEMINI,
@@ -324,14 +323,7 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
           modelId = idx >= 0 ? selected.slice(idx + sep.length) : selected;
         }
 
-        await config.switchModel(
-          selectedAuthType,
-          modelId,
-          selectedAuthType !== authType &&
-            selectedAuthType === AuthType.OLA_OAUTH
-            ? { requireCachedCredentials: true }
-            : undefined,
-        );
+        await config.switchModel(selectedAuthType, modelId, undefined);
 
         if (!isRuntime) {
           const event = new ModelSlashCommandEvent(modelId);
@@ -427,18 +419,14 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
               highlightedEntry.model.contextWindowSize,
             )}
           />
-          {highlightedEntry.authType !== AuthType.OLA_OAUTH && (
-            <>
-              <DetailRow
-                label="Base URL"
-                value={highlightedEntry.model.baseUrl ?? t('(default)')}
-              />
-              <DetailRow
-                label="API Key"
-                value={highlightedEntry.model.envKey ?? t('(not set)')}
-              />
-            </>
-          )}
+          <DetailRow
+            label="Base URL"
+            value={highlightedEntry.model.baseUrl ?? t('(default)')}
+          />
+          <DetailRow
+            label="API Key"
+            value={highlightedEntry.model.envKey ?? t('(not set)')}
+          />
         </Box>
       )}
 

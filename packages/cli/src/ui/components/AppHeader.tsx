@@ -5,7 +5,7 @@
  */
 
 import { Box } from 'ink';
-import { AuthType } from 'ola-core';
+import type { AuthType } from 'ola-core';
 import { Header, AuthDisplayType } from './Header.js';
 import { Tips } from './Tips.js';
 import { useSettings } from '../contexts/SettingsContext.js';
@@ -34,12 +34,7 @@ function getAuthDisplayType(
     return AuthDisplayType.API_KEY;
   }
 
-  switch (authType) {
-    case AuthType.OLA_OAUTH:
-      return AuthDisplayType.PLATFORM_OAUTH;
-    default:
-      return AuthDisplayType.API_KEY;
-  }
+  return AuthDisplayType.API_KEY;
 }
 
 export const AppHeader = ({ version }: AppHeaderProps) => {

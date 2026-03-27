@@ -38,7 +38,6 @@ export {
   type ModelProvidersConfig,
   type ModelSwitchMetadata,
   type OnModelChangeCallback,
-  OLA_OAUTH_MODELS,
   resolveModelConfig,
   type ResolvedModelConfig,
   validateModelConfig,
@@ -235,12 +234,6 @@ export * from './utils/toml-to-markdown-converter.js';
 export * from './utils/tool-utils.js';
 export * from './utils/workspaceContext.js';
 export * from './utils/yaml-parser.js';
-
-// ============================================================================
-// OAuth & Authentication
-// ============================================================================
-
-export * from './ola/olaOAuth2.js';
 
 // ============================================================================
 // Testing Utilities

@@ -13,14 +13,6 @@ import {
 import { t } from '../i18n/index.js';
 
 // Define subcommands separately
-const olaOauthCommand = {
-  command: 'ola-oauth',
-  describe: t('Authenticate using ola OAuth'),
-  handler: async () => {
-    await handleQwenAuth('ola-oauth', {});
-  },
-};
-
 const codePlanCommand = {
   command: 'coding-plan',
   describe: t('Authenticate using Alibaba Cloud Coding Plan'),
@@ -61,11 +53,10 @@ const statusCommand = {
 export const authCommand: CommandModule = {
   command: 'auth',
   describe: t(
-    'Configure ola authentication information with ola-OAuth or Alibaba Cloud Coding Plan',
+    'Configure ola authentication information with Alibaba Cloud Coding Plan',
   ),
   builder: (yargs: Argv) =>
     yargs
-      .command(olaOauthCommand)
       .command(codePlanCommand)
       .command(statusCommand)
       .demandCommand(0) // Don't require a subcommand

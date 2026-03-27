@@ -15,7 +15,21 @@ import type { Config } from 'ola-core';
 import { AuthType, DEFAULT_OLA_MODEL } from 'ola-core';
 import type { LoadedSettings } from '../../config/settings.js';
 import { SettingScope } from '../../config/settings.js';
-import { getFilteredQwenModels } from '../models/availableModels.js';
+
+// Mock model data for testing - includes DEFAULT_OLA_MODEL as the first model
+const MOCK_OPENAI_MODELS = [
+  {
+    id: DEFAULT_OLA_MODEL,
+    label: 'Coder Model',
+    authType: AuthType.USE_OPENAI,
+  },
+  { id: 'gpt-4', label: 'GPT-4', authType: AuthType.USE_OPENAI },
+  {
+    id: 'gpt-3.5-turbo',
+    label: 'GPT-3.5 Turbo',
+    authType: AuthType.USE_OPENAI,
+  },
+];
 
 vi.mock('../hooks/useKeypress.js', () => ({
   useKeypress: vi.fn(),
@@ -29,11 +43,11 @@ vi.mock('./shared/DescriptiveRadioButtonSelect.js', () => ({
 // Helper to create getAvailableModelsForAuthType mock
 const createMockGetAvailableModelsForAuthType = () =>
   vi.fn((t: AuthType) => {
-    if (t === AuthType.OLA_OAUTH) {
-      return getFilteredQwenModels().map((m) => ({
+    if (t === AuthType.USE_OPENAI) {
+      return MOCK_OPENAI_MODELS.map((m) => ({
         id: m.id,
         label: m.label,
-        authType: AuthType.OLA_OAUTH,
+        authType: AuthType.USE_OPENAI,
       }));
     }
     return [];
@@ -61,13 +75,12 @@ const renderComponent = (
     getModel: vi.fn(() => DEFAULT_OLA_MODEL),
     setModel: vi.fn().mockResolvedValue(undefined),
     switchModel: vi.fn().mockResolvedValue(undefined),
-    getAuthType: vi.fn(() => 'ola-oauth'),
+    getAuthType: vi.fn(() => 'use-openai'),
     getAllConfiguredModels: vi.fn(() =>
-      getFilteredQwenModels().map((m) => ({
+      MOCK_OPENAI_MODELS.map((m) => ({
         id: m.id,
         label: m.label,
-        description: m.description || '',
-        authType: AuthType.OLA_OAUTH,
+        authType: AuthType.USE_OPENAI,
       })),
     ),
 
@@ -76,7 +89,7 @@ const renderComponent = (
     getSessionId: vi.fn(() => 'mock-session-id'),
     getDebugMode: vi.fn(() => false),
     getContentGeneratorConfig: vi.fn(() => ({
-      authType: AuthType.OLA_OAUTH,
+      authType: AuthType.USE_OPENAI,
       model: DEFAULT_OLA_MODEL,
     })),
     getUseModelRouter: vi.fn(() => false),
@@ -124,10 +137,10 @@ describe('<ModelDialog />', () => {
     expect(mockedSelect).toHaveBeenCalledTimes(1);
 
     const props = mockedSelect.mock.calls[0][0];
-    expect(props.items).toHaveLength(getFilteredQwenModels().length);
+    expect(props.items).toHaveLength(MOCK_OPENAI_MODELS.length);
     // coder-model is the only model and it has vision capability
     expect(props.items[0].value).toBe(
-      `${AuthType.OLA_OAUTH}::${DEFAULT_OLA_MODEL}`,
+      `${AuthType.USE_OPENAI}::${DEFAULT_OLA_MODEL}`,
     );
     expect(props.showNumbers).toBe(true);
   });
@@ -145,8 +158,7 @@ describe('<ModelDialog />', () => {
 
     expect(mockGetModel).toHaveBeenCalled();
     // Calculate expected index dynamically based on model list
-    const qwenModels = getFilteredQwenModels();
-    const expectedIndex = qwenModels.findIndex(
+    const expectedIndex = MOCK_OPENAI_MODELS.findIndex(
       (m) => m.id === DEFAULT_OLA_MODEL,
     );
     expect(mockedSelect).toHaveBeenCalledWith(
@@ -197,11 +209,11 @@ describe('<ModelDialog />', () => {
       {},
       {
         getAvailableModelsForAuthType: vi.fn((t: AuthType) => {
-          if (t === AuthType.OLA_OAUTH) {
-            return getFilteredQwenModels().map((m) => ({
+          if (t === AuthType.USE_OPENAI) {
+            return MOCK_OPENAI_MODELS.map((m) => ({
               id: m.id,
               label: m.label,
-              authType: AuthType.OLA_OAUTH,
+              authType: AuthType.USE_OPENAI,
             }));
           }
           return [];
@@ -212,10 +224,10 @@ describe('<ModelDialog />', () => {
     const childOnSelect = mockedSelect.mock.calls[0][0].onSelect;
     expect(childOnSelect).toBeDefined();
 
-    await childOnSelect(`${AuthType.OLA_OAUTH}::${DEFAULT_OLA_MODEL}`);
+    await childOnSelect(`${AuthType.USE_OPENAI}::${DEFAULT_OLA_MODEL}`);
 
     expect(mockConfig?.switchModel).toHaveBeenCalledWith(
-      AuthType.OLA_OAUTH,
+      AuthType.USE_OPENAI,
       DEFAULT_OLA_MODEL,
       undefined,
     );
@@ -227,35 +239,38 @@ describe('<ModelDialog />', () => {
     expect(mockSettings.setValue).toHaveBeenCalledWith(
       SettingScope.User,
       'security.auth.selectedType',
-      AuthType.OLA_OAUTH,
+      AuthType.USE_OPENAI,
     );
     expect(props.onClose).toHaveBeenCalledTimes(1);
   });
 
   it('calls config.switchModel and persists authType+model when selecting a different authType', async () => {
     const switchModel = vi.fn().mockResolvedValue(undefined);
-    const getAuthType = vi.fn(() => AuthType.USE_OPENAI);
+    const getAuthType = vi.fn(() => AuthType.USE_ANTHROPIC);
     const getAvailableModelsForAuthType = vi.fn((t: AuthType) => {
       if (t === AuthType.USE_OPENAI) {
-        return [{ id: 'gpt-4', label: 'GPT-4', authType: t }];
-      }
-      if (t === AuthType.OLA_OAUTH) {
-        return getFilteredQwenModels().map((m) => ({
+        return MOCK_OPENAI_MODELS.map((m) => ({
           id: m.id,
           label: m.label,
-          authType: AuthType.OLA_OAUTH,
+          authType: AuthType.USE_OPENAI,
         }));
+      }
+      if (t === AuthType.USE_ANTHROPIC) {
+        return [{ id: 'claude-3', label: 'Claude 3', authType: t }];
       }
       return [];
     });
 
+    // getContentGeneratorConfig should return the new config after switchModel is called
+    const getContentGeneratorConfig = vi.fn(() => ({
+      authType: AuthType.USE_OPENAI,
+      model: DEFAULT_OLA_MODEL,
+    }));
+
     const mockConfigWithSwitchAuthType = {
       getAuthType,
-      getModel: vi.fn(() => 'gpt-4'),
-      getContentGeneratorConfig: vi.fn(() => ({
-        authType: AuthType.OLA_OAUTH,
-        model: DEFAULT_OLA_MODEL,
-      })),
+      getModel: vi.fn(() => 'claude-3'),
+      getContentGeneratorConfig,
       // Add switchModel to the mock object (not the type)
       switchModel,
       getAvailableModelsForAuthType,
@@ -268,13 +283,14 @@ describe('<ModelDialog />', () => {
     );
 
     const childOnSelect = mockedSelect.mock.calls[0][0].onSelect;
-    await childOnSelect(`${AuthType.OLA_OAUTH}::${DEFAULT_OLA_MODEL}`);
+    await childOnSelect(`${AuthType.USE_OPENAI}::${DEFAULT_OLA_MODEL}`);
 
     expect(switchModel).toHaveBeenCalledWith(
-      AuthType.OLA_OAUTH,
+      AuthType.USE_OPENAI,
       DEFAULT_OLA_MODEL,
-      { requireCachedCredentials: true },
+      undefined,
     );
+    // Settings are persisted with the selected model (DEFAULT_OLA_MODEL)
     expect(mockSettings.setValue).toHaveBeenCalledWith(
       SettingScope.User,
       'model.name',
@@ -283,7 +299,7 @@ describe('<ModelDialog />', () => {
     expect(mockSettings.setValue).toHaveBeenCalledWith(
       SettingScope.User,
       'security.auth.selectedType',
-      AuthType.OLA_OAUTH,
+      AuthType.USE_OPENAI,
     );
     expect(props.onClose).toHaveBeenCalledTimes(1);
   });
@@ -329,7 +345,7 @@ describe('<ModelDialog />', () => {
 
   it('updates initialIndex when config context changes', () => {
     const mockGetModel = vi.fn(() => DEFAULT_OLA_MODEL);
-    const mockGetAuthType = vi.fn(() => 'ola-oauth');
+    const mockGetAuthType = vi.fn(() => 'use-openai');
     const mockSettings = {
       isTrusted: true,
       user: { settings: {} },
@@ -346,11 +362,10 @@ describe('<ModelDialog />', () => {
               getAvailableModelsForAuthType:
                 createMockGetAvailableModelsForAuthType(),
               getAllConfiguredModels: vi.fn(() =>
-                getFilteredQwenModels().map((m) => ({
+                MOCK_OPENAI_MODELS.map((m) => ({
                   id: m.id,
                   label: m.label,
-                  description: m.description || '',
-                  authType: AuthType.OLA_OAUTH,
+                  authType: AuthType.USE_OPENAI,
                 })),
               ),
             } as unknown as Config
@@ -370,11 +385,10 @@ describe('<ModelDialog />', () => {
       getAuthType: mockGetAuthType,
       getAvailableModelsForAuthType: createMockGetAvailableModelsForAuthType(),
       getAllConfiguredModels: vi.fn(() =>
-        getFilteredQwenModels().map((m) => ({
+        MOCK_OPENAI_MODELS.map((m) => ({
           id: m.id,
           label: m.label,
-          description: m.description || '',
-          authType: AuthType.OLA_OAUTH,
+          authType: AuthType.USE_OPENAI,
         })),
       ),
     } as unknown as Config;
@@ -390,8 +404,7 @@ describe('<ModelDialog />', () => {
     // Should be called at least twice: initial render + re-render after context change
     expect(mockedSelect).toHaveBeenCalledTimes(2);
     // Calculate expected index for DEFAULT_OLA_MODEL dynamically
-    const qwenModels = getFilteredQwenModels();
-    const expectedCoderIndex = qwenModels.findIndex(
+    const expectedCoderIndex = MOCK_OPENAI_MODELS.findIndex(
       (m) => m.id === DEFAULT_OLA_MODEL,
     );
     expect(mockedSelect.mock.calls[1][0].initialIndex).toBe(expectedCoderIndex);

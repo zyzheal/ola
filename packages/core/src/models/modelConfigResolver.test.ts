@@ -10,7 +10,7 @@ import {
   validateModelConfig,
 } from './modelConfigResolver.js';
 import { AuthType } from '../core/contentGenerator.js';
-import { DEFAULT_OLA_MODEL, MAINLINE_CODER_MODEL } from '../config/models.js';
+import { MAINLINE_CODER_MODEL } from '../config/models.js';
 
 describe('modelConfigResolver', () => {
   describe('resolveModelConfig', () => {
@@ -143,50 +143,6 @@ describe('modelConfigResolver', () => {
       });
     });
 
-    describe('ola OAuth auth type', () => {
-      it('uses default model for ola OAuth', () => {
-        const result = resolveModelConfig({
-          authType: AuthType.OLA_OAUTH,
-          cli: {},
-          settings: {},
-          env: {},
-        });
-
-        expect(result.config.model).toBe(DEFAULT_OLA_MODEL);
-        expect(result.config.apiKey).toBe('OLA_OAUTH_DYNAMIC_TOKEN');
-        expect(result.sources['apiKey'].kind).toBe('computed');
-      });
-
-      it('allows coder-model for ola OAuth', () => {
-        const result = resolveModelConfig({
-          authType: AuthType.OLA_OAUTH,
-          cli: {
-            model: 'coder-model',
-          },
-          settings: {},
-          env: {},
-        });
-
-        expect(result.config.model).toBe('coder-model');
-        expect(result.sources['model'].kind).toBe('cli');
-      });
-
-      it('warns and falls back for unsupported ola OAuth models', () => {
-        const result = resolveModelConfig({
-          authType: AuthType.OLA_OAUTH,
-          cli: {
-            model: 'unsupported-model',
-          },
-          settings: {},
-          env: {},
-        });
-
-        expect(result.config.model).toBe(DEFAULT_OLA_MODEL);
-        expect(result.warnings).toHaveLength(1);
-        expect(result.warnings[0]).toContain('unsupported-model');
-      });
-    });
-
     describe('Anthropic auth type', () => {
       it('resolves Anthropic config from env', () => {
         const result = resolveModelConfig({
@@ -309,16 +265,6 @@ describe('modelConfigResolver', () => {
       expect(result.valid).toBe(false);
       expect(result.errors).toHaveLength(1);
       expect(result.errors[0].message).toContain('Missing model');
-    });
-
-    it('always passes for ola OAuth', () => {
-      const result = validateModelConfig({
-        authType: AuthType.OLA_OAUTH,
-        model: DEFAULT_OLA_MODEL,
-        apiKey: 'OLA_OAUTH_DYNAMIC_TOKEN',
-      });
-
-      expect(result.valid).toBe(true);
     });
 
     it('requires baseUrl for Anthropic', () => {

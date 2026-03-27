@@ -65,31 +65,6 @@ describe('showAuthStatus', () => {
     expect(process.exit).toHaveBeenCalledWith(0);
   });
 
-  it('should show ola OAuth status when configured', async () => {
-    vi.mocked(loadSettings).mockReturnValue(
-      createMockSettings({
-        security: {
-          auth: {
-            selectedType: AuthType.OLA_OAUTH,
-          },
-        },
-      }),
-    );
-
-    await showAuthStatus();
-
-    expect(writeStdoutLine).toHaveBeenCalledWith(
-      expect.stringContaining('ola OAuth'),
-    );
-    expect(writeStdoutLine).toHaveBeenCalledWith(
-      expect.stringContaining('Free tier'),
-    );
-    expect(writeStdoutLine).toHaveBeenCalledWith(
-      expect.stringContaining('1,000 requests/day'),
-    );
-    expect(process.exit).toHaveBeenCalledWith(0);
-  });
-
   it('should show Coding Plan status when configured with API key', async () => {
     process.env[CODING_PLAN_ENV_KEY] = 'test-api-key';
 
