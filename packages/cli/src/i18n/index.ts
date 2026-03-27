@@ -121,23 +121,12 @@ async function loadTranslationsAsync(
           } else {
             throw new Error('Module loaded but result is empty or invalid');
           }
-        } catch {
-          // For builtin locales, try alternative import method (relative path)
+        } catch (importError) {
+          // Log the import error for debugging
           if (!isUser) {
-            try {
-              const module = await import(`./locales/${lang}.js`);
-              const result = module.default || module;
-              if (
-                result &&
-                typeof result === 'object' &&
-                Object.keys(result).length > 0
-              ) {
-                translationCache[lang] = result;
-                return result;
-              }
-            } catch {
-              // Continue to next directory
-            }
+            writeStderrLine(
+              `Failed to import translation file ${jsPath}: ${importError instanceof Error ? importError.message : String(importError)}`,
+            );
           }
           // If import failed, continue to next directory
           continue;
