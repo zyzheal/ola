@@ -258,7 +258,6 @@ class AskUserQuestionToolInvocation extends BaseToolInvocation<
   private userAnswers: Record<string, string> = {};
   private wasAnswered = false;
   private questionsSignature: string;
-  private persistenceLevel: 'session' | 'project' | 'user' = 'session';
 
   constructor(
     private readonly _config: Config,

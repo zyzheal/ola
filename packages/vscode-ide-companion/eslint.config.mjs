@@ -8,6 +8,7 @@ import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import globals from 'globals';
 import importX from 'eslint-plugin-import-x';
+import reactHooks from 'eslint-plugin-react-hooks';
 
 export default [
   {
@@ -24,8 +25,11 @@ export default [
     },
     plugins: {
       'import-x': importX,
+      'react-hooks': reactHooks,
     },
     rules: {
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
@@ -38,13 +42,15 @@ export default [
       eqeqeq: ['warn', 'always', { null: 'ignore' }],
       'no-throw-literal': 'warn',
       semi: ['warn', 'always'],
-      // Allow internal module imports for webview styles
+      // Allow internal module imports for webview styles and MCP SDK
       'import-x/no-internal-modules': [
         'error',
         {
           allow: [
+            'react-dom/client',
             '@ai-platform/webui/**',
-            './styles/**',
+            '@modelcontextprotocol/sdk/**',
+            '**/styles/**',
           ],
         },
       ],
