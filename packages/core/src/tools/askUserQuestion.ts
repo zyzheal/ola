@@ -31,9 +31,11 @@ const debugLogger = createDebugLogger('ASK_USER_QUESTION');
 // Key: questions signature (JSON string), Value: user answers
 const answerCache = new Map<string, Record<string, string>>();
 
-// File paths for persistent caches
+// File paths for persistent caches (lazy evaluation to support testing)
 const PROJECT_CACHE_FILE = '.ola/answer-cache.json';
-const USER_CACHE_FILE = join(homedir(), '.ola', 'answer-cache.json');
+function getUserCacheFilePath(): string {
+  return join(homedir(), '.ola', 'answer-cache.json');
+}
 
 /**
  * Load answer cache from file
@@ -95,7 +97,7 @@ function getCachedAnswers(
   }
 
   // Check user cache
-  const userCache = loadCacheFromFile(USER_CACHE_FILE);
+  const userCache = loadCacheFromFile(getUserCacheFilePath());
   if (userCache[questionsSignature]) {
     return userCache[questionsSignature];
   }
@@ -127,9 +129,9 @@ function cacheAnswers(
       break;
     }
     case 'user': {
-      const userCache = loadCacheFromFile(USER_CACHE_FILE);
+      const userCache = loadCacheFromFile(getUserCacheFilePath());
       userCache[questionsSignature] = answers;
-      saveCacheToFile(USER_CACHE_FILE, userCache);
+      saveCacheToFile(getUserCacheFilePath(), userCache);
       break;
     }
     default:

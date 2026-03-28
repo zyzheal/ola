@@ -15,11 +15,24 @@ import {
 } from 'vitest';
 
 const mockShellExecutionService = vi.hoisted(() => vi.fn());
+const mockHomedir = vi.hoisted(() => vi.fn());
+
 vi.mock('../services/shellExecutionService.js', () => ({
   ShellExecutionService: { execute: mockShellExecutionService },
 }));
 vi.mock('fs');
-vi.mock('os');
+vi.mock('os', () => ({
+  default: {
+    platform: vi.fn(),
+    tmpdir: vi.fn(),
+    homedir: mockHomedir,
+    EOL: '/',
+  },
+  platform: vi.fn(),
+  tmpdir: vi.fn(),
+  homedir: mockHomedir,
+  EOL: '/',
+}));
 vi.mock('crypto');
 
 import { isCommandAllowed } from '../utils/shell-utils.js';
@@ -74,6 +87,7 @@ describe('ShellTool', () => {
 
     vi.mocked(os.platform).mockReturnValue('linux');
     vi.mocked(os.tmpdir).mockReturnValue('/tmp');
+    mockHomedir.mockReturnValue('/test/home');
     (vi.mocked(crypto.randomBytes) as Mock).mockReturnValue(
       Buffer.from('abcdef', 'hex'),
     );
@@ -1266,6 +1280,196 @@ describe('ShellTool', () => {
         false,
         {},
       );
+    });
+  });
+
+  describe('Session-level command caching', () => {
+    let shellTool: ShellTool;
+    let mockConfig: Config;
+
+    beforeEach(() => {
+      vi.clearAllMocks();
+
+      mockConfig = {
+        getCoreTools: vi.fn().mockReturnValue([]),
+        getPermissionsDeny: vi.fn().mockReturnValue([]),
+        getDebugMode: vi.fn().mockReturnValue(false),
+        getTargetDir: vi.fn().mockReturnValue('/test/dir'),
+        getWorkspaceContext: vi
+          .fn()
+          .mockReturnValue(createMockWorkspaceContext('/test/dir')),
+        storage: {
+          getUserSkillsDirs: vi
+            .fn()
+            .mockReturnValue(['/test/dir/.qwen/skills']),
+          getProjectTempDir: vi.fn().mockReturnValue('/tmp/qwen-temp'),
+        },
+        getTruncateToolOutputThreshold: vi.fn().mockReturnValue(0),
+        getTruncateToolOutputLines: vi.fn().mockReturnValue(0),
+        getGeminiClient: vi.fn(),
+        getGitCoAuthor: vi.fn().mockReturnValue({
+          enabled: true,
+          name: 'Test User',
+          email: 'test@example.com',
+        }),
+        getShouldUseNodePtyShell: vi.fn().mockReturnValue(false),
+      } as unknown as Config;
+
+      shellTool = new ShellTool(mockConfig);
+
+      vi.mocked(os.platform).mockReturnValue('linux');
+      vi.mocked(os.tmpdir).mockReturnValue('/tmp');
+      mockHomedir.mockReturnValue('/test/home');
+      (vi.mocked(crypto.randomBytes) as Mock).mockReturnValue(
+        Buffer.from('abcdef', 'hex'),
+      );
+    });
+
+    afterEach(() => {
+      // Clear session cache after each test
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (shellTool as any).constructor.clearSessionAllowlist?.();
+    });
+
+    it('should cache command after ProceedOnce selection', async () => {
+      const invocation = shellTool.build({
+        command: 'curl https://example.com',
+        is_background: false,
+      });
+
+      // First call - should return 'ask'
+      const firstPermission = await invocation.getDefaultPermission();
+      expect(firstPermission).toBe('ask');
+
+      // Get confirmation details and simulate ProceedOnce
+      const confirmationDetails = await invocation.getConfirmationDetails(
+        new AbortController().signal,
+      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (confirmationDetails as any).onConfirm('proceed_once');
+
+      // Second call with same command - should return 'allow' from cache
+      const invocation2 = shellTool.build({
+        command: 'curl https://example.com',
+        is_background: false,
+      });
+      const secondPermission = await invocation2.getDefaultPermission();
+      expect(secondPermission).toBe('allow');
+    });
+
+    it('should not cache different commands', async () => {
+      const invocation1 = shellTool.build({
+        command: 'curl https://example.com',
+        is_background: false,
+      });
+
+      // First command - cache it
+      await invocation1.getDefaultPermission();
+      const confirmationDetails1 = await invocation1.getConfirmationDetails(
+        new AbortController().signal,
+      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (confirmationDetails1 as any).onConfirm('proceed_once');
+
+      // Different command - should still require permission
+      const invocation2 = shellTool.build({
+        command: 'curl https://different.com',
+        is_background: false,
+      });
+      const permission2 = await invocation2.getDefaultPermission();
+      expect(permission2).toBe('ask');
+    });
+
+    it('should clear session cache', async () => {
+      const invocation = shellTool.build({
+        command: 'npm run build',
+        is_background: false,
+      });
+
+      // Cache the command
+      await invocation.getDefaultPermission();
+      const confirmationDetails = await invocation.getConfirmationDetails(
+        new AbortController().signal,
+      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (confirmationDetails as any).onConfirm('proceed_once');
+
+      // Verify it's cached
+      const invocation2 = shellTool.build({
+        command: 'npm run build',
+        is_background: false,
+      });
+      expect(await invocation2.getDefaultPermission()).toBe('allow');
+
+      // Clear cache using the static method from ShellToolInvocation
+      const { ShellToolInvocation } = await import('./shell.js');
+      ShellToolInvocation.clearSessionAllowlist();
+
+      // Verify it's no longer cached
+      const invocation3 = shellTool.build({
+        command: 'npm run build',
+        is_background: false,
+      });
+      expect(await invocation3.getDefaultPermission()).toBe('ask');
+    });
+
+    it('should handle compound commands', async () => {
+      const invocation = shellTool.build({
+        command: 'npm install && npm run build',
+        is_background: false,
+      });
+
+      // First call - should return 'ask'
+      const permission = await invocation.getDefaultPermission();
+      expect(permission).toBe('ask');
+
+      // Get confirmation details and simulate ProceedOnce
+      const confirmationDetails = await invocation.getConfirmationDetails(
+        new AbortController().signal,
+      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (confirmationDetails as any).onConfirm('proceed_once');
+
+      // Same compound command - should return 'allow' from cache
+      const invocation2 = shellTool.build({
+        command: 'npm install && npm run build',
+        is_background: false,
+      });
+      const permission2 = await invocation2.getDefaultPermission();
+      expect(permission2).toBe('allow');
+    });
+
+    it('should not affect read-only commands', async () => {
+      const invocation = shellTool.build({
+        command: 'ls -la',
+        is_background: false,
+      });
+
+      // Read-only commands should be allowed without caching
+      const permission = await invocation.getDefaultPermission();
+      expect(permission).toBe('allow');
+    });
+
+    it('should still deny command substitution even if cached', async () => {
+      // First, cache a normal command
+      const normalInvocation = shellTool.build({
+        command: 'echo hello',
+        is_background: false,
+      });
+      await normalInvocation.getDefaultPermission();
+      const confirmationDetails = await normalInvocation.getConfirmationDetails(
+        new AbortController().signal,
+      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (confirmationDetails as any).onConfirm('proceed_once');
+
+      // Command with substitution should still be denied
+      const maliciousInvocation = shellTool.build({
+        command: 'echo $(cat /etc/passwd)',
+        is_background: false,
+      });
+      const permission = await maliciousInvocation.getDefaultPermission();
+      expect(permission).toBe('deny');
     });
   });
 });
