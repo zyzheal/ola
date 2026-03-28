@@ -9,7 +9,7 @@ import tseslint from 'typescript-eslint';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import prettierConfig from 'eslint-config-prettier';
-import importPlugin from 'eslint-plugin-import';
+import importPlugin from 'eslint-plugin-import-x';
 import vitest from '@vitest/eslint-plugin';
 import globals from 'globals';
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
@@ -47,29 +47,29 @@ export default tseslint.config(
     // Import specific config
     files: ['packages/cli/src/**/*.{ts,tsx}'], // Target only TS/TSX in the cli package
     plugins: {
-      import: importPlugin,
+      'import-x': importPlugin,
     },
     settings: {
-      'import/resolver': {
+      'import-x/resolver': {
         node: true,
       },
     },
     rules: {
       ...importPlugin.configs.recommended.rules,
       ...importPlugin.configs.typescript.rules,
-      'import/no-default-export': 'warn',
-      'import/no-unresolved': 'off', // Disable for now, can be noisy with monorepos/paths
-      'import/namespace': 'off', // Disabled due to https://github.com/import-js/eslint-plugin-import/issues/2866
+      'import-x/no-default-export': 'warn',
+      'import-x/no-unresolved': 'off', // Disable for now, can be noisy with monorepos/paths
+      'import-x/namespace': 'off', // Disabled due to https://github.com/import-js/eslint-plugin-import/issues/2866
     },
   },
   {
     // General overrides and rules for the project (TS/TSX files)
     files: ['packages/*/src/**/*.{ts,tsx}'], // Target only TS/TSX in the cli package
     plugins: {
-      import: importPlugin,
+      'import-x': importPlugin,
     },
     settings: {
-      'import/resolver': {
+      'import-x/resolver': {
         node: true,
       },
     },
@@ -113,7 +113,7 @@ export default tseslint.config(
           caughtErrorsIgnorePattern: '^_',
         },
       ],
-      'import/no-internal-modules': [
+      'import-x/no-internal-modules': [
         'error',
         {
           allow: [
@@ -129,7 +129,7 @@ export default tseslint.config(
           ],
         },
       ],
-      'import/no-relative-packages': 'error',
+      'import-x/no-relative-packages': 'error',
       'no-cond-assign': 'error',
       'no-debugger': 'error',
       'no-duplicate-case': 'error',
@@ -224,7 +224,20 @@ export default tseslint.config(
   // VS Code IDE companion - out of scope for no-console rule
   {
     files: ['packages/vscode-ide-companion/**/*.ts', 'packages/vscode-ide-companion/**/*.tsx', 'packages/vscode-ide-companion/**/*.js'],
-    rules: { 'no-console': 'off' },
+    rules: {
+      'no-console': 'off',
+      // Allow internal module imports for webview styles and react-dom/client
+      'import-x/no-internal-modules': [
+        'error',
+        {
+          allow: [
+            'react-dom/client',
+            '@ai-platform/webui/**',
+            '**/vscode-ide-companion/src/webview/styles/**',
+          ],
+        },
+      ],
+    },
   },
   // WebUI package - UI component library with Storybook
   {

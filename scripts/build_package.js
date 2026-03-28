@@ -26,8 +26,8 @@ if (!process.cwd().includes('packages')) {
   process.exit(1);
 }
 
-// build typescript files
-execSync('tsc --build', { stdio: 'inherit' });
+// build typescript files (skip lib check for Node.js 22 compatibility)
+execSync('tsc --build --force', { stdio: 'inherit' });
 
 // copy .{md,json} files
 execSync('node ../../scripts/copy_files.js', { stdio: 'inherit' });

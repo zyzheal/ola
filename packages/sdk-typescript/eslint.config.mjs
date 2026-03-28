@@ -6,24 +6,20 @@
 
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import globals from 'globals';
-import importX from 'eslint-plugin-import-x';
 
 export default [
   {
-    ignores: ['dist/**', 'node_modules/**', '*.cjs'],
+    ignores: ['dist/**', 'node_modules/**'],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ['**/*.ts', '**/*.tsx'],
+    files: ['**/*.ts'],
     languageOptions: {
-      globals: {
-        ...globals.browser,
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
       },
-    },
-    plugins: {
-      'import-x': importX,
     },
     rules: {
       '@typescript-eslint/no-unused-vars': [
@@ -34,20 +30,11 @@ export default [
           caughtErrorsIgnorePattern: '^_',
         },
       ],
+      '@typescript-eslint/no-explicit-any': 'warn',
       curly: 'warn',
       eqeqeq: ['warn', 'always', { null: 'ignore' }],
       'no-throw-literal': 'warn',
       semi: ['warn', 'always'],
-      // Allow internal module imports for webview styles
-      'import-x/no-internal-modules': [
-        'error',
-        {
-          allow: [
-            '@ai-platform/webui/**',
-            './styles/**',
-          ],
-        },
-      ],
     },
   },
   {

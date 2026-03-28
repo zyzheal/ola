@@ -66,7 +66,15 @@
     "cliui": {
       "wrap-ansi": "7.0.0"
     },
-    "baseline-browser-mapping": "^2.9.19"
+    "baseline-browser-mapping": "^2.9.19",
+    "@hono/node-server": "^1.19.10",
+    "@isaacs/brace-expansion": "^5.1.0",
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "minimatch": "^10.0.3",
+    "diff": "^8.0.4",
+    "esbuild": "^0.25.0",
+    "@microsoft/api-extractor": "^7.57.7",
+    "@rushstack/node-core-library": "^5.20.3"
   },
   "bin": {
     "ola": "dist/cli.js"
@@ -77,6 +85,7 @@
     "LICENSE"
   ],
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.5",
     "@types/marked": "^5.0.2",
     "@types/mime-types": "^3.0.1",
     "@types/minimatch": "^5.1.2",
@@ -88,9 +97,10 @@
     "@xterm/xterm": "^6.0.0",
     "cross-env": "^7.0.3",
     "esbuild": "^0.25.0",
-    "eslint": "^9.24.0",
+    "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.2",
-    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-import-x": "^4.16.2",
     "eslint-plugin-license-header": "^0.8.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
@@ -115,6 +125,9 @@
   },
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
+    "cli-spinners": "^3.4.0",
+    "gradient-string": "^3.0.0",
+    "mimic-fn": "^4.0.0",
     "simple-git": "^3.28.0"
   },
   "optionalDependencies": {

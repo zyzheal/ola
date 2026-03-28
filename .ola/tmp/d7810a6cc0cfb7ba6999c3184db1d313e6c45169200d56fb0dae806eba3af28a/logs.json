@@ -187,5 +187,159 @@
     "type": "user",
     "message": "确认",
     "timestamp": "2026-03-27T00:17:55.918Z"
+  },
+  {
+    "sessionId": "8ccedb89-f834-4dd0-a846-08f42eaf30b0",
+    "messageId": 0,
+    "type": "user",
+    "message": "ni",
+    "timestamp": "2026-03-27T14:36:07.181Z"
+  },
+  {
+    "sessionId": "8ccedb89-f834-4dd0-a846-08f42eaf30b0",
+    "messageId": 1,
+    "type": "user",
+    "message": "修复安全漏洞",
+    "timestamp": "2026-03-27T14:37:20.153Z"
+  },
+  {
+    "sessionId": "8ccedb89-f834-4dd0-a846-08f42eaf30b0",
+    "messageId": 2,
+    "type": "user",
+    "message": "/quit",
+    "timestamp": "2026-03-27T14:54:19.457Z"
+  },
+  {
+    "sessionId": "0021f82e-19f6-404f-865d-da231a5ad3ed",
+    "messageId": 0,
+    "type": "user",
+    "message": "恢复lock文件",
+    "timestamp": "2026-03-27T14:54:49.386Z"
+  },
+  {
+    "sessionId": "0021f82e-19f6-404f-865d-da231a5ad3ed",
+    "messageId": 1,
+    "type": "user",
+    "message": "/status",
+    "timestamp": "2026-03-27T14:55:07.690Z"
+  },
+  {
+    "sessionId": "0021f82e-19f6-404f-865d-da231a5ad3ed",
+    "messageId": 2,
+    "type": "user",
+    "message": "/quir",
+    "timestamp": "2026-03-27T14:55:12.746Z"
+  },
+  {
+    "sessionId": "0021f82e-19f6-404f-865d-da231a5ad3ed",
+    "messageId": 3,
+    "type": "user",
+    "message": "/quit",
+    "timestamp": "2026-03-27T14:55:16.626Z"
+  },
+  {
+    "sessionId": "8557b200-7c00-40b0-84ce-e389535d8f61",
+    "messageId": 0,
+    "type": "user",
+    "message": "npm install 会失败",
+    "timestamp": "2026-03-27T14:57:00.854Z"
+  },
+  {
+    "sessionId": "8557b200-7c00-40b0-84ce-e389535d8f61",
+    "messageId": 1,
+    "type": "user",
+    "message": "修复漏洞更新了依赖的版本但是lock文件中有本地项目的包不能删除，作为专家的你进行分析解决npm install的问题",
+    "timestamp": "2026-03-27T14:59:24.382Z"
+  },
+  {
+    "sessionId": "8557b200-7c00-40b0-84ce-e389535d8f61",
+    "messageId": 2,
+    "type": "user",
+    "message": "需要",
+    "timestamp": "2026-03-27T15:16:48.421Z"
+  },
+  {
+    "sessionId": "94c8fc52-905c-4310-9a13-317ab8c3d83d",
+    "messageId": 0,
+    "type": "user",
+    "message": "你是谁",
+    "timestamp": "2026-03-27T15:17:50.962Z"
+  },
+  {
+    "sessionId": "94c8fc52-905c-4310-9a13-317ab8c3d83d",
+    "messageId": 1,
+    "type": "user",
+    "message": "/quit",
+    "timestamp": "2026-03-27T15:18:01.951Z"
+  },
+  {
+    "sessionId": "8557b200-7c00-40b0-84ce-e389535d8f61",
+    "messageId": 3,
+    "type": "user",
+    "message": "/approval-mode",
+    "timestamp": "2026-03-27T23:45:54.472Z"
+  },
+  {
+    "sessionId": "8557b200-7c00-40b0-84ce-e389535d8f61",
+    "messageId": 4,
+    "type": "user",
+    "message": "继续解决问题",
+    "timestamp": "2026-03-27T23:46:03.422Z"
+  },
+  {
+    "sessionId": "8557b200-7c00-40b0-84ce-e389535d8f61",
+    "messageId": 5,
+    "type": "user",
+    "message": "/approval-mode",
+    "timestamp": "2026-03-28T00:15:39.880Z"
+  },
+  {
+    "sessionId": "8557b200-7c00-40b0-84ce-e389535d8f61",
+    "messageId": 6,
+    "type": "user",
+    "message": "继续",
+    "timestamp": "2026-03-28T00:15:46.891Z"
+  },
+  {
+    "sessionId": "8557b200-7c00-40b0-84ce-e389535d8f61",
+    "messageId": 7,
+    "type": "user",
+    "message": "继续解决问题",
+    "timestamp": "2026-03-28T00:27:24.351Z"
+  },
+  {
+    "sessionId": "8557b200-7c00-40b0-84ce-e389535d8f61",
+    "messageId": 8,
+    "type": "user",
+    "message": "进行编译测试是否还有安全问题",
+    "timestamp": "2026-03-28T00:39:44.811Z"
+  },
+  {
+    "sessionId": "8557b200-7c00-40b0-84ce-e389535d8f61",
+    "messageId": 9,
+    "type": "user",
+    "message": "/quit",
+    "timestamp": "2026-03-28T00:45:44.302Z"
+  },
+  {
+    "sessionId": "eaede051-c2e3-4637-bef4-67ab2c583987",
+    "messageId": 0,
+    "type": "user",
+    "message": "条件更新",
+    "timestamp": "2026-03-28T00:51:58.725Z"
+  },
+  {
+    "sessionId": "eaede051-c2e3-4637-bef4-67ab2c583987",
+    "messageId": 1,
+    "type": "user",
+    "message": "提交更新",
+    "timestamp": "2026-03-28T00:52:05.299Z"
+  },
+  {
+    "sessionId": "eaede051-c2e3-4637-bef4-67ab2c583987",
+    "messageId": 2,
+    "type": "user",
+    "message": "提交代码到仓库",
+    "timestamp": "2026-03-28T03:05:23.666Z"
   }
 ]
