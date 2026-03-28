@@ -163,7 +163,7 @@ describe('FileMessageHandler', () => {
     );
     expect(shouldIgnoreFileMock).toHaveBeenCalledWith(ignoredPath, {
       respectGitIgnore: true,
-      respectQwenIgnore: false,
+      respectOlaIgnore: false,
     });
 
     const payload = sendToWebView.mock.calls[

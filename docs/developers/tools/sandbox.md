@@ -43,7 +43,7 @@ qwen -v
 
 #### 3、Create your sandbox Dockerfile under the root directory of your own project
 
-- Path: `.qwen/sandbox.Dockerfile`
+- Path: `.ola/sandbox.Dockerfile`
 
 - Official mirror image address:https://github.com/QwenLM/ola/pkgs/container/ola
 

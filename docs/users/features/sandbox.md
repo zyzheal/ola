@@ -52,7 +52,7 @@ Cross-platform sandboxing with complete process isolation.
 
 By default, OLA uses a published sandbox image (configured in the CLI package) and will pull it as needed.
 
-The container sandbox mounts your workspace and your `~/.qwen` directory into the container so auth and settings persist between runs.
+The container sandbox mounts your workspace and your `~/.ola` directory into the container so auth and settings persist between runs.
 
 **Best for**: Strong isolation on any OS, consistent tooling inside a known image.
 
@@ -128,7 +128,7 @@ Built-in profiles (set via `SEATBELT_PROFILE` env var):
 
 To use a custom Seatbelt profile:
 
-1. Create a file named `.qwen/sandbox-macos-<profile_name>.sb` in your project.
+1. Create a file named `.ola/sandbox-macos-<profile_name>.sb` in your project.
 2. Set `SEATBELT_PROFILE=<profile_name>`.
 
 ### Custom Sandbox Flags
@@ -162,7 +162,7 @@ For a working allowlist-style proxy example, see: [Example Proxy Script](/develo
 
 ## Linux UID/GID handling
 
-On Linux, OLA defaults to enabling UID/GID mapping so the sandbox runs as your user (and reuses the mounted `~/.qwen`). Override with:
+On Linux, OLA defaults to enabling UID/GID mapping so the sandbox runs as your user (and reuses the mounted `~/.ola`). Override with:
 
 ```bash
 export SANDBOX_SET_UID_GID=true   # Force host UID/GID
@@ -181,14 +181,14 @@ export SANDBOX_SET_UID_GID=false  # Disable UID/GID mapping
 
 **Missing commands**
 
-- Container sandbox: add them via `.qwen/sandbox.Dockerfile` or `.qwen/sandbox.bashrc`.
+- Container sandbox: add them via `.ola/sandbox.Dockerfile` or `.ola/sandbox.bashrc`.
 - Seatbelt: your host binaries are used, but the sandbox may restrict access to some paths.
 
 **Java not available in Docker sandbox**
 
 The official OLA Docker image is intentionally minimal to keep the image small, secure, and fast to pull. Different users require different language runtimes (Java, Python, Node.js, etc.), and bundling all environments into a single image is not practical. Therefore, Java is **not included by default** in the Docker sandbox.
 
-If your workflow requires Java, you can extend the base image by creating a `.qwen/sandbox.Dockerfile` in your project:
+If your workflow requires Java, you can extend the base image by creating a `.ola/sandbox.Dockerfile` in your project:
 
 ```dockerfile
 FROM ghcr.io/qwenlm/ola:latest

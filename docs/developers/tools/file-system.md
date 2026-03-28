@@ -73,7 +73,7 @@ OLA provides a comprehensive suite of tools for interacting with the local file 
 - **Behavior:**
   - Searches for files matching the glob pattern within the specified directory.
   - Returns a list of absolute paths, sorted with the most recently modified files first.
-  - Respects .gitignore and .qwenignore patterns by default.
+  - Respects .gitignore and .olaignore patterns by default.
   - Limits results to 100 files to prevent context overflow.
 - **Output (`llmContent`):** A message like: `Found 5 file(s) matching "*.ts" within /path/to/search/dir, sorted by modification time (newest first):\n---\n/path/to/file1.ts\n/path/to/subdir/file2.ts\n---\n[95 files truncated] ...`
 - **Confirmation:** No.
@@ -94,7 +94,7 @@ OLA provides a comprehensive suite of tools for interacting with the local file 
   - Uses ripgrep for fast search when available; otherwise falls back to a JavaScript-based search implementation.
   - Returns matching lines with file paths and line numbers.
   - Case-insensitive by default.
-  - Respects .gitignore and .qwenignore patterns.
+  - Respects .gitignore and .olaignore patterns.
   - Limits output to prevent context overflow.
 - **Output (`llmContent`):** A formatted string of matches, e.g.:
 
@@ -187,7 +187,7 @@ The `defaultFileEncoding` setting controls encoding for **newly created** files 
 | `utf-8`     | UTF-8 without BOM, no automatic adjustments                                 |
 | `utf-8-bom` | UTF-8 with BOM for all new files                                            |
 
-Set it in `.qwen/settings.json` or `~/.qwen/settings.json`:
+Set it in `.ola/settings.json` or `~/.ola/settings.json`:
 
 ```json
 {

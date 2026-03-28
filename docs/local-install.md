@@ -574,7 +574,7 @@ npm install
 
 ### 问题：配置不生效（显示错误的模型名）
 
-确认配置写入了正确的目录（`/~.aiops/`，不是旧版的 `~/.qwen/`）：
+确认配置写入了正确的目录（`/~.aiops/`，不是旧版的 `~/.ola/`）：
 
 ```bash
 cat /~.aiops/settings.json
@@ -583,7 +583,7 @@ cat /~.aiops/settings.json
 若 `/~.aiops/settings.json` 为空或缺少模型配置，将旧配置迁移过来：
 
 ```bash
-cp ~/.qwen/settings.json /~.aiops/settings.json
+cp ~/.ola/settings.json /~.aiops/settings.json
 ```
 
 ### 问题：连接模型服务失败

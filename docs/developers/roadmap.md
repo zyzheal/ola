@@ -54,7 +54,7 @@
 | Compress                | `V0.0.11` | Chat compression mechanism                              | User Experience                 | 1     |
 | SubAgent                | `V0.0.11` | Dedicated sub-agent system                              | Coding Workflow                 | 1     |
 | TodoWrite               | `V0.0.10` | Task management and progress tracking                   | Coding Workflow                 | 1     |
-| Tool: TextSearch        | `V0.0.8+` | Text search tool (grep, supports .qwenignore)           | Coding Workflow                 | 1     |
+| Tool: TextSearch        | `V0.0.8+` | Text search tool (grep, supports .olaignore)            | Coding Workflow                 | 1     |
 | Tool: WebFetch          | `V0.0.7+` | Web content fetching tool                               | Coding Workflow                 | 1     |
 | Tool: WebSearch         | `V0.0.7+` | Web search tool (using Tavily API)                      | Coding Workflow                 | 1     |
 | OAuth                   | `V0.0.5+` | OAuth login authentication (Qwen OAuth)                 | User Experience                 | 1     |

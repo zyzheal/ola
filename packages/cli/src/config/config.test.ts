@@ -148,11 +148,11 @@ vi.mock('ola-core', async (importOriginal) => {
     ),
     DEFAULT_MEMORY_FILE_FILTERING_OPTIONS: {
       respectGitIgnore: false,
-      respectQwenIgnore: true,
+      respectOlaIgnore: true,
     },
     DEFAULT_FILE_FILTERING_OPTIONS: {
       respectGitIgnore: true,
-      respectQwenIgnore: true,
+      respectOlaIgnore: true,
     },
   };
 });
@@ -1449,7 +1449,7 @@ describe('loadCliConfig with allowed-mcp-server-names', () => {
 });
 
 describe('loadCliConfig model selection', () => {
-  it.skip('selects a model from settings.json if provided', async () => {
+  it.todo('selects a model from settings.json if provided', async () => {
     process.argv = ['node', 'script.js'];
     const argv = await parseArguments();
     const config = await loadCliConfig(
@@ -1466,7 +1466,7 @@ describe('loadCliConfig model selection', () => {
     expect(config.getModel()).toBe('qwen3-coder-plus');
   });
 
-  it.skip('uses the default gemini model if nothing is set', async () => {
+  it.todo('uses the default gemini model if nothing is set', async () => {
     process.argv = ['node', 'script.js']; // No model set.
     const argv = await parseArguments();
     const config = await loadCliConfig(
@@ -2163,12 +2163,12 @@ describe('loadCliConfig fileFiltering', () => {
       value: false,
     },
     {
-      property: 'respectQwenIgnore',
+      property: 'respectOlaIgnore',
       getter: (c) => c.getFileFilteringRespectQwenIgnore(),
       value: true,
     },
     {
-      property: 'respectQwenIgnore',
+      property: 'respectOlaIgnore',
       getter: (c) => c.getFileFilteringRespectQwenIgnore(),
       value: false,
     },

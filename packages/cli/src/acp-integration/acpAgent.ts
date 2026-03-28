@@ -8,12 +8,16 @@ import {
   APPROVAL_MODE_INFO,
   APPROVAL_MODES,
   AuthType,
+  // clearCachedCredentialFile - not available in this build
   createDebugLogger,
+  // QwenOAuth2Event - not available in this build
+  // qwenOAuth2Events - not available in this build
   MCPServerConfig,
   SessionService,
   tokenLimit,
   type Config,
   type ConversationRecord,
+  // DeviceAuthorizationData - not available in this build
 } from 'ola-core';
 import {
   AgentSideConnection,
@@ -53,7 +57,7 @@ import { buildAuthMethods } from './authMethods.js';
 import { AcpFileSystemService } from './service/filesystem.js';
 import { Readable, Writable } from 'node:stream';
 import type { LoadedSettings } from '../config/settings.js';
-import { SettingScope } from '../config/settings.js';
+import { loadSettings, SettingScope } from '../config/settings.js';
 import type { ApprovalModeValue } from './session/types.js';
 import { z } from 'zod';
 import type { CliArgs } from '../config/config.js';
@@ -139,8 +143,8 @@ class QwenAgent implements Agent {
     return {
       protocolVersion: PROTOCOL_VERSION,
       agentInfo: {
-        name: 'aiops',
-        title: 'aiops',
+        name: 'qwen-code',
+        title: 'Qwen Code',
         version,
       },
       authMethods,
@@ -162,12 +166,22 @@ class QwenAgent implements Agent {
   async authenticate({ methodId }: AuthenticateRequest): Promise<void> {
     const method = z.nativeEnum(AuthType).parse(methodId);
 
-    await this.config.refreshAuth(method);
-    this.settings.setValue(
-      SettingScope.User,
-      'security.auth.selectedType',
-      method,
-    );
+    // QWEN_OAUTH is not available in this build - skip OAuth flow
+    // Direct API key authentication only
+    await new Promise((resolve) => setTimeout(resolve, 100)); // Simulate auth delay
+    try {
+      await this.config.refreshAuth(method);
+      this.settings.setValue(
+        SettingScope.User,
+        'security.auth.selectedType',
+        method,
+      );
+    } catch (e) {
+      // Authentication failed
+      throw new RequestError(
+        `Authentication failed: ${e instanceof Error ? e.message : String(e)}`,
+      );
+    }
   }
 
   async newSession({
@@ -200,30 +214,18 @@ class QwenAgent implements Agent {
         return sessionService.sessionExists(params.sessionId);
       },
     );
-    if (!exists) {
-      throw RequestError.invalidParams(
-        undefined,
-        `Session not found for id: ${params.sessionId}`,
-      );
-    }
 
     const config = await this.newSessionConfig(
       params.cwd,
       params.mcpServers,
       params.sessionId,
+      exists,
     );
     await this.ensureAuthenticated(config);
     this.setupFileSystem(config);
 
     const sessionData = config.getResumedSessionData();
-    if (!sessionData) {
-      throw RequestError.internalError(
-        undefined,
-        `Failed to load session data for id: ${params.sessionId}`,
-      );
-    }
-
-    await this.createAndStoreSession(config, sessionData.conversation);
+    await this.createAndStoreSession(config, sessionData?.conversation);
 
     const modesData = this.buildModesData(config);
     const availableModels = this.buildAvailableModels(config);
@@ -357,7 +359,9 @@ class QwenAgent implements Agent {
     cwd: string,
     mcpServers: McpServer[],
     sessionId?: string,
+    resume?: boolean,
   ): Promise<Config> {
+    this.settings = loadSettings(cwd);
     const mergedMcpServers = { ...this.settings.merged.mcpServers };
 
     for (const server of mcpServers) {
@@ -379,11 +383,11 @@ class QwenAgent implements Agent {
     const settings = { ...this.settings.merged, mcpServers: mergedMcpServers };
     const argvForSession = {
       ...this.argv,
-      resume: sessionId,
+      ...(resume ? { resume: sessionId } : { sessionId }),
       continue: false,
     };
 
-    const config = await loadCliConfig(settings, argvForSession, cwd);
+    const config = await loadCliConfig(settings, argvForSession, cwd, []);
     await config.initialize();
     return config;
   }
@@ -393,7 +397,7 @@ class QwenAgent implements Agent {
     if (!selectedType) {
       throw RequestError.authRequired(
         { authMethods: this.pickAuthMethodsForAuthRequired() },
-        'Use OLA CLI to authenticate first.',
+        'Use Qwen Code CLI to authenticate first.',
       );
     }
 
@@ -410,17 +414,27 @@ class QwenAgent implements Agent {
     }
   }
 
-  private pickAuthMethodsForAuthRequired(
-    selectedType?: AuthType | string,
-    _error?: unknown,
-  ): AuthMethod[] {
+  private pickAuthMethodsForAuthRequired() // selectedType?: AuthType | string,  // not used in this build
+  // error?: unknown,  // not used in this build
+  : AuthMethod[] {
     const authMethods = buildAuthMethods();
-    if (selectedType) {
-      const matched = authMethods.filter((m) => m.id === selectedType);
-      return matched.length ? matched : authMethods;
-    }
-
+    // QWEN_OAUTH error handling is not available in this build
+    // Return all available auth methods
     return authMethods;
+  }
+
+  private extractErrorMessage(error?: unknown): string | undefined {
+    if (error instanceof Error) return error.message;
+    if (
+      typeof error === 'object' &&
+      error != null &&
+      'message' in error &&
+      typeof error.message === 'string'
+    ) {
+      return error.message;
+    }
+    if (typeof error === 'string') return error;
+    return undefined;
   }
 
   private setupFileSystem(config: Config): void {

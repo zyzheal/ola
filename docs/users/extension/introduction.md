@@ -137,11 +137,11 @@ qwen extensions update --all
 
 ## How it works
 
-On startup, OLA looks for extensions in `<home>/.qwen/extensions`
+On startup, OLA looks for extensions in `<home>/.ola/extensions`
 
 Extensions exist as a directory that contains a `qwen-extension.json` file. For example:
 
-`<home>/.qwen/extensions/my-extension/qwen-extension.json`
+`<home>/.ola/extensions/my-extension/qwen-extension.json`
 
 ### `qwen-extension.json`
 
@@ -216,8 +216,8 @@ qwen extensions settings unset <extension-name> <setting-name> [--scope user|wor
 
 Settings can be configured at two levels:
 
-- **User level** (default): Settings apply across all projects (`~/.qwen/.env`)
-- **Workspace level**: Settings apply only to the current project (`.qwen/.env`)
+- **User level** (default): Settings apply across all projects (`~/.ola/.env`)
+- **Workspace level**: Settings apply only to the current project (`.ola/.env`)
 
 Workspace settings take precedence over user settings. Sensitive settings are stored securely and never displayed in plain text.
 
@@ -234,7 +234,7 @@ Extensions can provide [custom commands](./cli/commands.md#custom-commands) by p
 An extension named `gcp` with the following structure:
 
 ```
-.qwen/extensions/gcp/
+.ola/extensions/gcp/
 ├── qwen-extension.json
 └── commands/
     ├── deploy.md
@@ -254,7 +254,7 @@ Extensions can provide custom skills by placing skill files in a `skills/` subdi
 **Example**
 
 ```
-.qwen/extensions/my-extension/
+.ola/extensions/my-extension/
 ├── qwen-extension.json
 └── skills/
     └── pdf-processor/
@@ -270,7 +270,7 @@ Extensions can provide custom subagents by placing agent configuration files in 
 **Example**
 
 ```
-.qwen/extensions/my-extension/
+.ola/extensions/my-extension/
 ├── qwen-extension.json
 └── agents/
     └── testing-expert.yaml
@@ -296,8 +296,8 @@ OLA extensions allow variable substitution in `qwen-extension.json`. This can be
 
 **Supported variables:**
 
-| variable                   | description                                                                                                                                                   |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `${extensionPath}`         | The fully-qualified path of the extension in the user's filesystem e.g., '/Users/username/.qwen/extensions/example-extension'. This will not unwrap symlinks. |
-| `${workspacePath}`         | The fully-qualified path of the current workspace.                                                                                                            |
-| `${/} or ${pathSeparator}` | The path separator (differs per OS).                                                                                                                          |
+| variable                   | description                                                                                                                                                  |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `${extensionPath}`         | The fully-qualified path of the extension in the user's filesystem e.g., '/Users/username/.ola/extensions/example-extension'. This will not unwrap symlinks. |
+| `${workspacePath}`         | The fully-qualified path of the current workspace.                                                                                                           |
+| `${/} or ${pathSeparator}` | The path separator (differs per OS).                                                                                                                         |

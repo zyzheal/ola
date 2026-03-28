@@ -15,6 +15,7 @@ import { SettingInputPrompt } from './SettingInputPrompt.js';
 import { PluginChoicePrompt } from './PluginChoicePrompt.js';
 import { ThemeDialog } from './ThemeDialog.js';
 import { SettingsDialog } from './SettingsDialog.js';
+// import { QwenOAuthProgress } from './QwenOAuthProgress.js';  // not used in this build
 import { AuthDialog } from '../auth/AuthDialog.js';
 import { EditorSettingsDialog } from './EditorSettingsDialog.js';
 import { TrustDialog } from './TrustDialog.js';
@@ -34,9 +35,11 @@ import process from 'node:process';
 import { type UseHistoryManagerReturn } from '../hooks/useHistoryManager.js';
 import { IdeTrustChangeDialog } from './IdeTrustChangeDialog.js';
 import { WelcomeBackDialog } from './WelcomeBackDialog.js';
+import { AgentCreationWizard } from './subagents/create/AgentCreationWizard.js';
 import { AgentsManagerDialog } from './subagents/manage/AgentsManagerDialog.js';
 import { ExtensionsManagerDialog } from './extensions/ExtensionsManagerDialog.js';
 import { MCPManagementDialog } from './mcp/MCPManagementDialog.js';
+import { HooksManagementDialog } from './hooks/HooksManagementDialog.js';
 import { SessionPicker } from './SessionPicker.js';
 
 interface DialogManagerProps {
@@ -289,6 +292,15 @@ export const DialogManager = ({
     );
   }
 
+  if (uiState.isAuthenticating) {
+    // QWEN_OAUTH authentication flow is not available in this build
+    // Using simplified authentication handling
+    return (
+      <Box>
+        <Text color={theme.text.secondary}>Authenticating...</Text>
+      </Box>
+    );
+  }
   if (uiState.isTrustDialogOpen) {
     return (
       <TrustDialog onExit={uiActions.closeTrustDialog} addItem={addItem} />
@@ -299,9 +311,13 @@ export const DialogManager = ({
     return <PermissionsDialog onExit={uiActions.closePermissionsDialog} />;
   }
 
-  // AgentCreationWizard has been removed
   if (uiState.isSubagentCreateDialogOpen) {
-    uiActions.closeSubagentCreateDialog();
+    return (
+      <AgentCreationWizard
+        onClose={uiActions.closeSubagentCreateDialog}
+        config={config}
+      />
+    );
   }
 
   if (uiState.isAgentsManagerDialogOpen) {
@@ -320,6 +336,9 @@ export const DialogManager = ({
         config={config}
       />
     );
+  }
+  if (uiState.isHooksDialogOpen) {
+    return <HooksManagementDialog onClose={uiActions.closeHooksDialog} />;
   }
   if (uiState.isMcpDialogOpen) {
     return <MCPManagementDialog onClose={uiActions.closeMcpDialog} />;

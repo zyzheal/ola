@@ -47,7 +47,7 @@
           "default": true
         },
         "gitCoAuthor": {
-          "description": "Automatically add a Co-authored-by trailer to git commit messages when commits are made through OLA.",
+          "description": "Automatically add a Co-authored-by trailer to git commit messages when commits are made through Qwen Code.",
           "type": "boolean",
           "default": true
         },
@@ -68,7 +68,7 @@
           "default": false
         },
         "language": {
-          "description": "The language for the user interface. Use \"auto\" to detect from system settings. You can also use custom language codes (e.g., \"es\", \"fr\") by placing JS language files in ~/.ola/locales/ (e.g., ~/.ola/locales/es.js). Options: auto, en, zh, ru, de, ja, pt",
+          "description": "The language for the user interface. Use \"auto\" to detect from system settings. You can also use custom language codes (e.g., \"es\", \"fr\") by placing JS language files in ~/.qwen/locales/ (e.g., ~/.qwen/locales/es.js). Options: auto, en, zh, ru, de, ja, pt",
           "enum": [
             "auto",
             "en",
@@ -83,25 +83,7 @@
         "outputLanguage": {
           "description": "The language for LLM output. Use \"auto\" to detect from system settings, or set a specific language.",
           "type": "string",
-          "default": "Chinese"
-        },
-        "trustedCommands": {
-          "description": "Commands that are automatically approved without confirmation.",
-          "type": "object",
-          "properties": {
-            "patterns": {
-              "description": "Glob patterns for commands to trust (e.g., \"find *\", \"git *\").",
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "enabled": {
-              "description": "Enable automatic approval of trusted commands.",
-              "type": "boolean",
-              "default": false
-            }
-          }
+          "default": "auto"
         },
         "terminalBell": {
           "description": "Play terminal bell sound when response completes or needs approval.",
@@ -157,7 +139,7 @@
           "default": false
         },
         "showStatusInTitle": {
-          "description": "Show OLA status and thoughts in the terminal window title",
+          "description": "Show Qwen Code status and thoughts in the terminal window title",
           "type": "boolean",
           "default": false
         },
@@ -319,7 +301,7 @@
               "default": "auto"
             },
             "contextWindowSize": {
-              "description": "Overrides the default context window size for the selected model. Use this setting when a provider's effective context limit differs from OLA's default. This value defines the model's assumed maximum context capacity, not a per-request token limit.",
+              "description": "Overrides the default context window size for the selected model. Use this setting when a provider's effective context limit differs from Qwen Code's default. This value defines the model's assumed maximum context capacity, not a per-request token limit.",
               "type": "number"
             }
           }
@@ -361,7 +343,7 @@
               "default": true
             },
             "respectQwenIgnore": {
-              "description": "Respect .olaignore files when searching",
+              "description": "Respect .qwenignore files when searching",
               "type": "boolean",
               "default": true
             },
@@ -599,7 +581,7 @@
           "additionalProperties": true
         },
         "runtimeOutputDir": {
-          "description": "Custom directory for runtime output (temp files, debug logs, session data, todos, etc.). Config files remain at ~/.ola. Env var OLA_RUNTIME_DIR takes priority.",
+          "description": "Custom directory for runtime output (temp files, debug logs, session data, todos, etc.). Config files remain at ~/.qwen. Env var QWEN_RUNTIME_DIR takes priority.",
           "type": "string"
         },
         "tavilyApiKey": {
@@ -628,7 +610,7 @@
           "type": "object",
           "properties": {
             "worktreeBaseDir": {
-              "description": "Custom base directory for Arena worktrees. Defaults to ~/.ola/arena.",
+              "description": "Custom base directory for Arena worktrees. Defaults to ~/.qwen/arena.",
               "type": "string"
             },
             "preserveArtifacts": {
@@ -814,70 +796,650 @@
           "description": "Hooks that execute when notifications are sent.",
           "type": "array",
           "items": {
-            "type": "string"
+            "description": "A hook definition with an optional matcher and a list of hook configurations.",
+            "type": "object",
+            "properties": {
+              "matcher": {
+                "description": "An optional matcher pattern to filter when this hook definition applies.",
+                "type": "string"
+              },
+              "sequential": {
+                "description": "Whether the hooks should be executed sequentially instead of in parallel.",
+                "type": "boolean"
+              },
+              "hooks": {
+                "description": "The list of hook configurations to execute.",
+                "type": "array",
+                "items": {
+                  "description": "A hook configuration entry that defines a command to execute.",
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "description": "The type of hook.",
+                      "type": "string",
+                      "enum": [
+                        "command"
+                      ]
+                    },
+                    "command": {
+                      "description": "The command to execute when the hook is triggered.",
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "An optional name for the hook.",
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "An optional description of what the hook does.",
+                      "type": "string"
+                    },
+                    "timeout": {
+                      "description": "Timeout in milliseconds for the hook execution.",
+                      "type": "number"
+                    },
+                    "env": {
+                      "description": "Environment variables to set when executing the hook command.",
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "command"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "hooks"
+            ]
           }
         },
         "PreToolUse": {
           "description": "Hooks that execute before tool execution.",
           "type": "array",
           "items": {
-            "type": "string"
+            "description": "A hook definition with an optional matcher and a list of hook configurations.",
+            "type": "object",
+            "properties": {
+              "matcher": {
+                "description": "An optional matcher pattern to filter when this hook definition applies.",
+                "type": "string"
+              },
+              "sequential": {
+                "description": "Whether the hooks should be executed sequentially instead of in parallel.",
+                "type": "boolean"
+              },
+              "hooks": {
+                "description": "The list of hook configurations to execute.",
+                "type": "array",
+                "items": {
+                  "description": "A hook configuration entry that defines a command to execute.",
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "description": "The type of hook.",
+                      "type": "string",
+                      "enum": [
+                        "command"
+                      ]
+                    },
+                    "command": {
+                      "description": "The command to execute when the hook is triggered.",
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "An optional name for the hook.",
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "An optional description of what the hook does.",
+                      "type": "string"
+                    },
+                    "timeout": {
+                      "description": "Timeout in milliseconds for the hook execution.",
+                      "type": "number"
+                    },
+                    "env": {
+                      "description": "Environment variables to set when executing the hook command.",
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "command"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "hooks"
+            ]
           }
         },
         "PostToolUse": {
           "description": "Hooks that execute after successful tool execution.",
           "type": "array",
           "items": {
-            "type": "string"
+            "description": "A hook definition with an optional matcher and a list of hook configurations.",
+            "type": "object",
+            "properties": {
+              "matcher": {
+                "description": "An optional matcher pattern to filter when this hook definition applies.",
+                "type": "string"
+              },
+              "sequential": {
+                "description": "Whether the hooks should be executed sequentially instead of in parallel.",
+                "type": "boolean"
+              },
+              "hooks": {
+                "description": "The list of hook configurations to execute.",
+                "type": "array",
+                "items": {
+                  "description": "A hook configuration entry that defines a command to execute.",
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "description": "The type of hook.",
+                      "type": "string",
+                      "enum": [
+                        "command"
+                      ]
+                    },
+                    "command": {
+                      "description": "The command to execute when the hook is triggered.",
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "An optional name for the hook.",
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "An optional description of what the hook does.",
+                      "type": "string"
+                    },
+                    "timeout": {
+                      "description": "Timeout in milliseconds for the hook execution.",
+                      "type": "number"
+                    },
+                    "env": {
+                      "description": "Environment variables to set when executing the hook command.",
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "command"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "hooks"
+            ]
           }
         },
         "PostToolUseFailure": {
           "description": "Hooks that execute when tool execution fails. ",
           "type": "array",
           "items": {
-            "type": "string"
+            "description": "A hook definition with an optional matcher and a list of hook configurations.",
+            "type": "object",
+            "properties": {
+              "matcher": {
+                "description": "An optional matcher pattern to filter when this hook definition applies.",
+                "type": "string"
+              },
+              "sequential": {
+                "description": "Whether the hooks should be executed sequentially instead of in parallel.",
+                "type": "boolean"
+              },
+              "hooks": {
+                "description": "The list of hook configurations to execute.",
+                "type": "array",
+                "items": {
+                  "description": "A hook configuration entry that defines a command to execute.",
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "description": "The type of hook.",
+                      "type": "string",
+                      "enum": [
+                        "command"
+                      ]
+                    },
+                    "command": {
+                      "description": "The command to execute when the hook is triggered.",
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "An optional name for the hook.",
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "An optional description of what the hook does.",
+                      "type": "string"
+                    },
+                    "timeout": {
+                      "description": "Timeout in milliseconds for the hook execution.",
+                      "type": "number"
+                    },
+                    "env": {
+                      "description": "Environment variables to set when executing the hook command.",
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "command"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "hooks"
+            ]
           }
         },
         "SessionStart": {
           "description": "Hooks that execute when a new session starts or resumes.",
           "type": "array",
           "items": {
-            "type": "string"
+            "description": "A hook definition with an optional matcher and a list of hook configurations.",
+            "type": "object",
+            "properties": {
+              "matcher": {
+                "description": "An optional matcher pattern to filter when this hook definition applies.",
+                "type": "string"
+              },
+              "sequential": {
+                "description": "Whether the hooks should be executed sequentially instead of in parallel.",
+                "type": "boolean"
+              },
+              "hooks": {
+                "description": "The list of hook configurations to execute.",
+                "type": "array",
+                "items": {
+                  "description": "A hook configuration entry that defines a command to execute.",
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "description": "The type of hook.",
+                      "type": "string",
+                      "enum": [
+                        "command"
+                      ]
+                    },
+                    "command": {
+                      "description": "The command to execute when the hook is triggered.",
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "An optional name for the hook.",
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "An optional description of what the hook does.",
+                      "type": "string"
+                    },
+                    "timeout": {
+                      "description": "Timeout in milliseconds for the hook execution.",
+                      "type": "number"
+                    },
+                    "env": {
+                      "description": "Environment variables to set when executing the hook command.",
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "command"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "hooks"
+            ]
           }
         },
         "SessionEnd": {
           "description": "Hooks that execute when a session ends.",
           "type": "array",
           "items": {
-            "type": "string"
+            "description": "A hook definition with an optional matcher and a list of hook configurations.",
+            "type": "object",
+            "properties": {
+              "matcher": {
+                "description": "An optional matcher pattern to filter when this hook definition applies.",
+                "type": "string"
+              },
+              "sequential": {
+                "description": "Whether the hooks should be executed sequentially instead of in parallel.",
+                "type": "boolean"
+              },
+              "hooks": {
+                "description": "The list of hook configurations to execute.",
+                "type": "array",
+                "items": {
+                  "description": "A hook configuration entry that defines a command to execute.",
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "description": "The type of hook.",
+                      "type": "string",
+                      "enum": [
+                        "command"
+                      ]
+                    },
+                    "command": {
+                      "description": "The command to execute when the hook is triggered.",
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "An optional name for the hook.",
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "An optional description of what the hook does.",
+                      "type": "string"
+                    },
+                    "timeout": {
+                      "description": "Timeout in milliseconds for the hook execution.",
+                      "type": "number"
+                    },
+                    "env": {
+                      "description": "Environment variables to set when executing the hook command.",
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "command"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "hooks"
+            ]
           }
         },
         "PreCompact": {
           "description": "Hooks that execute before conversation compaction.",
           "type": "array",
           "items": {
-            "type": "string"
+            "description": "A hook definition with an optional matcher and a list of hook configurations.",
+            "type": "object",
+            "properties": {
+              "matcher": {
+                "description": "An optional matcher pattern to filter when this hook definition applies.",
+                "type": "string"
+              },
+              "sequential": {
+                "description": "Whether the hooks should be executed sequentially instead of in parallel.",
+                "type": "boolean"
+              },
+              "hooks": {
+                "description": "The list of hook configurations to execute.",
+                "type": "array",
+                "items": {
+                  "description": "A hook configuration entry that defines a command to execute.",
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "description": "The type of hook.",
+                      "type": "string",
+                      "enum": [
+                        "command"
+                      ]
+                    },
+                    "command": {
+                      "description": "The command to execute when the hook is triggered.",
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "An optional name for the hook.",
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "An optional description of what the hook does.",
+                      "type": "string"
+                    },
+                    "timeout": {
+                      "description": "Timeout in milliseconds for the hook execution.",
+                      "type": "number"
+                    },
+                    "env": {
+                      "description": "Environment variables to set when executing the hook command.",
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "command"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "hooks"
+            ]
           }
         },
         "SubagentStart": {
           "description": "Hooks that execute when a subagent (Task tool call) is started.",
           "type": "array",
           "items": {
-            "type": "string"
+            "description": "A hook definition with an optional matcher and a list of hook configurations.",
+            "type": "object",
+            "properties": {
+              "matcher": {
+                "description": "An optional matcher pattern to filter when this hook definition applies.",
+                "type": "string"
+              },
+              "sequential": {
+                "description": "Whether the hooks should be executed sequentially instead of in parallel.",
+                "type": "boolean"
+              },
+              "hooks": {
+                "description": "The list of hook configurations to execute.",
+                "type": "array",
+                "items": {
+                  "description": "A hook configuration entry that defines a command to execute.",
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "description": "The type of hook.",
+                      "type": "string",
+                      "enum": [
+                        "command"
+                      ]
+                    },
+                    "command": {
+                      "description": "The command to execute when the hook is triggered.",
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "An optional name for the hook.",
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "An optional description of what the hook does.",
+                      "type": "string"
+                    },
+                    "timeout": {
+                      "description": "Timeout in milliseconds for the hook execution.",
+                      "type": "number"
+                    },
+                    "env": {
+                      "description": "Environment variables to set when executing the hook command.",
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "command"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "hooks"
+            ]
           }
         },
         "SubagentStop": {
           "description": "Hooks that execute right before a subagent (Task tool call) concludes its response.",
           "type": "array",
           "items": {
-            "type": "string"
+            "description": "A hook definition with an optional matcher and a list of hook configurations.",
+            "type": "object",
+            "properties": {
+              "matcher": {
+                "description": "An optional matcher pattern to filter when this hook definition applies.",
+                "type": "string"
+              },
+              "sequential": {
+                "description": "Whether the hooks should be executed sequentially instead of in parallel.",
+                "type": "boolean"
+              },
+              "hooks": {
+                "description": "The list of hook configurations to execute.",
+                "type": "array",
+                "items": {
+                  "description": "A hook configuration entry that defines a command to execute.",
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "description": "The type of hook.",
+                      "type": "string",
+                      "enum": [
+                        "command"
+                      ]
+                    },
+                    "command": {
+                      "description": "The command to execute when the hook is triggered.",
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "An optional name for the hook.",
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "An optional description of what the hook does.",
+                      "type": "string"
+                    },
+                    "timeout": {
+                      "description": "Timeout in milliseconds for the hook execution.",
+                      "type": "number"
+                    },
+                    "env": {
+                      "description": "Environment variables to set when executing the hook command.",
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "command"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "hooks"
+            ]
           }
         },
         "PermissionRequest": {
           "description": "Hooks that execute when a permission dialog is displayed.",
           "type": "array",
           "items": {
-            "type": "string"
+            "description": "A hook definition with an optional matcher and a list of hook configurations.",
+            "type": "object",
+            "properties": {
+              "matcher": {
+                "description": "An optional matcher pattern to filter when this hook definition applies.",
+                "type": "string"
+              },
+              "sequential": {
+                "description": "Whether the hooks should be executed sequentially instead of in parallel.",
+                "type": "boolean"
+              },
+              "hooks": {
+                "description": "The list of hook configurations to execute.",
+                "type": "array",
+                "items": {
+                  "description": "A hook configuration entry that defines a command to execute.",
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "description": "The type of hook.",
+                      "type": "string",
+                      "enum": [
+                        "command"
+                      ]
+                    },
+                    "command": {
+                      "description": "The command to execute when the hook is triggered.",
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "An optional name for the hook.",
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "An optional description of what the hook does.",
+                      "type": "string"
+                    },
+                    "timeout": {
+                      "description": "Timeout in milliseconds for the hook execution.",
+                      "type": "number"
+                    },
+                    "env": {
+                      "description": "Environment variables to set when executing the hook command.",
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "command"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "hooks"
+            ]
           }
         }
       }

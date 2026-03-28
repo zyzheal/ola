@@ -13,18 +13,18 @@ import * as path from 'node:path';
 
 export interface FilterFilesOptions {
   respectGitIgnore?: boolean;
-  respectQwenIgnore?: boolean;
+  respectOlaIgnore?: boolean;
 }
 
 export interface FilterReport {
   filteredPaths: string[];
   gitIgnoredCount: number;
-  qwenIgnoredCount: number;
+  olaIgnoredCount: number;
 }
 
 export class FileDiscoveryService {
   private gitIgnoreFilter: GitIgnoreFilter | null = null;
-  private qwenIgnoreFilter: AipIgnoreFilter | null = null;
+  private olaIgnoreFilter: AipIgnoreFilter | null = null;
   private projectRoot: string;
 
   constructor(projectRoot: string) {
@@ -32,7 +32,7 @@ export class FileDiscoveryService {
     if (isGitRepository(this.projectRoot)) {
       this.gitIgnoreFilter = new GitIgnoreParser(this.projectRoot);
     }
-    this.qwenIgnoreFilter = new OlaIgnoreParser(this.projectRoot);
+    this.olaIgnoreFilter = new OlaIgnoreParser(this.projectRoot);
   }
 
   /**
@@ -42,14 +42,14 @@ export class FileDiscoveryService {
     filePaths: string[],
     options: FilterFilesOptions = {
       respectGitIgnore: true,
-      respectQwenIgnore: true,
+      respectOlaIgnore: true,
     },
   ): string[] {
     return filePaths.filter((filePath) => {
       if (options.respectGitIgnore && this.shouldGitIgnoreFile(filePath)) {
         return false;
       }
-      if (options.respectQwenIgnore && this.shouldQwenIgnoreFile(filePath)) {
+      if (options.respectOlaIgnore && this.shouldOlaIgnoreFile(filePath)) {
         return false;
       }
       return true;
@@ -64,12 +64,12 @@ export class FileDiscoveryService {
     filePaths: string[],
     opts: FilterFilesOptions = {
       respectGitIgnore: true,
-      respectQwenIgnore: true,
+      respectOlaIgnore: true,
     },
   ): FilterReport {
     const filteredPaths: string[] = [];
     let gitIgnoredCount = 0;
-    let qwenIgnoredCount = 0;
+    let olaIgnoredCount = 0;
 
     for (const filePath of filePaths) {
       if (opts.respectGitIgnore && this.shouldGitIgnoreFile(filePath)) {
@@ -77,8 +77,8 @@ export class FileDiscoveryService {
         continue;
       }
 
-      if (opts.respectQwenIgnore && this.shouldQwenIgnoreFile(filePath)) {
-        qwenIgnoredCount++;
+      if (opts.respectOlaIgnore && this.shouldOlaIgnoreFile(filePath)) {
+        olaIgnoredCount++;
         continue;
       }
 
@@ -88,7 +88,7 @@ export class FileDiscoveryService {
     return {
       filteredPaths,
       gitIgnoredCount,
-      qwenIgnoredCount,
+      olaIgnoredCount,
     };
   }
 
@@ -103,11 +103,11 @@ export class FileDiscoveryService {
   }
 
   /**
-   * Checks if a single file should be qwen-ignored
+   * Checks if a single file should be ola-ignored
    */
-  shouldQwenIgnoreFile(filePath: string): boolean {
-    if (this.qwenIgnoreFilter) {
-      return this.qwenIgnoreFilter.isIgnored(filePath);
+  shouldOlaIgnoreFile(filePath: string): boolean {
+    if (this.olaIgnoreFilter) {
+      return this.olaIgnoreFilter.isIgnored(filePath);
     }
     return false;
   }
@@ -121,13 +121,13 @@ export class FileDiscoveryService {
   ): boolean {
     const {
       respectGitIgnore = true,
-      respectQwenIgnore: respectQwenIgnore = true,
+      respectOlaIgnore: respectOlaIgnore = true,
     } = options;
 
     if (respectGitIgnore && this.shouldGitIgnoreFile(filePath)) {
       return true;
     }
-    if (respectQwenIgnore && this.shouldQwenIgnoreFile(filePath)) {
+    if (respectOlaIgnore && this.shouldOlaIgnoreFile(filePath)) {
       return true;
     }
     return false;

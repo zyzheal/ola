@@ -1,0 +1,12 @@
+# OLA 运行时文件
+.ola/debug/
+.ola/tmp/
+.ola/todos/
+.ola/projects/
+
+# 备份文件
+.ola/*.bak
+.ola/*.orig
+
+# 日志文件
+.ola/*.log

@@ -51,7 +51,7 @@ observability framework — OLA's observability system provides:
 >
 > **⚠️ Special Note: This feature requires corresponding code changes. This documentation is provided in advance; please refer to future code updates for actual functionality.**
 
-All telemetry behavior is controlled through your `.qwen/settings.json` file.
+All telemetry behavior is controlled through your `.ola/settings.json` file.
 These settings can be overridden by environment variables or CLI flags.
 
 | Setting        | Environment Variable           | CLI Flag                                                 | Description                                       | Values             | Default                 |
@@ -77,7 +77,7 @@ For detailed information about all configuration options, see the
 
 Sends telemetry directly to Aliyun services. No collector needed.
 
-1. Enable telemetry in your `.qwen/settings.json`:
+1. Enable telemetry in your `.ola/settings.json`:
    ```json
    {
      "telemetry": {
@@ -95,19 +95,19 @@ For local development and debugging, you can capture telemetry data locally:
 
 ### File-based Output (Recommended)
 
-1. Enable telemetry in your `.qwen/settings.json`:
+1. Enable telemetry in your `.ola/settings.json`:
    ```json
    {
      "telemetry": {
        "enabled": true,
        "target": "local",
        "otlpEndpoint": "",
-       "outfile": ".qwen/telemetry.log"
+       "outfile": ".ola/telemetry.log"
      }
    }
    ```
 2. Run OLA and send prompts.
-3. View logs and metrics in the specified file (e.g., `.qwen/telemetry.log`).
+3. View logs and metrics in the specified file (e.g., `.ola/telemetry.log`).
 
 ### Collector-Based Export (Advanced)
 
@@ -119,7 +119,7 @@ For local development and debugging, you can capture telemetry data locally:
    - Download and start Jaeger and OTEL collector
    - Configure your workspace for local telemetry
    - Provide a Jaeger UI at http://localhost:16686
-   - Save logs/metrics to `~/.qwen/tmp/<projectHash>/otel/collector.log`
+   - Save logs/metrics to `~/.ola/tmp/<projectHash>/otel/collector.log`
    - Stop collector on exit (e.g. `Ctrl+C`)
 2. Run OLA and send prompts.
 3. View traces at http://localhost:16686 and logs/metrics in the collector log

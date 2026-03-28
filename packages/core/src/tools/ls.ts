@@ -197,16 +197,16 @@ class LSToolInvocation extends BaseToolInvocation<LSToolParams, ToolResult> {
       );
 
       const fileDiscovery = this.config.getFileService();
-      const { filteredPaths, gitIgnoredCount, qwenIgnoredCount } =
+      const { filteredPaths, gitIgnoredCount, olaIgnoredCount } =
         fileDiscovery.filterFilesWithReport(relativePaths, {
           respectGitIgnore:
             this.params.file_filtering_options?.respect_git_ignore ??
             this.config.getFileFilteringOptions().respectGitIgnore ??
             DEFAULT_FILE_FILTERING_OPTIONS.respectGitIgnore,
-          respectQwenIgnore:
+          respectOlaIgnore:
             this.params.file_filtering_options?.respect_qwen_ignore ??
-            this.config.getFileFilteringOptions().respectQwenIgnore ??
-            DEFAULT_FILE_FILTERING_OPTIONS.respectQwenIgnore,
+            this.config.getFileFilteringOptions().respectOlaIgnore ??
+            DEFAULT_FILE_FILTERING_OPTIONS.respectOlaIgnore,
         });
 
       const entries = [];
@@ -265,8 +265,8 @@ class LSToolInvocation extends BaseToolInvocation<LSToolParams, ToolResult> {
       if (gitIgnoredCount > 0) {
         ignoredMessages.push(`${gitIgnoredCount} git-ignored`);
       }
-      if (qwenIgnoredCount > 0) {
-        ignoredMessages.push(`${qwenIgnoredCount} qwen-ignored`);
+      if (olaIgnoredCount > 0) {
+        ignoredMessages.push(`${olaIgnoredCount} qwen-ignored`);
       }
       if (ignoredMessages.length > 0) {
         resultMessage += `\n\n(${ignoredMessages.join(', ')})`;

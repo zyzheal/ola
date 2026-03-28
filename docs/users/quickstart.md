@@ -10,7 +10,7 @@ Make sure you have:
 
 - A **terminal** or command prompt open
 - A code project to work with
-- A [OLA](https://chat.qwen.ai/auth?mode=register) account
+- A [OLA](https://chat.ola.ai/auth?mode=register) account
 
 ## Step 1: Install OLA
 
@@ -70,7 +70,7 @@ Select `Qwen OAuth`, log in to your account and follow the prompts to confirm. O
 
 > [!note]
 >
-> When you first authenticate OLA with your Qwen account, a workspace called ".qwen" is automatically created for you. This workspace provides centralized cost tracking and management for all OLA usage in your organization.
+> When you first authenticate OLA with your Qwen account, a workspace called ".ola" is automatically created for you. This workspace provides centralized cost tracking and management for all OLA usage in your organization.
 
 > [!tip]
 >

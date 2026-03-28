@@ -17,6 +17,9 @@ export * from './permissions/index.js';
 
 // Model configuration
 export {
+  DEFAULT_AIP_MODEL,
+  DEFAULT_AIP_FLASH_MODEL,
+  DEFAULT_AIP_EMBEDDING_MODEL,
   DEFAULT_OLA_MODEL,
   DEFAULT_OLA_FLASH_MODEL,
   DEFAULT_OLA_EMBEDDING_MODEL,
@@ -54,6 +57,7 @@ export * from './output/types.js';
 export * from './core/client.js';
 export * from './core/contentGenerator.js';
 export * from './core/coreToolScheduler.js';
+export * from './core/permission-helpers.js';
 export * from './core/geminiChat.js';
 export * from './core/geminiRequest.js';
 export * from './core/logger.js';
@@ -126,7 +130,6 @@ export * from './ide/types.js';
 export * from './lsp/constants.js';
 export * from './lsp/LspConfigLoader.js';
 export * from './lsp/LspConnectionFactory.js';
-export * from './lsp/LspLanguageDetector.js';
 export * from './lsp/LspResponseNormalizer.js';
 export * from './lsp/LspServerManager.js';
 export * from './lsp/NativeLspClient.js';
@@ -159,7 +162,7 @@ export type {
 // Telemetry
 // ============================================================================
 
-export { OlaLogger } from './telemetry/ola-logger/ola-logger.js';
+export { QwenLogger } from './telemetry/qwen-logger/qwen-logger.js';
 export * from './telemetry/index.js';
 export {
   logAuth,
@@ -236,6 +239,13 @@ export * from './utils/workspaceContext.js';
 export * from './utils/yaml-parser.js';
 
 // ============================================================================
+// OAuth & Authentication
+// ============================================================================
+
+// NOTE: Qwen OAuth implementation is ola-specific
+// export * from './qwen/qwenOAuth2.js';
+
+// ============================================================================
 // Testing Utilities
 // ============================================================================
 
@@ -253,5 +263,6 @@ export type { HookRegistryEntry } from './hooks/index.js';
 // Export hook triggers for notification hooks
 export {
   fireNotificationHook,
+  firePermissionRequestHook,
   type NotificationHookResult,
 } from './core/toolHookTriggers.js';

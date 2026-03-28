@@ -61,7 +61,7 @@ import {
   recordArenaAgentCompletedMetrics,
   recordArenaSessionEndedMetrics,
 } from './metrics.js';
-import { OlaLogger } from './ola-logger/ola-logger.js';
+import { QwenLogger } from './qwen-logger/qwen-logger.js';
 import { isTelemetrySdkInitialized } from './sdk.js';
 import type {
   ApiErrorEvent,
@@ -102,6 +102,7 @@ import type {
   ArenaAgentCompletedEvent,
   ArenaSessionEndedEvent,
 } from './types.js';
+import type { HookCallEvent } from './types.js';
 import type { UiEvent } from './uiTelemetry.js';
 import { uiTelemetryService } from './uiTelemetry.js';
 
@@ -114,11 +115,13 @@ function getCommonAttributes(config: Config): LogAttributes {
   };
 }
 
+export { getCommonAttributes };
+
 export function logStartSession(
   config: Config,
   event: StartSessionEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logStartSessionEvent(event);
+  QwenLogger.getInstance(config)?.logStartSessionEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -154,7 +157,7 @@ export function logStartSession(
 }
 
 export function logUserPrompt(config: Config, event: UserPromptEvent): void {
-  OlaLogger.getInstance(config)?.logNewPromptEvent(event);
+  QwenLogger.getInstance(config)?.logNewPromptEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -182,7 +185,7 @@ export function logUserPrompt(config: Config, event: UserPromptEvent): void {
 }
 
 export function logUserRetry(config: Config, event: UserRetryEvent): void {
-  OlaLogger.getInstance(config)?.logRetryEvent(event);
+  QwenLogger.getInstance(config)?.logRetryEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -208,7 +211,7 @@ export function logToolCall(config: Config, event: ToolCallEvent): void {
   } as UiEvent;
   uiTelemetryService.addEvent(uiEvent);
   config.getChatRecordingService()?.recordUiTelemetryEvent(uiEvent);
-  OlaLogger.getInstance(config)?.logToolCallEvent(event);
+  QwenLogger.getInstance(config)?.logToolCallEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -243,7 +246,7 @@ export function logToolOutputTruncated(
   config: Config,
   event: ToolOutputTruncatedEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logToolOutputTruncatedEvent(event);
+  QwenLogger.getInstance(config)?.logToolOutputTruncatedEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -265,7 +268,7 @@ export function logFileOperation(
   config: Config,
   event: FileOperationEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logFileOperationEvent(event);
+  QwenLogger.getInstance(config)?.logFileOperationEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -306,7 +309,7 @@ export function logFileOperation(
 }
 
 export function logApiRequest(config: Config, event: ApiRequestEvent): void {
-  // OlaLogger.getInstance(config)?.logApiRequestEvent(event);
+  // QwenLogger.getInstance(config)?.logApiRequestEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -328,7 +331,7 @@ export function logFlashFallback(
   config: Config,
   event: FlashFallbackEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logFlashFallbackEvent(event);
+  QwenLogger.getInstance(config)?.logFlashFallbackEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -350,7 +353,7 @@ export function logRipgrepFallback(
   config: Config,
   event: RipgrepFallbackEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logRipgrepFallbackEvent(event);
+  QwenLogger.getInstance(config)?.logRipgrepFallbackEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -376,7 +379,7 @@ export function logApiError(config: Config, event: ApiErrorEvent): void {
   } as UiEvent;
   uiTelemetryService.addEvent(uiEvent);
   config.getChatRecordingService()?.recordUiTelemetryEvent(uiEvent);
-  OlaLogger.getInstance(config)?.logApiErrorEvent(event);
+  QwenLogger.getInstance(config)?.logApiErrorEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -416,7 +419,7 @@ export function logApiCancel(config: Config, event: ApiCancelEvent): void {
     'event.timestamp': new Date().toISOString(),
   } as UiEvent;
   uiTelemetryService.addEvent(uiEvent);
-  OlaLogger.getInstance(config)?.logApiCancelEvent(event);
+  QwenLogger.getInstance(config)?.logApiCancelEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -443,7 +446,7 @@ export function logApiResponse(config: Config, event: ApiResponseEvent): void {
   } as UiEvent;
   uiTelemetryService.addEvent(uiEvent);
   config.getChatRecordingService()?.recordUiTelemetryEvent(uiEvent);
-  OlaLogger.getInstance(config)?.logApiResponseEvent(event);
+  QwenLogger.getInstance(config)?.logApiResponseEvent(event);
   if (!isTelemetrySdkInitialized()) return;
   const attributes: LogAttributes = {
     ...getCommonAttributes(config),
@@ -496,7 +499,7 @@ export function logLoopDetected(
   config: Config,
   event: LoopDetectedEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logLoopDetectedEvent(event);
+  QwenLogger.getInstance(config)?.logLoopDetectedEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -516,14 +519,14 @@ export function logLoopDetectionDisabled(
   config: Config,
   _event: LoopDetectionDisabledEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logLoopDetectionDisabledEvent();
+  QwenLogger.getInstance(config)?.logLoopDetectionDisabledEvent();
 }
 
 export function logNextSpeakerCheck(
   config: Config,
   event: NextSpeakerCheckEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logNextSpeakerCheck(event);
+  QwenLogger.getInstance(config)?.logNextSpeakerCheck(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -544,7 +547,7 @@ export function logSlashCommand(
   config: Config,
   event: SlashCommandEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logSlashCommandEvent(event);
+  QwenLogger.getInstance(config)?.logSlashCommandEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -565,7 +568,7 @@ export function logIdeConnection(
   config: Config,
   event: IdeConnectionEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logIdeConnectionEvent(event);
+  QwenLogger.getInstance(config)?.logIdeConnectionEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -586,7 +589,7 @@ export function logConversationFinishedEvent(
   config: Config,
   event: ConversationFinishedEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logConversationFinishedEvent(event);
+  QwenLogger.getInstance(config)?.logConversationFinishedEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -607,7 +610,7 @@ export function logChatCompression(
   config: Config,
   event: ChatCompressionEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logChatCompressionEvent(event);
+  QwenLogger.getInstance(config)?.logChatCompressionEvent(event);
 
   const attributes: LogAttributes = {
     ...getCommonAttributes(config),
@@ -632,7 +635,7 @@ export function logKittySequenceOverflow(
   config: Config,
   event: KittySequenceOverflowEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logKittySequenceOverflowEvent(event);
+  QwenLogger.getInstance(config)?.logKittySequenceOverflowEvent(event);
   if (!isTelemetrySdkInitialized()) return;
   const attributes: LogAttributes = {
     ...getCommonAttributes(config),
@@ -650,7 +653,7 @@ export function logMalformedJsonResponse(
   config: Config,
   event: MalformedJsonResponseEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logMalformedJsonResponseEvent(event);
+  QwenLogger.getInstance(config)?.logMalformedJsonResponseEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -671,7 +674,7 @@ export function logInvalidChunk(
   config: Config,
   event: InvalidChunkEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logInvalidChunkEvent(event);
+  QwenLogger.getInstance(config)?.logInvalidChunkEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -697,7 +700,7 @@ export function logContentRetry(
   config: Config,
   event: ContentRetryEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logContentRetryEvent(event);
+  QwenLogger.getInstance(config)?.logContentRetryEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -719,7 +722,7 @@ export function logContentRetryFailure(
   config: Config,
   event: ContentRetryFailureEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logContentRetryFailureEvent(event);
+  QwenLogger.getInstance(config)?.logContentRetryFailureEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -741,7 +744,7 @@ export function logSubagentExecution(
   config: Config,
   event: SubagentExecutionEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logSubagentExecutionEvent(event);
+  QwenLogger.getInstance(config)?.logSubagentExecutionEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -769,7 +772,7 @@ export function logModelSlashCommand(
   config: Config,
   event: ModelSlashCommandEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logModelSlashCommandEvent(event);
+  QwenLogger.getInstance(config)?.logModelSlashCommandEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -787,11 +790,16 @@ export function logModelSlashCommand(
   recordModelSlashCommand(config, event);
 }
 
+export function logHookCall(config: Config, event: HookCallEvent): void {
+  // Log to QwenLogger for RUM telemetry only
+  QwenLogger.getInstance(config)?.logHookCallEvent(event);
+}
+
 export function logExtensionInstallEvent(
   config: Config,
   event: ExtensionInstallEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logExtensionInstallEvent(event);
+  QwenLogger.getInstance(config)?.logExtensionInstallEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -817,7 +825,7 @@ export function logExtensionUninstall(
   config: Config,
   event: ExtensionUninstallEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logExtensionUninstallEvent(event);
+  QwenLogger.getInstance(config)?.logExtensionUninstallEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -839,7 +847,7 @@ export async function logExtensionUpdateEvent(
   config: Config,
   event: ExtensionUpdateEvent,
 ): Promise<void> {
-  OlaLogger.getInstance(config)?.logExtensionUpdateEvent(event);
+  QwenLogger.getInstance(config)?.logExtensionUpdateEvent(event);
 
   const attributes: LogAttributes = {
     ...getCommonAttributes(config),
@@ -865,7 +873,7 @@ export function logExtensionEnable(
   config: Config,
   event: ExtensionEnableEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logExtensionEnableEvent(event);
+  QwenLogger.getInstance(config)?.logExtensionEnableEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -887,7 +895,7 @@ export function logExtensionDisable(
   config: Config,
   event: ExtensionDisableEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logExtensionDisableEvent(event);
+  QwenLogger.getInstance(config)?.logExtensionDisableEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -906,7 +914,7 @@ export function logExtensionDisable(
 }
 
 export function logAuth(config: Config, event: AuthEvent): void {
-  OlaLogger.getInstance(config)?.logAuthEvent(event);
+  QwenLogger.getInstance(config)?.logAuthEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -960,7 +968,7 @@ export function logUserFeedback(
   } as UiEvent;
   uiTelemetryService.addEvent(uiEvent);
   config.getChatRecordingService()?.recordUiTelemetryEvent(uiEvent);
-  OlaLogger.getInstance(config)?.logUserFeedbackEvent(event);
+  QwenLogger.getInstance(config)?.logUserFeedbackEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -982,7 +990,7 @@ export function logArenaSessionStarted(
   config: Config,
   event: ArenaSessionStartedEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logArenaSessionStartedEvent(event);
+  QwenLogger.getInstance(config)?.logArenaSessionStartedEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -1006,7 +1014,7 @@ export function logArenaAgentCompleted(
   config: Config,
   event: ArenaAgentCompletedEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logArenaAgentCompletedEvent(event);
+  QwenLogger.getInstance(config)?.logArenaAgentCompletedEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {
@@ -1036,7 +1044,7 @@ export function logArenaSessionEnded(
   config: Config,
   event: ArenaSessionEndedEvent,
 ): void {
-  OlaLogger.getInstance(config)?.logArenaSessionEndedEvent(event);
+  QwenLogger.getInstance(config)?.logArenaSessionEndedEvent(event);
   if (!isTelemetrySdkInitialized()) return;
 
   const attributes: LogAttributes = {

@@ -76,7 +76,7 @@ How should we handle database migration?
 ### Configure Plan Mode as default
 
 ```json
-// .qwen/settings.json
+// .ola/settings.json
 {
   "permissions": {
     "defaultMode": "plan"
@@ -139,7 +139,7 @@ You can review each proposed change and approve or reject it individually.
 ### Configure Default Mode as default
 
 ```bash
-// .qwen/settings.json
+// .ola/settings.json
 {
   "permissions": {
 "defaultMode": "default"
@@ -209,7 +209,7 @@ YOLO Mode grants OLA the highest permissions, automatically approving all tool c
 ### Configuration Example
 
 ```bash
-// .qwen/settings.json
+// .ola/settings.json
 {
   "permissions": {
 "defaultMode": "yolo",
@@ -244,8 +244,8 @@ Default Mode → Auto-Edit Mode → YOLO Mode → Plan Mode → Default Mode
 ### Persistent Configuration
 
 ```
-// Project-level: ./.qwen/settings.json
-// User-level: ~/.qwen/settings.json
+// Project-level: ./.ola/settings.json
+// User-level: ~/.ola/settings.json
 {
   "permissions": {
 "defaultMode": "auto-edit",  // or "plan" or "yolo"

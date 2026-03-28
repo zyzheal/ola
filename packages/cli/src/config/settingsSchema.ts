@@ -107,7 +107,7 @@ export interface SettingsSchema {
 
 /**
  * Common items schema for hook definitions.
- * Used by both UserPromptSubmit and Stop hooks.
+ * Used by all hook event types in the hooks configuration.
  */
 const HOOK_DEFINITION_ITEMS: SettingItemDefinition = {
   type: 'object',
@@ -282,7 +282,7 @@ const SETTINGS_SCHEMA = {
         requiresRestart: false,
         default: true,
         description:
-          'Automatically add a Co-authored-by trailer to git commit messages when commits are made through OLA.',
+          'Automatically add a Co-authored-by trailer to git commit messages when commits are made through Qwen Code.',
         showInDialog: true,
       },
       checkpointing: {
@@ -332,48 +332,11 @@ const SETTINGS_SCHEMA = {
         label: 'Language: Model',
         category: 'General',
         requiresRestart: true,
-        default: 'Chinese',
+        default: 'auto',
         description:
           'The language for LLM output. Use "auto" to detect from system settings, ' +
           'or set a specific language.',
         showInDialog: true,
-      },
-      trustedCommands: {
-        type: 'object',
-        label: 'Trusted Commands',
-        category: 'General',
-        requiresRestart: false,
-        default: {
-          patterns: [] as string[],
-          enabled: false,
-        },
-        description:
-          'Commands that are automatically approved without confirmation.',
-        showInDialog: false,
-        properties: {
-          patterns: {
-            type: 'array',
-            label: 'Command Patterns',
-            category: 'General',
-            requiresRestart: false,
-            default: [] as string[],
-            description:
-              'Glob patterns for commands to trust (e.g., "find *", "git *").',
-            showInDialog: false,
-            items: {
-              type: 'string',
-            },
-          },
-          enabled: {
-            type: 'boolean',
-            label: 'Enable Trusted Commands',
-            category: 'General',
-            requiresRestart: false,
-            default: false,
-            description: 'Enable automatic approval of trusted commands.',
-            showInDialog: false,
-          },
-        },
       },
       terminalBell: {
         type: 'boolean',
@@ -479,7 +442,7 @@ const SETTINGS_SCHEMA = {
         requiresRestart: false,
         default: false,
         description:
-          'Show OLA status and thoughts in the terminal window title',
+          'Show Qwen Code status and thoughts in the terminal window title',
         showInDialog: false,
       },
       hideTips: {
@@ -795,7 +758,7 @@ const SETTINGS_SCHEMA = {
             requiresRestart: false,
             default: undefined,
             description:
-              "Overrides the default context window size for the selected model. Use this setting when a provider's effective context limit differs from OLA's default. This value defines the model's assumed maximum context capacity, not a per-request token limit.",
+              "Overrides the default context window size for the selected model. Use this setting when a provider's effective context limit differs from Qwen Code's default. This value defines the model's assumed maximum context capacity, not a per-request token limit.",
             parentKey: 'generationConfig',
             showInDialog: false,
           },
@@ -869,7 +832,7 @@ const SETTINGS_SCHEMA = {
             description: 'Respect .gitignore files when searching',
             showInDialog: true,
           },
-          respectQwenIgnore: {
+          respectOlaIgnore: {
             type: 'boolean',
             label: 'Respect .olaignore',
             category: 'Context',
@@ -1518,6 +1481,7 @@ const SETTINGS_SCHEMA = {
         description: 'Hooks that execute when notifications are sent.',
         showInDialog: false,
         mergeStrategy: MergeStrategy.CONCAT,
+        items: HOOK_DEFINITION_ITEMS,
       },
       PreToolUse: {
         type: 'array',
@@ -1528,6 +1492,7 @@ const SETTINGS_SCHEMA = {
         description: 'Hooks that execute before tool execution.',
         showInDialog: false,
         mergeStrategy: MergeStrategy.CONCAT,
+        items: HOOK_DEFINITION_ITEMS,
       },
       PostToolUse: {
         type: 'array',
@@ -1538,6 +1503,7 @@ const SETTINGS_SCHEMA = {
         description: 'Hooks that execute after successful tool execution.',
         showInDialog: false,
         mergeStrategy: MergeStrategy.CONCAT,
+        items: HOOK_DEFINITION_ITEMS,
       },
       PostToolUseFailure: {
         type: 'array',
@@ -1548,6 +1514,7 @@ const SETTINGS_SCHEMA = {
         description: 'Hooks that execute when tool execution fails. ',
         showInDialog: false,
         mergeStrategy: MergeStrategy.CONCAT,
+        items: HOOK_DEFINITION_ITEMS,
       },
       SessionStart: {
         type: 'array',
@@ -1558,6 +1525,7 @@ const SETTINGS_SCHEMA = {
         description: 'Hooks that execute when a new session starts or resumes.',
         showInDialog: false,
         mergeStrategy: MergeStrategy.CONCAT,
+        items: HOOK_DEFINITION_ITEMS,
       },
       SessionEnd: {
         type: 'array',
@@ -1568,6 +1536,7 @@ const SETTINGS_SCHEMA = {
         description: 'Hooks that execute when a session ends.',
         showInDialog: false,
         mergeStrategy: MergeStrategy.CONCAT,
+        items: HOOK_DEFINITION_ITEMS,
       },
       PreCompact: {
         type: 'array',
@@ -1578,6 +1547,7 @@ const SETTINGS_SCHEMA = {
         description: 'Hooks that execute before conversation compaction.',
         showInDialog: false,
         mergeStrategy: MergeStrategy.CONCAT,
+        items: HOOK_DEFINITION_ITEMS,
       },
       SubagentStart: {
         type: 'array',
@@ -1589,6 +1559,7 @@ const SETTINGS_SCHEMA = {
           'Hooks that execute when a subagent (Task tool call) is started.',
         showInDialog: false,
         mergeStrategy: MergeStrategy.CONCAT,
+        items: HOOK_DEFINITION_ITEMS,
       },
       SubagentStop: {
         type: 'array',
@@ -1600,6 +1571,7 @@ const SETTINGS_SCHEMA = {
           'Hooks that execute right before a subagent (Task tool call) concludes its response.',
         showInDialog: false,
         mergeStrategy: MergeStrategy.CONCAT,
+        items: HOOK_DEFINITION_ITEMS,
       },
       PermissionRequest: {
         type: 'array',
@@ -1611,6 +1583,7 @@ const SETTINGS_SCHEMA = {
           'Hooks that execute when a permission dialog is displayed.',
         showInDialog: false,
         mergeStrategy: MergeStrategy.CONCAT,
+        items: HOOK_DEFINITION_ITEMS,
       },
     },
   },

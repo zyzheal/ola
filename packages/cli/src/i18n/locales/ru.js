@@ -849,8 +849,8 @@ export default {
   // ============================================================================
   // Команды - Резюме
   // ============================================================================
-  'Generate a project summary and save it to .qwen/PROJECT_SUMMARY.md':
-    'Сгенерировать сводку проекта и сохранить её в .qwen/PROJECT_SUMMARY.md',
+  'Generate a project summary and save it to .ola/PROJECT_SUMMARY.md':
+    'Сгенерировать сводку проекта и сохранить её в .ola/PROJECT_SUMMARY.md',
   'No chat client available to generate summary.':
     'Нет доступного чат-клиента для генерации сводки.',
   'Already generating summary, wait for previous request to complete':

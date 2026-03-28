@@ -37,7 +37,7 @@ Add the following entries to your `.gitignore` file:
 
 ```gitignore
 # ola-cli settings
-.qwen/
+.ola/
 
 # GitHub App credentials
 gha-creds-*.json
@@ -122,7 +122,7 @@ This type of action can be used to invoke a general-purpose, conversational OLA 
 
 - <a name="__input_prompt"></a><a href="#user-content-__input_prompt"><code>prompt</code></a>: _(Optional, default: `You are a helpful assistant.`)_ A string passed to the OLA CLI's [`--prompt` argument](https://github.com/QwenLM/ola-action/blob/main/docs/cli/configuration.md#command-line-arguments).
 
-- <a name="__input_settings"></a><a href="#user-content-__input_settings"><code>settings</code></a>: _(Optional)_ A JSON string written to `.qwen/settings.json` to configure the CLI's _project_ settings.
+- <a name="__input_settings"></a><a href="#user-content-__input_settings"><code>settings</code></a>: _(Optional)_ A JSON string written to `.ola/settings.json` to configure the CLI's _project_ settings.
   For more details, see the documentation on [settings files](https://github.com/QwenLM/ola-action/blob/main/docs/cli/configuration.md#settings-files).
 
 - <a name="__input_use_qwen_code_assist"></a><a href="#user-content-__input_use_qwen_code_assist"><code>use*qwen_code_assist</code></a>: *(Optional, default: `false`)\_ Whether to use Code Assist for OLA model access instead of the default OLA API key.

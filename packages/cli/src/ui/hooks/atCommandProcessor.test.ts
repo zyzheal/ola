@@ -53,7 +53,7 @@ describe('handleAtCommand', () => {
       getFileFilteringRespectQwenIgnore: () => true,
       getFileFilteringOptions: () => ({
         respectGitIgnore: true,
-        respectQwenIgnore: true,
+        respectOlaIgnore: true,
       }),
       getFileSystemService: () => new StandardFileSystemService(),
       getEnableRecursiveFileSearch: vi.fn(() => true),

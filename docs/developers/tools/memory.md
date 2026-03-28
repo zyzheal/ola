@@ -14,7 +14,7 @@ Use `save_memory` to save and recall information across your OLA sessions. With 
 
 ## How to use `save_memory` with OLA
 
-The tool appends the provided `fact` to your context file in the user's home directory (`~/.qwen/QWEN.md` by default). This filename can be configured via `contextFileName`.
+The tool appends the provided `fact` to your context file in the user's home directory (`~/.ola/QWEN.md` by default). This filename can be configured via `contextFileName`.
 
 Once added, the facts are stored under a `## Qwen Added Memories` section. This file is loaded as context in subsequent sessions, allowing the CLI to recall the saved information.
 

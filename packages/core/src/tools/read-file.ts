@@ -219,7 +219,7 @@ export class ReadFileTool extends BaseDeclarativeTool<
     }
 
     const fileService = this.config.getFileService();
-    if (fileService.shouldQwenIgnoreFile(params.file_path)) {
+    if (fileService.shouldOlaIgnoreFile(params.file_path)) {
       return `File path '${filePath}' is ignored by .olaignore pattern(s).`;
     }
 

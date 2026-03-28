@@ -396,7 +396,7 @@ export default {
   'Memory Discovery Max Dirs': '内存发现最大目录数',
   'Load Memory From Include Directories': '从包含目录加载内存',
   'Respect .gitignore': '遵守 .gitignore',
-  'Respect .qwenignore': '遵守 .qwenignore',
+  'Respect .olaignore': '遵守 .olaignore',
   'Enable Recursive File Search': '启用递归文件搜索',
   'Disable Fuzzy Search': '禁用模糊搜索',
   'Interactive Shell (PTY)': '交互式 Shell (PTY)',

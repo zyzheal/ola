@@ -158,9 +158,9 @@ describe('DashScopeOpenAICompatibleProvider', () => {
       const headers = provider.buildHeaders();
 
       expect(headers).toEqual({
-        'User-Agent': `QwenCode/1.0.0 (${process.platform}; ${process.arch})`,
+        'User-Agent': `AIPlatformCodeAssistant/1.0.0 (${process.platform}; ${process.arch})`,
         'X-DashScope-CacheControl': 'enable',
-        'X-DashScope-UserAgent': `QwenCode/1.0.0 (${process.platform}; ${process.arch})`,
+        'X-DashScope-UserAgent': `AIPlatformCodeAssistant/1.0.0 (${process.platform}; ${process.arch})`,
         'X-DashScope-AuthType': AuthType.USE_OPENAI,
       });
     });
@@ -179,8 +179,10 @@ describe('DashScopeOpenAICompatibleProvider', () => {
 
       const headers = providerWithCustomHeaders.buildHeaders();
 
-      expect(headers['User-Agent']).toContain('QwenCode/1.0.0');
-      expect(headers['X-DashScope-UserAgent']).toContain('QwenCode/1.0.0');
+      expect(headers['User-Agent']).toContain('AIPlatformCodeAssistant/1.0.0');
+      expect(headers['X-DashScope-UserAgent']).toContain(
+        'AIPlatformCodeAssistant/1.0.0',
+      );
       expect(headers['X-DashScope-AuthType']).toBe(AuthType.USE_OPENAI);
       expect(headers['X-Custom']).toBe('1');
       expect(headers['X-DashScope-CacheControl']).toBe('disable');
@@ -196,10 +198,10 @@ describe('DashScopeOpenAICompatibleProvider', () => {
       const headers = provider.buildHeaders();
 
       expect(headers['User-Agent']).toBe(
-        `QwenCode/unknown (${process.platform}; ${process.arch})`,
+        `AIPlatformCodeAssistant/unknown (${process.platform}; ${process.arch})`,
       );
       expect(headers['X-DashScope-UserAgent']).toBe(
-        `QwenCode/unknown (${process.platform}; ${process.arch})`,
+        `AIPlatformCodeAssistant/unknown (${process.platform}; ${process.arch})`,
       );
     });
   });
@@ -215,9 +217,9 @@ describe('DashScopeOpenAICompatibleProvider', () => {
           timeout: 60000,
           maxRetries: 2,
           defaultHeaders: {
-            'User-Agent': `QwenCode/1.0.0 (${process.platform}; ${process.arch})`,
+            'User-Agent': `AIPlatformCodeAssistant/1.0.0 (${process.platform}; ${process.arch})`,
             'X-DashScope-CacheControl': 'enable',
-            'X-DashScope-UserAgent': `QwenCode/1.0.0 (${process.platform}; ${process.arch})`,
+            'X-DashScope-UserAgent': `AIPlatformCodeAssistant/1.0.0 (${process.platform}; ${process.arch})`,
             'X-DashScope-AuthType': AuthType.USE_OPENAI,
           },
         }),

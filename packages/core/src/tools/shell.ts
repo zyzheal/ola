@@ -18,8 +18,8 @@ import type {
   ToolCallConfirmationDetails,
   ToolExecuteConfirmationDetails,
   ToolConfirmationPayload,
+  ToolConfirmationOutcome,
 } from './tools.js';
-import { ToolConfirmationOutcome } from './tools.js';
 import type { PermissionDecision } from '../permissions/types.js';
 import { BaseDeclarativeTool, BaseToolInvocation, Kind } from './tools.js';
 import { getErrorMessage } from '../utils/errors.js';
@@ -62,10 +62,6 @@ export class ShellToolInvocation extends BaseToolInvocation<
   ShellToolParams,
   ToolResult
 > {
-  // Session-level cache for allowed shell commands
-  // Key: command root (e.g., 'curl', 'npm'), Value: full command pattern
-  private static sessionShellAllowlist = new Map<string, string[]>();
-
   constructor(
     private readonly config: Config,
     params: ShellToolParams,
@@ -98,7 +94,6 @@ export class ShellToolInvocation extends BaseToolInvocation<
    * AST-based permission check for the shell command.
    * - Command substitution → 'deny' (security)
    * - Read-only commands (via AST analysis) → 'allow'
-   * - Session-allowed commands → 'allow'
    * - All other commands → 'ask'
    */
   override async getDefaultPermission(): Promise<PermissionDecision> {
@@ -107,24 +102,6 @@ export class ShellToolInvocation extends BaseToolInvocation<
     // Security: command substitution ($(), ``, <(), >()) → deny
     if (detectCommandSubstitution(command)) {
       return 'deny';
-    }
-
-    // Check session-level allowlist first
-    const commandRoot = getCommandRoot(command);
-    if (commandRoot) {
-      const allowedPatterns =
-        ShellToolInvocation.sessionShellAllowlist.get(commandRoot);
-      if (allowedPatterns) {
-        // Check if this command matches any allowed pattern
-        for (const pattern of allowedPatterns) {
-          if (this.matchesCommandPattern(command, pattern)) {
-            debugLogger.warn(
-              `Command "${command}" allowed by session cache (pattern: ${pattern})`,
-            );
-            return 'allow';
-          }
-        }
-      }
     }
 
     // AST-based read-only detection
@@ -141,49 +118,6 @@ export class ShellToolInvocation extends BaseToolInvocation<
   }
 
   /**
-   * Check if a command matches a pattern (supports * wildcard).
-   */
-  private matchesCommandPattern(command: string, pattern: string): boolean {
-    // Exact match
-    if (command === pattern) {
-      return true;
-    }
-
-    // Pattern with wildcard (e.g., "npm run *" matches "npm run build")
-    if (pattern.endsWith(' *')) {
-      const prefix = pattern.slice(0, -2);
-      return command.startsWith(prefix + ' ');
-    }
-
-    return false;
-  }
-
-  /**
-   * Add a command to the session-level allowlist.
-   */
-  static addCommandToSessionAllowlist(
-    commandRoot: string,
-    commandPattern: string,
-  ): void {
-    const allowedPatterns =
-      ShellToolInvocation.sessionShellAllowlist.get(commandRoot) || [];
-    if (!allowedPatterns.includes(commandPattern)) {
-      allowedPatterns.push(commandPattern);
-      ShellToolInvocation.sessionShellAllowlist.set(
-        commandRoot,
-        allowedPatterns,
-      );
-    }
-  }
-
-  /**
-   * Clear the session-level allowlist (for testing).
-   */
-  static clearSessionAllowlist(): void {
-    ShellToolInvocation.sessionShellAllowlist.clear();
-  }
-
-  /**
    * Constructs confirmation dialog details for a shell command that needs
    * user approval.  For compound commands (e.g. `cd foo && npm run build`),
    * sub-commands that are already allowed (read-only) are excluded from both
@@ -193,25 +127,40 @@ export class ShellToolInvocation extends BaseToolInvocation<
     _abortSignal: AbortSignal,
   ): Promise<ToolCallConfirmationDetails> {
     const command = stripShellWrapper(this.params.command);
+    const pm = this.config.getPermissionManager?.();
 
     // Split compound command and filter out already-allowed (read-only) sub-commands
     const subCommands = splitCommands(command);
-    const nonReadOnlySubCommands: string[] = [];
+    const confirmableSubCommands: string[] = [];
     for (const sub of subCommands) {
+      let isReadOnly = false;
       try {
-        const isReadOnly = await isShellCommandReadOnlyAST(sub);
-        if (!isReadOnly) {
-          nonReadOnlySubCommands.push(sub);
-        }
+        isReadOnly = await isShellCommandReadOnlyAST(sub);
       } catch {
-        nonReadOnlySubCommands.push(sub); // conservative: include if check fails
+        // conservative: treat unknown commands as requiring confirmation
       }
+
+      if (isReadOnly) {
+        continue;
+      }
+
+      if (pm) {
+        try {
+          if ((await pm.isCommandAllowed(sub)) === 'allow') {
+            continue;
+          }
+        } catch (e) {
+          debugLogger.warn('PermissionManager command check failed:', e);
+        }
+      }
+
+      confirmableSubCommands.push(sub);
     }
 
     // Fallback to all sub-commands if everything was filtered out (shouldn't
     // normally happen since getDefaultPermission already returned 'ask').
     const effectiveSubCommands =
-      nonReadOnlySubCommands.length > 0 ? nonReadOnlySubCommands : subCommands;
+      confirmableSubCommands.length > 0 ? confirmableSubCommands : subCommands;
 
     const rootCommands = [
       ...new Set(
@@ -242,25 +191,10 @@ export class ShellToolInvocation extends BaseToolInvocation<
       rootCommand: rootCommands.join(', '),
       permissionRules,
       onConfirm: async (
-        outcome: ToolConfirmationOutcome,
+        _outcome: ToolConfirmationOutcome,
         _payload?: ToolConfirmationPayload,
       ) => {
-        // Handle session-level caching for "ProceedOnce" outcome
-        if (outcome === ToolConfirmationOutcome.ProceedOnce) {
-          // Add each root command to session allowlist
-          for (const rootCommand of rootCommands) {
-            // Create pattern for future matching
-            const pattern = this.params.command;
-            ShellToolInvocation.addCommandToSessionAllowlist(
-              rootCommand,
-              pattern,
-            );
-            debugLogger.warn(
-              `Added "${pattern}" to session allowlist for root "${rootCommand}"`,
-            );
-          }
-        }
-        // Note: Project/User level persistence is handled by coreToolScheduler via PM rules
+        // No-op: persistence is handled by coreToolScheduler via PM rules
       },
     };
     return confirmationDetails;

@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find *)",
+      "Bash(ls *)",
+      "Bash(npx *)",
+      "Bash(node *)",
+      "Bash(git push *)"
+    ]
+  },
+  "$version": 3
+}
