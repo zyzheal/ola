@@ -376,5 +376,19 @@
     "type": "user",
     "message": "当使用yolo - Automatically approve all tools时后续也会出现是否确认执行的权限操作提示",
     "timestamp": "2026-03-28T03:41:14.849Z"
+  },
+  {
+    "sessionId": "eaede051-c2e3-4637-bef4-67ab2c583987",
+    "messageId": 8,
+    "type": "user",
+    "message": "确认权限只限于当前启动时的会话级别下次重置",
+    "timestamp": "2026-03-28T03:44:20.875Z"
+  },
+  {
+    "sessionId": "eaede051-c2e3-4637-bef4-67ab2c583987",
+    "messageId": 9,
+    "type": "user",
+    "message": "需要都支持这三种会话级别  │ Allow execution of: 'npm'?                                                                                                                                                                           │\n  │                                                                                                                                                                                                      │\n  │   1. Yes, allow once                                                                                                                                                                                 │\n  │   2. Always allow in this project [Bash(npm run *)]                                                                                                                                                  │\n  │ › 3. Always allow for this user [Bash(npm run *)]                                                                                                                                                    │\n  │   4. No, suggest changes (esc)                                                                                                                                                                       │\n  │",
+    "timestamp": "2026-03-28T03:46:12.786Z"
   }
 ]

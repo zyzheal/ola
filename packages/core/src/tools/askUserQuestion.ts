@@ -21,12 +21,123 @@ import type { Config } from '../config/config.js';
 import { ToolDisplayNames, ToolNames } from './tool-names.js';
 import { createDebugLogger } from '../utils/debugLogger.js';
 import { InputFormat } from '../output/types.js';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 
 const debugLogger = createDebugLogger('ASK_USER_QUESTION');
 
-// Session-level cache for storing user answers
+// In-memory cache for session-level answers
 // Key: questions signature (JSON string), Value: user answers
 const answerCache = new Map<string, Record<string, string>>();
+
+// File paths for persistent caches
+const PROJECT_CACHE_FILE = '.ola/answer-cache.json';
+const USER_CACHE_FILE = join(homedir(), '.ola', 'answer-cache.json');
+
+/**
+ * Load answer cache from file
+ */
+function loadCacheFromFile(
+  filePath: string,
+): Record<string, Record<string, string>> {
+  try {
+    if (!existsSync(filePath)) {
+      return {};
+    }
+    const data = readFileSync(filePath, 'utf-8');
+    return JSON.parse(data);
+  } catch (e) {
+    debugLogger.warn('Failed to load answer cache:', e);
+    return {};
+  }
+}
+
+/**
+ * Save answer cache to file
+ */
+function saveCacheToFile(
+  filePath: string,
+  cache: Record<string, Record<string, string>>,
+): void {
+  try {
+    const dir = filePath.substring(0, filePath.lastIndexOf('/'));
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true });
+    }
+    writeFileSync(filePath, JSON.stringify(cache, null, 2));
+  } catch (e) {
+    debugLogger.warn('Failed to save answer cache:', e);
+  }
+}
+
+/**
+ * Get cached answers from all sources (memory, project, user)
+ */
+function getCachedAnswers(
+  questionsSignature: string,
+  projectRoot?: string,
+): Record<string, string> | undefined {
+  // Check memory cache first (highest priority)
+  const memoryAnswer = answerCache.get(questionsSignature);
+  if (memoryAnswer) {
+    return memoryAnswer;
+  }
+
+  // Check project cache
+  if (projectRoot) {
+    const projectCache = loadCacheFromFile(
+      join(projectRoot, PROJECT_CACHE_FILE),
+    );
+    if (projectCache[questionsSignature]) {
+      return projectCache[questionsSignature];
+    }
+  }
+
+  // Check user cache
+  const userCache = loadCacheFromFile(USER_CACHE_FILE);
+  if (userCache[questionsSignature]) {
+    return userCache[questionsSignature];
+  }
+
+  return undefined;
+}
+
+/**
+ * Cache answers at the specified persistence level
+ */
+function cacheAnswers(
+  questionsSignature: string,
+  answers: Record<string, string>,
+  persistenceLevel: 'session' | 'project' | 'user',
+  projectRoot?: string,
+): void {
+  switch (persistenceLevel) {
+    case 'session':
+      answerCache.set(questionsSignature, answers);
+      break;
+    case 'project': {
+      if (projectRoot) {
+        const projectCache = loadCacheFromFile(
+          join(projectRoot, PROJECT_CACHE_FILE),
+        );
+        projectCache[questionsSignature] = answers;
+        saveCacheToFile(join(projectRoot, PROJECT_CACHE_FILE), projectCache);
+      }
+      break;
+    }
+    case 'user': {
+      const userCache = loadCacheFromFile(USER_CACHE_FILE);
+      userCache[questionsSignature] = answers;
+      saveCacheToFile(USER_CACHE_FILE, userCache);
+      break;
+    }
+    default:
+      // Fallback to session-level
+      answerCache.set(questionsSignature, answers);
+      break;
+  }
+}
 
 export interface QuestionOption {
   label: string;
@@ -147,6 +258,7 @@ class AskUserQuestionToolInvocation extends BaseToolInvocation<
   private userAnswers: Record<string, string> = {};
   private wasAnswered = false;
   private questionsSignature: string;
+  private persistenceLevel: 'session' | 'project' | 'user' = 'session';
 
   constructor(
     private readonly _config: Config,
@@ -161,14 +273,25 @@ class AskUserQuestionToolInvocation extends BaseToolInvocation<
    * Check if we have cached answers for these questions
    */
   private getCachedAnswers(): Record<string, string> | undefined {
-    return answerCache.get(this.questionsSignature);
+    return getCachedAnswers(
+      this.questionsSignature,
+      this._config.getTargetDir(),
+    );
   }
 
   /**
-   * Cache the answers for these questions
+   * Cache the answers for these questions at the specified persistence level
    */
-  private cacheAnswers(answers: Record<string, string>): void {
-    answerCache.set(this.questionsSignature, answers);
+  private cacheAnswersAtLevel(
+    answers: Record<string, string>,
+    level: 'session' | 'project' | 'user',
+  ): void {
+    cacheAnswers(
+      this.questionsSignature,
+      answers,
+      level,
+      this._config.getTargetDir(),
+    );
   }
 
   getDescription(): string {
@@ -181,9 +304,9 @@ class AskUserQuestionToolInvocation extends BaseToolInvocation<
    * provide answers. In non-interactive mode without ACP support, we skip
    * confirmation (and subsequently skip execution).
    *
-   * However, if we have cached answers for these questions, we can auto-approve
-   * to bypass the confirmation dialog (useful in YOLO mode or when the same
-   * questions are asked multiple times).
+   * However, if we have cached answers for these questions (from session,
+   * project, or user level), we can auto-approve to bypass the confirmation
+   * dialog (useful in YOLO mode or when the same questions are asked multiple times).
    */
   override async getDefaultPermission(): Promise<PermissionDecision> {
     const isAcpMode =
@@ -195,7 +318,7 @@ class AskUserQuestionToolInvocation extends BaseToolInvocation<
       return 'allow';
     }
 
-    // If we have cached answers, auto-approve to skip confirmation
+    // If we have cached answers (from any persistence level), auto-approve
     const cachedAnswers = this.getCachedAnswers();
     if (cachedAnswers) {
       return 'allow';
@@ -216,14 +339,32 @@ class AskUserQuestionToolInvocation extends BaseToolInvocation<
         outcome: ToolConfirmationOutcome,
         payload?: ToolConfirmationPayload,
       ) => {
+        const answers = payload?.answers ?? {};
+
         switch (outcome) {
           case ToolConfirmationOutcome.ProceedOnce:
-          case ToolConfirmationOutcome.ProceedAlways:
             this.wasAnswered = true;
-            this.userAnswers = payload?.answers ?? {};
-            // Cache the answers for future calls with the same questions
-            if (Object.keys(this.userAnswers).length > 0) {
-              this.cacheAnswers(this.userAnswers);
+            this.userAnswers = answers;
+            // Session-level only
+            if (Object.keys(answers).length > 0) {
+              this.cacheAnswersAtLevel(answers, 'session');
+            }
+            break;
+          case ToolConfirmationOutcome.ProceedAlways:
+          case ToolConfirmationOutcome.ProceedAlwaysProject:
+            this.wasAnswered = true;
+            this.userAnswers = answers;
+            // Project-level persistence
+            if (Object.keys(answers).length > 0) {
+              this.cacheAnswersAtLevel(answers, 'project');
+            }
+            break;
+          case ToolConfirmationOutcome.ProceedAlwaysUser:
+            this.wasAnswered = true;
+            this.userAnswers = answers;
+            // User-level persistence
+            if (Object.keys(answers).length > 0) {
+              this.cacheAnswersAtLevel(answers, 'user');
             }
             break;
           case ToolConfirmationOutcome.Cancel:
@@ -231,9 +372,9 @@ class AskUserQuestionToolInvocation extends BaseToolInvocation<
             break;
           default:
             this.wasAnswered = true;
-            this.userAnswers = payload?.answers ?? {};
-            if (Object.keys(this.userAnswers).length > 0) {
-              this.cacheAnswers(this.userAnswers);
+            this.userAnswers = answers;
+            if (Object.keys(answers).length > 0) {
+              this.cacheAnswersAtLevel(answers, 'session');
             }
             break;
         }
