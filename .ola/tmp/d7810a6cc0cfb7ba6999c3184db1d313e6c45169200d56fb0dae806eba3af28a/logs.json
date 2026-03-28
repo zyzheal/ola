@@ -341,5 +341,40 @@
     "type": "user",
     "message": "提交代码到仓库",
     "timestamp": "2026-03-28T03:05:23.666Z"
+  },
+  {
+    "sessionId": "eaede051-c2e3-4637-bef4-67ab2c583987",
+    "messageId": 3,
+    "type": "user",
+    "message": "确认推送",
+    "timestamp": "2026-03-28T03:28:50.696Z"
+  },
+  {
+    "sessionId": "eaede051-c2e3-4637-bef4-67ab2c583987",
+    "messageId": 4,
+    "type": "user",
+    "message": "作为资深专家的你进行解决确认操作的逻辑没有生效会一直进行提示确认",
+    "timestamp": "2026-03-28T03:33:32.660Z"
+  },
+  {
+    "sessionId": "eaede051-c2e3-4637-bef4-67ab2c583987",
+    "messageId": 5,
+    "type": "user",
+    "message": "是否解决一直需要执行命令的操作",
+    "timestamp": "2026-03-28T03:38:20.840Z"
+  },
+  {
+    "sessionId": "eaede051-c2e3-4637-bef4-67ab2c583987",
+    "messageId": 6,
+    "type": "user",
+    "message": "/approval-mode",
+    "timestamp": "2026-03-28T03:40:10.218Z"
+  },
+  {
+    "sessionId": "eaede051-c2e3-4637-bef4-67ab2c583987",
+    "messageId": 7,
+    "type": "user",
+    "message": "当使用yolo - Automatically approve all tools时后续也会出现是否确认执行的权限操作提示",
+    "timestamp": "2026-03-28T03:41:14.849Z"
   }
 ]

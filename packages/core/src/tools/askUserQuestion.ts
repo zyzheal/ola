@@ -180,6 +180,10 @@ class AskUserQuestionToolInvocation extends BaseToolInvocation<
    * ask_user_question always requires user confirmation so the user can
    * provide answers. In non-interactive mode without ACP support, we skip
    * confirmation (and subsequently skip execution).
+   *
+   * However, if we have cached answers for these questions, we can auto-approve
+   * to bypass the confirmation dialog (useful in YOLO mode or when the same
+   * questions are asked multiple times).
    */
   override async getDefaultPermission(): Promise<PermissionDecision> {
     const isAcpMode =
@@ -190,6 +194,13 @@ class AskUserQuestionToolInvocation extends BaseToolInvocation<
       // Non-interactive + no ACP: skip entirely
       return 'allow';
     }
+
+    // If we have cached answers, auto-approve to skip confirmation
+    const cachedAnswers = this.getCachedAnswers();
+    if (cachedAnswers) {
+      return 'allow';
+    }
+
     return 'ask';
   }
 
