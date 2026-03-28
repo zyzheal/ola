@@ -24,6 +24,10 @@ import { InputFormat } from '../output/types.js';
 
 const debugLogger = createDebugLogger('ASK_USER_QUESTION');
 
+// Session-level cache for storing user answers
+// Key: questions signature (JSON string), Value: user answers
+const answerCache = new Map<string, Record<string, string>>();
+
 export interface QuestionOption {
   label: string;
   description: string;
@@ -142,12 +146,29 @@ class AskUserQuestionToolInvocation extends BaseToolInvocation<
 > {
   private userAnswers: Record<string, string> = {};
   private wasAnswered = false;
+  private questionsSignature: string;
 
   constructor(
     private readonly _config: Config,
     params: AskUserQuestionParams,
   ) {
     super(params);
+    // Create a signature for these questions to cache answers
+    this.questionsSignature = JSON.stringify(params.questions);
+  }
+
+  /**
+   * Check if we have cached answers for these questions
+   */
+  private getCachedAnswers(): Record<string, string> | undefined {
+    return answerCache.get(this.questionsSignature);
+  }
+
+  /**
+   * Cache the answers for these questions
+   */
+  private cacheAnswers(answers: Record<string, string>): void {
+    answerCache.set(this.questionsSignature, answers);
   }
 
   getDescription(): string {
@@ -189,6 +210,10 @@ class AskUserQuestionToolInvocation extends BaseToolInvocation<
           case ToolConfirmationOutcome.ProceedAlways:
             this.wasAnswered = true;
             this.userAnswers = payload?.answers ?? {};
+            // Cache the answers for future calls with the same questions
+            if (Object.keys(this.userAnswers).length > 0) {
+              this.cacheAnswers(this.userAnswers);
+            }
             break;
           case ToolConfirmationOutcome.Cancel:
             this.wasAnswered = false;
@@ -196,6 +221,9 @@ class AskUserQuestionToolInvocation extends BaseToolInvocation<
           default:
             this.wasAnswered = true;
             this.userAnswers = payload?.answers ?? {};
+            if (Object.keys(this.userAnswers).length > 0) {
+              this.cacheAnswers(this.userAnswers);
+            }
             break;
         }
       },
@@ -206,6 +234,14 @@ class AskUserQuestionToolInvocation extends BaseToolInvocation<
 
   async execute(_signal: AbortSignal): Promise<ToolResult> {
     try {
+      // Check if we have cached answers for these questions
+      const cachedAnswers = this.getCachedAnswers();
+      if (cachedAnswers) {
+        // Use cached answers without showing dialog
+        this.wasAnswered = true;
+        this.userAnswers = cachedAnswers;
+      }
+
       // Check if we're in a mode that supports user interaction
       // ACP mode (VSCode extension, etc.) uses non-interactive mode but can still collect user input
       const isAcpMode =
