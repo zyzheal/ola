@@ -17,7 +17,6 @@ import type {
   SettingInputRequest,
   PluginChoiceRequest,
 } from '../types.js';
-import type { QwenAuthState } from '../hooks/useQwenAuth.js';
 import type { CommandContext, SlashCommand } from '../commands/types.js';
 import type { TextBuffer } from '../components/shared/text-buffer.js';
 import type { AuthType, IdeContext, ApprovalMode, IdeInfo } from 'ola-core';
@@ -41,8 +40,6 @@ export interface UIState {
   authError: string | null;
   isAuthDialogOpen: boolean;
   pendingAuthType: AuthType | undefined;
-  // Qwen OAuth state
-  qwenAuthState: QwenAuthState;
   editorError: string | null;
   isEditorDialogOpen: boolean;
   debugMessage: string;

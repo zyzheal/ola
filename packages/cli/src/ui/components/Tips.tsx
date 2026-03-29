@@ -21,10 +21,6 @@ const startupTips: Tip[] = [
   process.platform === 'win32'
     ? 'You can switch permission mode quickly with Tab or /approval-mode.'
     : 'You can switch permission mode quickly with Shift+Tab or /approval-mode.',
-  {
-    text: 'Try /insight to generate personalized insights from your chat history.',
-    weight: 3,
-  },
 ];
 
 function tipText(tip: Tip): string {

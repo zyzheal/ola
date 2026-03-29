@@ -44,8 +44,10 @@ export function useCodingPlanUpdates(
    * Removes old Coding Plan configs and replaces them with new ones from the template.
    * Preserves the user's current model selection if it still exists in the new template.
    * Uses the region from settings.codingPlan.region (defaults to CHINA).
+   *
+   * @deprecated This function is no longer used in local deployment mode.
    */
-  const executeUpdate = useCallback(
+  const _executeUpdate = useCallback(
     async (region: CodingPlanRegion = CodingPlanRegion.CHINA) => {
       try {
         const persistScope = getPersistScopeForModelSelection(settings);
@@ -174,45 +176,12 @@ export function useCodingPlanUpdates(
   /**
    * Check for version mismatch and prompt user for update if needed.
    * Uses the region from settings.codingPlan.region (defaults to CHINA if not set).
+   *
+   * Note: Update check is disabled for local deployment.
    */
   const checkForUpdates = useCallback(() => {
-    const mergedSettings = settings.merged as {
-      codingPlan?: {
-        version?: string;
-        region?: CodingPlanRegion;
-      };
-    };
-
-    // Get the region (default to CHINA if not set)
-    const region = mergedSettings.codingPlan?.region ?? CodingPlanRegion.CHINA;
-
-    // Get the saved version for the current region
-    const savedVersion = mergedSettings.codingPlan?.version;
-
-    // If no version is stored, user hasn't used Coding Plan yet - skip check
-    if (!savedVersion) {
-      return;
-    }
-
-    // Get current version for the region
-    const currentVersion = getCodingPlanConfig(region).version;
-
-    // Check if version matches
-    if (savedVersion !== currentVersion) {
-      setUpdateRequest({
-        prompt: t(
-          'New model configurations are available for {{region}}. Update now?',
-          { region: t('Alibaba Cloud Coding Plan') },
-        ),
-        onConfirm: async (confirmed: boolean) => {
-          setUpdateRequest(undefined);
-          if (confirmed) {
-            await executeUpdate(region);
-          }
-        },
-      });
-    }
-  }, [settings, executeUpdate]);
+    // Disabled for local deployment - no remote update checks
+  }, []);  
 
   // Check for updates on mount
   useEffect(() => {

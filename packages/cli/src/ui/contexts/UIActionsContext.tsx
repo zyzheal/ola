@@ -42,7 +42,7 @@ export interface UIActions {
     apiKey: string,
     region?: CodingPlanRegion,
   ) => Promise<void>;
-  handleAlibabaStandardSubmit: (
+  handleAlibabaStandardSubmit?: (
     apiKey: string,
     region: AlibabaStandardRegion,
     modelIdsInput: string,

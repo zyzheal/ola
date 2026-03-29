@@ -13,6 +13,7 @@ import type { ProviderModelConfig as ModelConfig } from 'ola-core';
 export enum CodingPlanRegion {
   CHINA = 'china',
   GLOBAL = 'global',
+  LOCAL = 'local', // Local custom region
 }
 
 /**
@@ -26,6 +27,32 @@ export type CodingPlanTemplate = ModelConfig[];
  * Unified key for both regions since they are mutually exclusive.
  */
 export const CODING_PLAN_ENV_KEY = 'BAILIAN_CODING_PLAN_API_KEY';
+
+/**
+ * Get the base URL from environment variable or use default.
+ * Allows users to customize the API endpoint via OLA_CODING_PLAN_BASE_URL.
+ * @param region - The region to get base URL for
+ * @returns The base URL to use
+ */
+export function getBaseUrl(region: CodingPlanRegion): string {
+  // Check for custom base URL from environment variable
+  const customBaseUrl = process.env['OLA_CODING_PLAN_BASE_URL'];
+  if (customBaseUrl) {
+    return customBaseUrl;
+  }
+
+  // Default URLs for each region
+  if (region === CodingPlanRegion.LOCAL) {
+    return 'http://localhost:8000/v1'; // Default local address
+  }
+  if (region === CodingPlanRegion.CHINA) {
+    return 'https://coding.dashscope.aliyuncs.com/v1';
+  }
+  if (region === CodingPlanRegion.GLOBAL) {
+    return 'https://coding-intl.dashscope.aliyuncs.com/v1';
+  }
+  return 'http://localhost:8000/v1';
+}
 
 /**
  * Computes the version hash for the coding plan template.
@@ -42,116 +69,21 @@ export function computeCodingPlanVersion(template: CodingPlanTemplate): string {
  * Generate the complete coding plan template for a specific region.
  * China region uses legacy description to maintain backward compatibility.
  * Global region uses new description with region indicator.
+ * Local region uses customizable base URL.
  * @param region - The region to generate template for
  * @returns Complete model configuration array for the region
  */
 export function generateCodingPlanTemplate(
   region: CodingPlanRegion,
 ): CodingPlanTemplate {
-  if (region === CodingPlanRegion.CHINA) {
-    // China region uses legacy fields to maintain backward compatibility
-    // This ensures existing users don't get prompted for unnecessary updates
-    return [
-      {
-        id: 'qwen3.5-plus',
-        name: '[ModelStudio Coding Plan] qwen3.5-plus',
-        baseUrl: 'https://coding.dashscope.aliyuncs.com/v1',
-        envKey: CODING_PLAN_ENV_KEY,
-        generationConfig: {
-          extra_body: {
-            enable_thinking: true,
-          },
-          contextWindowSize: 1000000,
-        },
-      },
-      {
-        id: 'glm-5',
-        name: '[ModelStudio Coding Plan] glm-5',
-        baseUrl: 'https://coding.dashscope.aliyuncs.com/v1',
-        envKey: CODING_PLAN_ENV_KEY,
-        generationConfig: {
-          extra_body: {
-            enable_thinking: true,
-          },
-          contextWindowSize: 202752,
-        },
-      },
-      {
-        id: 'kimi-k2.5',
-        name: '[ModelStudio Coding Plan] kimi-k2.5',
-        baseUrl: 'https://coding.dashscope.aliyuncs.com/v1',
-        envKey: CODING_PLAN_ENV_KEY,
-        generationConfig: {
-          extra_body: {
-            enable_thinking: true,
-          },
-          contextWindowSize: 262144,
-        },
-      },
-      {
-        id: 'MiniMax-M2.5',
-        name: '[ModelStudio Coding Plan] MiniMax-M2.5',
-        baseUrl: 'https://coding.dashscope.aliyuncs.com/v1',
-        envKey: CODING_PLAN_ENV_KEY,
-        generationConfig: {
-          extra_body: {
-            enable_thinking: true,
-          },
-          contextWindowSize: 196608,
-        },
-      },
-      {
-        id: 'qwen3-coder-plus',
-        name: '[ModelStudio Coding Plan] qwen3-coder-plus',
-        baseUrl: 'https://coding.dashscope.aliyuncs.com/v1',
-        envKey: CODING_PLAN_ENV_KEY,
-        generationConfig: {
-          contextWindowSize: 1000000,
-        },
-      },
-      {
-        id: 'qwen3-coder-next',
-        name: '[ModelStudio Coding Plan] qwen3-coder-next',
-        baseUrl: 'https://coding.dashscope.aliyuncs.com/v1',
-        envKey: CODING_PLAN_ENV_KEY,
-        generationConfig: {
-          contextWindowSize: 262144,
-        },
-      },
-      {
-        id: 'qwen3-max-2026-01-23',
-        name: '[ModelStudio Coding Plan] qwen3-max-2026-01-23',
-        baseUrl: 'https://coding.dashscope.aliyuncs.com/v1',
-        envKey: CODING_PLAN_ENV_KEY,
-        generationConfig: {
-          extra_body: {
-            enable_thinking: true,
-          },
-          contextWindowSize: 262144,
-        },
-      },
-      {
-        id: 'glm-4.7',
-        name: '[ModelStudio Coding Plan] glm-4.7',
-        baseUrl: 'https://coding.dashscope.aliyuncs.com/v1',
-        envKey: CODING_PLAN_ENV_KEY,
-        generationConfig: {
-          extra_body: {
-            enable_thinking: true,
-          },
-          contextWindowSize: 202752,
-        },
-      },
-    ];
-  }
+  const baseUrl = getBaseUrl(region);
 
-  // Global region uses ModelStudio Coding Plan branding for Global/Intl
-  return [
+  // Common model IDs that work across all regions
+  // Users can customize these models based on their local deployment
+  const commonModels = [
     {
       id: 'qwen3.5-plus',
-      name: '[ModelStudio Coding Plan for Global/Intl] qwen3.5-plus',
-      baseUrl: 'https://coding-intl.dashscope.aliyuncs.com/v1',
-      envKey: CODING_PLAN_ENV_KEY,
+      name: `[Coding Plan] qwen3.5-plus`,
       generationConfig: {
         extra_body: {
           enable_thinking: true,
@@ -161,75 +93,21 @@ export function generateCodingPlanTemplate(
     },
     {
       id: 'qwen3-coder-plus',
-      name: '[ModelStudio Coding Plan for Global/Intl] qwen3-coder-plus',
-      baseUrl: 'https://coding-intl.dashscope.aliyuncs.com/v1',
-      envKey: CODING_PLAN_ENV_KEY,
+      name: `[Coding Plan] qwen3-coder-plus`,
       generationConfig: {
         contextWindowSize: 1000000,
       },
     },
     {
       id: 'qwen3-coder-next',
-      name: '[ModelStudio Coding Plan for Global/Intl] qwen3-coder-next',
-      baseUrl: 'https://coding-intl.dashscope.aliyuncs.com/v1',
-      envKey: CODING_PLAN_ENV_KEY,
+      name: `[Coding Plan] qwen3-coder-next`,
       generationConfig: {
         contextWindowSize: 262144,
       },
     },
     {
       id: 'qwen3-max-2026-01-23',
-      name: '[ModelStudio Coding Plan for Global/Intl] qwen3-max-2026-01-23',
-      baseUrl: 'https://coding-intl.dashscope.aliyuncs.com/v1',
-      envKey: CODING_PLAN_ENV_KEY,
-      generationConfig: {
-        extra_body: {
-          enable_thinking: true,
-        },
-        contextWindowSize: 262144,
-      },
-    },
-    {
-      id: 'glm-4.7',
-      name: '[ModelStudio Coding Plan for Global/Intl] glm-4.7',
-      baseUrl: 'https://coding-intl.dashscope.aliyuncs.com/v1',
-      envKey: CODING_PLAN_ENV_KEY,
-      generationConfig: {
-        extra_body: {
-          enable_thinking: true,
-        },
-        contextWindowSize: 202752,
-      },
-    },
-    {
-      id: 'glm-5',
-      name: '[ModelStudio Coding Plan for Global/Intl] glm-5',
-      baseUrl: 'https://coding-intl.dashscope.aliyuncs.com/v1',
-      envKey: CODING_PLAN_ENV_KEY,
-      generationConfig: {
-        extra_body: {
-          enable_thinking: true,
-        },
-        contextWindowSize: 202752,
-      },
-    },
-    {
-      id: 'MiniMax-M2.5',
-      name: '[ModelStudio Coding Plan for Global/Intl] MiniMax-M2.5',
-      baseUrl: 'https://coding-intl.dashscope.aliyuncs.com/v1',
-      envKey: CODING_PLAN_ENV_KEY,
-      generationConfig: {
-        extra_body: {
-          enable_thinking: true,
-        },
-        contextWindowSize: 196608,
-      },
-    },
-    {
-      id: 'kimi-k2.5',
-      name: '[ModelStudio Coding Plan for Global/Intl] kimi-k2.5',
-      baseUrl: 'https://coding-intl.dashscope.aliyuncs.com/v1',
-      envKey: CODING_PLAN_ENV_KEY,
+      name: `[Coding Plan] qwen3-max-2026-01-23`,
       generationConfig: {
         extra_body: {
           enable_thinking: true,
@@ -238,6 +116,108 @@ export function generateCodingPlanTemplate(
       },
     },
   ];
+
+  // Add region-specific models
+  let models = [...commonModels];
+
+  if (region === CodingPlanRegion.CHINA) {
+    // China region specific models
+    models = [
+      ...models,
+      {
+        id: 'glm-5',
+        name: `[Coding Plan] glm-5`,
+        generationConfig: {
+          extra_body: {
+            enable_thinking: true,
+          },
+          contextWindowSize: 202752,
+        },
+      },
+      {
+        id: 'kimi-k2.5',
+        name: `[Coding Plan] kimi-k2.5`,
+        generationConfig: {
+          extra_body: {
+            enable_thinking: true,
+          },
+          contextWindowSize: 262144,
+        },
+      },
+      {
+        id: 'MiniMax-M2.5',
+        name: `[Coding Plan] MiniMax-M2.5`,
+        generationConfig: {
+          extra_body: {
+            enable_thinking: true,
+          },
+          contextWindowSize: 196608,
+        },
+      },
+      {
+        id: 'glm-4.7',
+        name: `[Coding Plan] glm-4.7`,
+        generationConfig: {
+          extra_body: {
+            enable_thinking: true,
+          },
+          contextWindowSize: 202752,
+        },
+      },
+    ];
+  } else if (region === CodingPlanRegion.GLOBAL) {
+    // Global region specific models
+    models = [
+      ...models,
+      {
+        id: 'glm-4.7',
+        name: `[Coding Plan] glm-4.7`,
+        generationConfig: {
+          extra_body: {
+            enable_thinking: true,
+          },
+          contextWindowSize: 202752,
+        },
+      },
+      {
+        id: 'glm-5',
+        name: `[Coding Plan] glm-5`,
+        generationConfig: {
+          extra_body: {
+            enable_thinking: true,
+          },
+          contextWindowSize: 202752,
+        },
+      },
+      {
+        id: 'MiniMax-M2.5',
+        name: `[Coding Plan] MiniMax-M2.5`,
+        generationConfig: {
+          extra_body: {
+            enable_thinking: true,
+          },
+          contextWindowSize: 196608,
+        },
+      },
+      {
+        id: 'kimi-k2.5',
+        name: `[Coding Plan] kimi-k2.5`,
+        generationConfig: {
+          extra_body: {
+            enable_thinking: true,
+          },
+          contextWindowSize: 262144,
+        },
+      },
+    ];
+  }
+
+  // Build the final template with the base URL
+  return models.map((model) => ({
+    ...model,
+    baseUrl,
+    envKey: CODING_PLAN_ENV_KEY,
+  }));
 }
 
 /**
@@ -247,10 +227,7 @@ export function generateCodingPlanTemplate(
  */
 export function getCodingPlanConfig(region: CodingPlanRegion) {
   const template = generateCodingPlanTemplate(region);
-  const baseUrl =
-    region === CodingPlanRegion.CHINA
-      ? 'https://coding.dashscope.aliyuncs.com/v1'
-      : 'https://coding-intl.dashscope.aliyuncs.com/v1';
+  const baseUrl = getBaseUrl(region);
   return {
     template,
     baseUrl,
@@ -263,10 +240,17 @@ export function getCodingPlanConfig(region: CodingPlanRegion) {
  * @returns Array of base URLs
  */
 export function getCodingPlanBaseUrls(): string[] {
-  return [
-    'https://coding.dashscope.aliyuncs.com/v1',
-    'https://coding-intl.dashscope.aliyuncs.com/v1',
+  // Check for custom base URL from environment variable
+  const customBaseUrl = process.env['OLA_CODING_PLAN_BASE_URL'];
+  const baseUrls = [
+    'http://localhost:8000/v1', // Local default
+    'https://coding.dashscope.aliyuncs.com/v1', // China
+    'https://coding-intl.dashscope.aliyuncs.com/v1', // Global
   ];
+  if (customBaseUrl) {
+    baseUrls.push(customBaseUrl);
+  }
+  return baseUrls;
 }
 
 /**
@@ -289,7 +273,16 @@ export function isCodingPlanConfig(
     return false;
   }
 
+  // Check for custom base URL from environment variable
+  const customBaseUrl = process.env['OLA_CODING_PLAN_BASE_URL'];
+  if (customBaseUrl && baseUrl === customBaseUrl) {
+    return CodingPlanRegion.LOCAL;
+  }
+
   // Check which region's baseUrl matches
+  if (baseUrl === 'http://localhost:8000/v1') {
+    return CodingPlanRegion.LOCAL;
+  }
   if (baseUrl === 'https://coding.dashscope.aliyuncs.com/v1') {
     return CodingPlanRegion.CHINA;
   }
@@ -310,6 +303,15 @@ export function getRegionFromBaseUrl(
 ): CodingPlanRegion | null {
   if (!baseUrl) return null;
 
+  // Check for custom base URL from environment variable
+  const customBaseUrl = process.env['OLA_CODING_PLAN_BASE_URL'];
+  if (customBaseUrl && baseUrl === customBaseUrl) {
+    return CodingPlanRegion.LOCAL;
+  }
+
+  if (baseUrl === 'http://localhost:8000/v1') {
+    return CodingPlanRegion.LOCAL;
+  }
   if (baseUrl === 'https://coding.dashscope.aliyuncs.com/v1') {
     return CodingPlanRegion.CHINA;
   }

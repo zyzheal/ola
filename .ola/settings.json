@@ -19,7 +19,12 @@
     "useRipgrep": false
   },
   "permissions": {
-    "allow": ["Bash(cargo build *)", "Bash(npm run *)"]
+    "allow": [
+      "Bash(cargo build *)",
+      "Bash(npm run *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
   },
   "advanced": {
     "autoConfigureMemory": false,
