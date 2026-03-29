@@ -108,12 +108,12 @@ describe('ShellTool', () => {
     it('should allow a command if no restrictions are provided', async () => {
       (mockConfig.getCoreTools as Mock).mockReturnValue(undefined);
       (mockConfig.getPermissionsDeny as Mock).mockReturnValue(undefined);
-      expect(await isCommandAllowed('ls -l', mockConfig).allowed).toBe(true);
+      expect((await isCommandAllowed('ls -l', mockConfig)).allowed).toBe(true);
     });
 
-    it('should block a command with command substitution using $()', () => {
+    it('should block a command with command substitution using $()', async () => {
       expect(
-        await isCommandAllowed('echo $(rm -rf /)', mockConfig).allowed,
+        (await isCommandAllowed('echo $(rm -rf /)', mockConfig)).allowed,
       ).toBe(false);
     });
   });
@@ -1327,7 +1327,6 @@ describe('ShellTool', () => {
 
     afterEach(() => {
       // Clear session cache after each test
-       
       // clearSessionAllowlist is not available in this build
       // (shellTool as any).constructor.clearSessionAllowlist?.();
     });

@@ -150,7 +150,7 @@ describe('isCommandAllowed', () => {
       expect(result.reason).toContain('Command substitution');
     });
 
-    it('should block command substitution using `>(...)`', () => {
+    it('should block command substitution using `>(...)`', async () => {
       const result = await isCommandAllowed(
         'echo "Log message" > >(tee log.txt)',
         config,
@@ -219,7 +219,7 @@ describe('isCommandAllowed', () => {
         expect((await result).allowed).toBe(true);
       });
 
-      it('should support tab-stripping heredocs (<<-)', () => {
+      it('should support tab-stripping heredocs (<<-)', async () => {
         const cmd = [
           "cat <<-'EOF' > user_session.md",
           '\t$(rm -rf /)',
@@ -326,7 +326,7 @@ describe('checkCommandPermissions', () => {
 
   describe('in "Default Deny" mode (with sessionAllowlist)', () => {
     it('should allow a command on the sessionAllowlist', async () => {
-      const result = checkCommandPermissions(
+      const result = await checkCommandPermissions(
         'ls -l',
         config,
         new Set(['ls -l']),
@@ -335,7 +335,7 @@ describe('checkCommandPermissions', () => {
     });
 
     it('should block a command not on the sessionAllowlist or global allowlist', async () => {
-      const result = checkCommandPermissions(
+      const result = await checkCommandPermissions(
         'rm -rf /',
         config,
         new Set(['ls -l']),
@@ -349,7 +349,7 @@ describe('checkCommandPermissions', () => {
 
     it('should allow a command on the global allowlist even if not on the session allowlist', async () => {
       config.getCoreTools = () => ['ShellTool(git status)'];
-      const result = checkCommandPermissions(
+      const result = await checkCommandPermissions(
         'git status',
         config,
         new Set(['ls -l']),
@@ -359,7 +359,7 @@ describe('checkCommandPermissions', () => {
 
     it('should allow a chained command if parts are on different allowlists', async () => {
       config.getCoreTools = () => ['ShellTool(git status)'];
-      const result = checkCommandPermissions(
+      const result = await checkCommandPermissions(
         'git status && git commit',
         config,
         new Set(['git commit']),
@@ -369,7 +369,7 @@ describe('checkCommandPermissions', () => {
 
     it('should block a command on the sessionAllowlist if it is also globally blocked', async () => {
       config.getPermissionsDeny = () => ['run_shell_command(rm)'];
-      const result = checkCommandPermissions(
+      const result = await checkCommandPermissions(
         'rm -rf /',
         config,
         new Set(['rm -rf /']),
@@ -380,7 +380,7 @@ describe('checkCommandPermissions', () => {
 
     it('should block a chained command if one part is not on any allowlist', async () => {
       config.getCoreTools = () => ['run_shell_command(echo)'];
-      const result = checkCommandPermissions(
+      const result = await checkCommandPermissions(
         'echo "hello" && rm -rf /',
         config,
         new Set(['echo']),
