@@ -4,13 +4,14 @@
 
 **ola** is an open-source AI agent for the terminal, optimized for code assistance. It helps developers understand large codebases, automate tedious work, and ship faster.
 
-This project is based on [Google Gemini CLI](https://github.com/google-gemini/gemini-cli) with adaptations to better support AI coding models.
+This project is a private fork based on [qwen-code](https://github.com/QwenLM/qwen-code) (Apache 2.0), de-branded and enhanced with additional capabilities.
 
 ### Key Features
 
-- **OpenAI-compatible, OAuth free tier**: Use an OpenAI-compatible API, or sign in with ola OAuth to get 1,000 free requests/day
+- **Multi-protocol, OAuth free tier**: Use OpenAI / Anthropic / Gemini-compatible APIs, or sign in with ola OAuth for 1,000 free requests/day
 - **Agentic workflow, feature-rich**: Rich built-in tools (Skills, SubAgents, Plan Mode) for a full agentic workflow
 - **Terminal-first, IDE-friendly**: Built for developers who live in the command line, with optional integration for VS Code, Zed, and JetBrains IDEs
+- **Full Chinese support**: Complete i18n support with Chinese as the primary output language
 
 ## Technology Stack
 
@@ -33,6 +34,7 @@ This project is based on [Google Gemini CLI](https://github.com/google-gemini/ge
 │   ├── sdk-typescript/   # TypeScript SDK
 │   ├── test-utils/       # Shared testing utilities
 │   ├── vscode-ide-companion/  # VS Code extension companion
+│   ├── web-templates/    # Web templates (insight reports, HTML export)
 │   ├── webui/            # Web UI components
 │   └── zed-extension/    # Zed editor extension
 ├── scripts/              # Build and utility scripts
@@ -52,19 +54,26 @@ The main CLI package providing:
 - Non-interactive/headless mode
 - Authentication handling (OAuth, API keys)
 - Configuration management
-- Command system (`/help`, `/clear`, `/compress`, etc.)
+- Command system (`/help`, `/clear`, `/compress`, `/auth`, etc.)
+- i18n support with Chinese localization
 
 #### `ola-core` (packages/core/)
 
 Core library containing:
 
-- **Tools**: File operations (read, write, edit, glob, grep), shell execution, web fetch, LSP integration, MCP client
+- **Tools**:
+  - File operations (read, write, edit, glob, grep, ls)
+  - Shell execution with sandbox support
+  - Web fetch and web-search
+  - LSP integration (diagnostics, hover, go-to-definition)
+  - MCP client (Model Context Protocol)
+  - Todo management
+  - Memory/skill system
+  - Agent delegation
 - **Subagents**: Task delegation to specialized agents
-- **Skills**: Reusable skill system
+- **Skills**: Reusable skill system with Markdown + YAML configuration
 - **Models**: Model configuration and registry for AI and OpenAI-compatible APIs
-- **Services**: Git integration, file discovery, session management
-- **LSP Support**: Language Server Protocol integration
-- **MCP**: Model Context Protocol implementation
+- **Services**: Git integration, file discovery, session management, LSP support
 
 ## Building and Running
 
@@ -94,6 +103,9 @@ npm run build:all
 
 # Build only packages
 npm run build:packages
+
+# Build web-templates (required for bundle)
+npm run build:web-templates
 
 # Development mode with hot reload
 npm run dev
@@ -193,6 +205,8 @@ All tools extend `BaseDeclarativeTool` or implement the tool interfaces:
 - Located in `packages/core/src/tools/`
 - Each tool has a corresponding `.test.ts` file
 - Tools are registered in the tool registry
+- Supports both sync and async execution
+- Built-in error handling and retry logic
 
 #### Subagents System
 
@@ -201,6 +215,16 @@ Task delegation framework:
 - Configuration stored as Markdown + YAML frontmatter
 - Supports both project-level and user-level subagents
 - Event-driven architecture for UI updates
+- Can be invoked via `/subagent` command or programmatically
+
+#### Skills System
+
+Reusable skill definitions:
+
+- Markdown files with YAML frontmatter
+- Located in `~/.ola/skills/` (user) or `.ola/skills/` (project)
+- Can include custom prompts, tools, and constraints
+- Invoked via `/skill` command
 
 #### Configuration System
 
@@ -214,8 +238,10 @@ Hierarchical configuration loading:
 
 ### Authentication Methods
 
-1. **ola OAuth** (recommended): Browser-based OAuth flow
+1. **ola OAuth** (recommended): Browser-based OAuth flow, 1,000 free requests/day
 2. **OpenAI-compatible API**: Via `OPENAI_API_KEY` environment variable
+3. **Anthropic API**: Claude models support
+4. **Google GenAI API**: Gemini models support
 
 Environment variables for API mode:
 
@@ -223,6 +249,30 @@ Environment variables for API mode:
 export OPENAI_API_KEY="your-api-key"
 export OPENAI_BASE_URL="https://api.openai.com/v1"  # optional
 export OPENAI_MODEL="gpt-4o"                        # optional
+
+# Or use Dashscope (Alibaba Cloud)
+export DASHSCOPE_API_KEY="sk-xxxxx"
+```
+
+Configuration via `~/.ola/settings.json`:
+
+```json
+{
+  "modelProviders": {
+    "openai": [
+      {
+        "id": "qwen3-coder-plus",
+        "name": "qwen3-coder-plus",
+        "baseUrl": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "description": "Qwen3-Coder via Dashscope",
+        "envKey": "DASHSCOPE_API_KEY"
+      }
+    ]
+  },
+  "env": {
+    "DASHSCOPE_API_KEY": "sk-xxxxxxxxxxxxx"
+  }
+}
 ```
 
 ## Debugging
@@ -273,17 +323,18 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines. Key points:
 
 ## Useful Commands Reference
 
-| Command             | Description                                                          |
-| ------------------- | -------------------------------------------------------------------- |
-| `npm start`         | Start CLI in interactive mode                                        |
-| `npm run dev`       | Development mode with hot reload                                     |
-| `npm run build`     | Build all packages                                                   |
-| `npm run test`      | Run unit tests                                                       |
-| `npm run test:e2e`  | Run integration tests                                                |
-| `npm run preflight` | Full CI check (clean, install, format, lint, build, typecheck, test) |
-| `npm run lint`      | Run ESLint                                                           |
-| `npm run format`    | Run Prettier                                                         |
-| `npm run clean`     | Clean build artifacts                                                |
+| Command                       | Description                                                          |
+| ----------------------------- | -------------------------------------------------------------------- |
+| `npm start`                   | Start CLI in interactive mode                                        |
+| `npm run dev`                 | Development mode with hot reload                                     |
+| `npm run build`               | Build all packages                                                   |
+| `npm run build:web-templates` | Build web templates (required before bundle)                         |
+| `npm run test`                | Run unit tests                                                       |
+| `npm run test:e2e`            | Run integration tests                                                |
+| `npm run preflight`           | Full CI check (clean, install, format, lint, build, typecheck, test) |
+| `npm run lint`                | Run ESLint                                                           |
+| `npm run format`              | Run Prettier                                                         |
+| `npm run clean`               | Clean build artifacts                                                |
 
 ## Session Commands (within CLI)
 
@@ -291,7 +342,30 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines. Key points:
 - `/clear` - Clear conversation history
 - `/compress` - Compress history to save tokens
 - `/stats` - Show session information
+- `/auth` - Manage authentication
 - `/bug` - Submit bug report
 - `/exit` or `/quit` - Exit ola
+
+## Recent Changes
+
+### Build System Fixes (2026-03-31)
+
+- Fixed `npm install` failure by adding `build:web-templates` to `prepare` script
+- Simplified `.gitignore` to ignore entire `.ola/` directory
+- Removed `.ola/` files from git tracking (runtime config/cache directory)
+- Removed qwen references from `prepare-package.js` (copyright, description, bin name)
+
+### Key Capabilities
+
+- **File Operations**: Read, write, edit, search (glob/grep), list directories
+- **Code Intelligence**: LSP integration for diagnostics, hover, go-to-definition
+- **Shell Execution**: With Docker/Podman sandbox support
+- **Web Integration**: Web fetch, web-search capabilities
+- **MCP Support**: Model Context Protocol for external tool integration
+- **Skill System**: Reusable skill definitions with custom prompts
+- **Subagent Delegation**: Task delegation to specialized agents
+- **Todo Management**: Built-in todo tracking during tasks
+- **Memory System**: Persistent memory across sessions
+- **Multi-model Support**: OpenAI, Anthropic, Google GenAI, Dashscope compatible
 
 ---
