@@ -110,19 +110,19 @@
       },
       {
         "command": "ola.login",
-        "title": "AI Platform Code Assistant: Login"
+        "title": "OLA: Login"
       },
       {
         "command": "ola.focusChat",
-        "title": "AI Platform Code Assistant: Focus Chat View"
+        "title": "OLA: Focus Chat View"
       },
       {
         "command": "ola.newConversation",
-        "title": "AI Platform Code Assistant: New Conversation"
+        "title": "OLA: New Conversation"
       },
       {
         "command": "ola.showLogs",
-        "title": "AI Platform Code Assistant: Show Logs"
+        "title": "OLA: Show Logs"
       }
     ],
     "menus": {

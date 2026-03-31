@@ -72,6 +72,19 @@ if (existsSync(bundledSkillsDir)) {
   );
 }
 
+// Copy i18n translation files so they are available at runtime.
+// The i18n system loads translations dynamically from dist/locales/.
+const i18nLocalesDir = join(root, 'packages', 'cli', 'src', 'i18n', 'locales');
+if (existsSync(i18nLocalesDir)) {
+  const destLocalesDir = join(distDir, 'locales');
+  copyRecursiveSync(i18nLocalesDir, destLocalesDir);
+  console.log('Copied i18n locales to dist/locales/');
+} else {
+  console.warn(
+    `Warning: i18n locales directory not found at ${i18nLocalesDir}`,
+  );
+}
+
 console.log('\n✅ All bundle assets copied to dist/');
 
 /**

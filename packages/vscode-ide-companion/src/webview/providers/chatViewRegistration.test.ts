@@ -71,7 +71,12 @@ describe('registerChatViewProviders', () => {
     expect(calls[0]?.[2]).toEqual({
       webviewOptions: { retainContextWhenHidden: true },
     });
-    expect(executeCommand).not.toHaveBeenCalled();
+    // Context key is always set, even when secondary sidebar is supported
+    expect(executeCommand).toHaveBeenCalledWith(
+      'setContext',
+      'ola:supportsSecondarySidebar',
+      true,
+    );
     expect(context.subscriptions).toHaveLength(2);
   });
 
@@ -84,8 +89,8 @@ describe('registerChatViewProviders', () => {
 
     expect(executeCommand).toHaveBeenCalledWith(
       'setContext',
-      'ola:doesNotSupportSecondarySidebar',
-      true,
+      'ola:supportsSecondarySidebar',
+      false,
     );
   });
 });

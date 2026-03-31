@@ -144,7 +144,7 @@ class QwenAgent implements Agent {
       protocolVersion: PROTOCOL_VERSION,
       agentInfo: {
         name: 'qwen-code',
-        title: 'Qwen Code',
+        title: 'OLA',
         version,
       },
       authMethods,
@@ -179,6 +179,7 @@ class QwenAgent implements Agent {
     } catch (e) {
       // Authentication failed
       throw new RequestError(
+        401,
         `Authentication failed: ${e instanceof Error ? e.message : String(e)}`,
       );
     }
@@ -397,7 +398,7 @@ class QwenAgent implements Agent {
     if (!selectedType) {
       throw RequestError.authRequired(
         { authMethods: this.pickAuthMethodsForAuthRequired() },
-        'Use Qwen Code CLI to authenticate first.',
+        'Use OLA CLI to authenticate first.',
       );
     }
 
@@ -405,12 +406,7 @@ class QwenAgent implements Agent {
       await config.refreshAuth(selectedType, true);
     } catch (e) {
       debugLogger.error(`Authentication failed: ${e}`);
-      throw RequestError.authRequired(
-        {
-          authMethods: this.pickAuthMethodsForAuthRequired(selectedType, e),
-        },
-        'Authentication failed: ' + (e as Error).message,
-      );
+      throw RequestError.authRequired();
     }
   }
 
@@ -423,19 +419,19 @@ class QwenAgent implements Agent {
     return authMethods;
   }
 
-  private extractErrorMessage(error?: unknown): string | undefined {
-    if (error instanceof Error) return error.message;
-    if (
-      typeof error === 'object' &&
-      error != null &&
-      'message' in error &&
-      typeof error.message === 'string'
-    ) {
-      return error.message;
-    }
-    if (typeof error === 'string') return error;
-    return undefined;
-  }
+  // private extractErrorMessage(error?: unknown): string | undefined {
+  //   if (error instanceof Error) return error.message;
+  //   if (
+  //     typeof error === 'object' &&
+  //     error != null &&
+  //     'message' in error &&
+  //     typeof error.message === 'string'
+  //   ) {
+  //     return error.message;
+  //   }
+  //   if (typeof error === 'string') return error;
+  //   return undefined;
+  // }
 
   private setupFileSystem(config: Config): void {
     if (!this.clientCapabilities?.fs) return;

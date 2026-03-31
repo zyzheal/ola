@@ -87,6 +87,7 @@ interface SlashCommandProcessorActions {
   openAgentsManagerDialog: () => void;
   openExtensionsManagerDialog: () => void;
   openMcpDialog: () => void;
+  openHooksDialog: () => void;
 }
 
 /**
@@ -531,6 +532,9 @@ export const useSlashCommandProcessor = (
                       return { type: 'handled' };
                     case 'extensions_manage':
                       actions.openExtensionsManagerDialog();
+                      return { type: 'handled' };
+                    case 'hooks':
+                      actions.openHooksDialog();
                       return { type: 'handled' };
                     case 'help':
                       return { type: 'handled' };

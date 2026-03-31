@@ -1,6 +1,6 @@
 # Provider Structure
 
-This folder contains the different provider implementations for the Qwen Code refactor system.
+This folder contains the different provider implementations for the OLA refactor system.
 
 ## File Structure
 
@@ -46,9 +46,7 @@ All providers must implement:
 ## Example
 
 ```typescript
-export class NewProviderOpenAICompatibleProvider
-  implements OpenAICompatibleProvider
-{
+export class NewProviderOpenAICompatibleProvider implements OpenAICompatibleProvider {
   // Implementation...
 
   static isNewProviderProvider(

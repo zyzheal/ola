@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2026 Qwen Team
+ * Copyright 2026 OLA Team
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -199,7 +199,7 @@ describe('hooks constants', () => {
 
       expect(info.event).toBe(HookEventName.Stop);
       expect(info.shortDescription).toBe(
-        'Right before Qwen Code concludes its response',
+        'Right before OLA concludes its response',
       );
       expect(info.description).toBe('');
       expect(info.exitCodes).toHaveLength(3);

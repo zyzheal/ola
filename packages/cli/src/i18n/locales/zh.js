@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 Qwen
+ * Copyright 2025 OLA
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -113,8 +113,8 @@ export default {
   // ============================================================================
   // Commands - General
   // ============================================================================
-  'Analyzes the project and creates a tailored QWEN.md file.':
-    '分析项目并创建定制的 QWEN.md 文件',
+  'Analyzes the project and creates a tailored OLA.md file.':
+    '分析项目并创建定制的 OLA.md 文件',
   'List available OLA tools. Usage: /tools [desc]':
     '列出可用的 OLA 工具。用法：/tools [desc]',
   'List available skills.': '列出可用技能。',
@@ -374,7 +374,7 @@ export default {
   'Custom Witty Phrases': '自定义诙谐短语',
   'Show Welcome Back Dialog': '显示欢迎回来对话框',
   'Enable User Feedback': '启用用户反馈',
-  'How is Qwen doing this session? (optional)': 'Qwen 这次表现如何？（可选）',
+  'How is OLA doing this session? (optional)': 'OLA 这次表现如何？（可选）',
   Bad: '不满意',
   Fine: '还行',
   Good: '满意',
@@ -485,8 +485,8 @@ export default {
   remote: '远程',
   'This extension will add the following commands: {{commands}}.':
     '此扩展将添加以下命令：{{commands}}。',
-  'This extension will append info to your QWEN.md context using {{fileName}}':
-    '此扩展将使用 {{fileName}} 向您的 QWEN.md 上下文追加信息',
+  'This extension will append info to your OLA.md context using {{fileName}}':
+    '此扩展将使用 {{fileName}} 向您的 OLA.md 上下文追加信息',
   'This extension will exclude the following core tools: {{tools}}':
     '此扩展将排除以下核心工具：{{tools}}',
   'This extension will install the following skills:': '此扩展将安装以下技能：',
@@ -857,7 +857,7 @@ export default {
   servers: '个服务器',
   'Add MCP servers to your settings to get started.':
     '请在设置中添加 MCP 服务器以开始使用。',
-  'Run qwen --debug to see error logs': '运行 qwen --debug 查看错误日志',
+  'Run ola --debug to see error logs': '运行 ola --debug 查看错误日志',
 
   // MCP OAuth Authentication
   'OAuth Authentication': 'OAuth 认证',
@@ -1010,8 +1010,8 @@ export default {
   'The /directory add command is not supported in restrictive sandbox profiles. Please use --include-directories when starting the session instead.':
     '/directory add 命令在限制性沙箱配置文件中不受支持。请改为在启动会话时使用 --include-directories。',
   "Error adding '{{path}}': {{error}}": "添加 '{{path}}' 时出错：{{error}}",
-  'Successfully added QWEN.md files from the following directories if there are:\n- {{directories}}':
-    '如果存在，已成功从以下目录添加 QWEN.md 文件：\n- {{directories}}',
+  'Successfully added OLA.md files from the following directories if there are:\n- {{directories}}':
+    '如果存在，已成功从以下目录添加 OLA.md 文件：\n- {{directories}}',
   'Error refreshing memory: {{error}}': '刷新内存时出错：{{error}}',
   'Successfully added directories:\n- {{directories}}':
     '成功添加目录：\n- {{directories}}',
@@ -1099,11 +1099,11 @@ export default {
   'You must select an auth method to proceed. Press Ctrl+C again to exit.':
     '您必须选择认证方法才能继续。再次按 Ctrl+C 退出',
   'Terms of Services and Privacy Notice': '服务条款和隐私声明',
-  'Qwen OAuth': 'Qwen OAuth (免费)',
-  'Free \u00B7 Up to 1,000 requests/day \u00B7 Qwen latest models':
-    '免费 \u00B7 每天最多 1,000 次请求 \u00B7 Qwen 最新模型',
-  'Login with QwenChat account to use daily free quota.':
-    '使用 QwenChat 账号登录，享受每日免费额度。',
+  'OLA OAuth': 'OLA OAuth (免费)',
+  'Free \u00B7 Up to 1,000 requests/day \u00B7 OLA latest models':
+    '免费 \u00B7 每天最多 1,000 次请求 \u00B7 OLA 最新模型',
+  'Login with OLAChat account to use daily free quota.':
+    '使用 OLAChat 账号登录，享受每日免费额度。',
   'Paid \u00B7 Up to 6,000 requests/5 hrs \u00B7 All Alibaba Cloud Coding Plan Models':
     '付费 \u00B7 每 5 小时最多 6,000 次请求 \u00B7 支持阿里云百炼 Coding Plan 全部模型',
   'Alibaba Cloud Coding Plan': '阿里云百炼 Coding Plan',
@@ -1114,25 +1114,25 @@ export default {
   'Failed to login. Message: {{message}}': '登录失败。消息：{{message}}',
   'Authentication is enforced to be {{enforcedType}}, but you are currently using {{currentType}}.':
     '认证方式被强制设置为 {{enforcedType}}，但您当前使用的是 {{currentType}}',
-  'Qwen OAuth authentication timed out. Please try again.':
-    'Qwen OAuth 认证超时。请重试',
-  'Qwen OAuth authentication cancelled.': 'Qwen OAuth 认证已取消',
-  'Qwen OAuth Authentication': 'Qwen OAuth 认证',
+  'OLA OAuth authentication timed out. Please try again.':
+    'OLA OAuth 认证超时。请重试',
+  'OLA OAuth authentication cancelled.': 'OLA OAuth 认证已取消',
+  'OLA OAuth Authentication': 'OLA OAuth 认证',
   'Please visit this URL to authorize:': '请访问此 URL 进行授权：',
   'Or scan the QR code below:': '或扫描下方的二维码：',
   'Waiting for authorization': '等待授权中',
   'Time remaining:': '剩余时间：',
   '(Press ESC or CTRL+C to cancel)': '（按 ESC 或 CTRL+C 取消）',
-  'Qwen OAuth Authentication Timeout': 'Qwen OAuth 认证超时',
+  'OLA OAuth Authentication Timeout': 'OLA OAuth 认证超时',
   'OAuth token expired (over {{seconds}} seconds). Please select authentication method again.':
     'OAuth 令牌已过期（超过 {{seconds}} 秒）。请重新选择认证方法',
   'Press any key to return to authentication type selection.':
     '按任意键返回认证类型选择',
-  'Waiting for Qwen OAuth authentication...': '正在等待 Qwen OAuth 认证...',
-  'Note: Your existing API key in settings.json will not be cleared when using Qwen OAuth. You can switch back to OpenAI authentication later if needed.':
-    '注意：使用 Qwen OAuth 时，settings.json 中现有的 API 密钥不会被清除。如果需要，您可以稍后切换回 OpenAI 认证。',
-  'Note: Your existing API key will not be cleared when using Qwen OAuth.':
-    '注意：使用 Qwen OAuth 时，现有的 API 密钥不会被清除。',
+  'Waiting for OLA OAuth authentication...': '正在等待 OLA OAuth 认证...',
+  'Note: Your existing API key in settings.json will not be cleared when using OLA OAuth. You can switch back to OpenAI authentication later if needed.':
+    '注意：使用 OLA OAuth 时，settings.json 中现有的 API 密钥不会被清除。如果需要，您可以稍后切换回 OpenAI 认证。',
+  'Note: Your existing API key will not be cleared when using OLA OAuth.':
+    '注意：使用 OLA OAuth 时，现有的 API 密钥不会被清除。',
   'Authentication timed out. Please try again.': '认证超时。请重试。',
   'Waiting for auth... (Press ESC or CTRL+C to cancel)':
     '正在等待认证...（按 ESC 或 CTRL+C 取消）',
@@ -1190,10 +1190,10 @@ export default {
   unknown: '未知',
   "Failed to switch model to '{{modelId}}'.\n\n{{error}}":
     "无法切换到模型 '{{modelId}}'.\n\n{{error}}",
-  'Qwen 3.5 Plus — efficient hybrid model with leading coding performance':
-    'Qwen 3.5 Plus — 高效混合架构，编程性能业界领先',
-  'The latest Qwen Vision model from Alibaba Cloud ModelStudio (version: qwen3-vl-plus-2025-09-23)':
-    '来自阿里云 ModelStudio 的最新 Qwen Vision 模型（版本：qwen3-vl-plus-2025-09-23）',
+  'OLA 3.5 Plus — efficient hybrid model with leading coding performance':
+    'OLA 3.5 Plus — 高效混合架构，编程性能业界领先',
+  'The latest OLA Vision model from Alibaba Cloud ModelStudio (version: ola3-vl-plus-2025-09-23)':
+    '来自阿里云 ModelStudio 的最新 OLA Vision 模型（版本：ola3-vl-plus-2025-09-23）',
 
   // ============================================================================
   // Dialogs - Permissions
@@ -1336,7 +1336,7 @@ export default {
     '在 OLA 中使用 ! 可运行任意 shell 命令（例如 !ls）。',
   'Type / to open the command popup; Tab autocompletes slash commands and saved prompts.':
     '输入 / 打开命令弹窗；按 Tab 自动补全斜杠命令和保存的提示词。',
-  'You can resume a previous conversation by running qwen --continue or qwen --resume.':
+  'You can resume a previous conversation by running ola --continue or ola --resume.':
     '运行 ola --continue 或 ola --resume 可继续之前的会话。',
   'You can switch permission mode quickly with Shift+Tab or /approval-mode.':
     '按 Shift+Tab 或输入 /approval-mode 可快速切换权限模式。',
@@ -1622,19 +1622,19 @@ export default {
   // ============================================================================
   // Commands - Auth
   // ============================================================================
-  'Configure Qwen authentication information with Qwen-OAuth or Alibaba Cloud Coding Plan':
-    '使用 Qwen OAuth 或阿里云百炼 Coding Plan 配置 Qwen 认证信息',
-  'Authenticate using Qwen OAuth': '使用 Qwen OAuth 进行认证',
+  'Configure OLA authentication information with OLA-OAuth or Alibaba Cloud Coding Plan':
+    '使用 OLA OAuth 或阿里云百炼 Coding Plan 配置 OLA 认证信息',
+  'Authenticate using OLA OAuth': '使用 OLA OAuth 进行认证',
   'Authenticate using Alibaba Cloud Coding Plan':
     '使用阿里云百炼 Coding Plan 进行认证',
   'Region for Coding Plan (china/global)': 'Coding Plan 区域 (china/global)',
   'API key for Coding Plan': 'Coding Plan 的 API 密钥',
   'Show current authentication status': '显示当前认证状态',
   'Authentication completed successfully.': '认证完成。',
-  'Starting Qwen OAuth authentication...': '正在启动 Qwen OAuth 认证...',
-  'Successfully authenticated with Qwen OAuth.': '已成功通过 Qwen OAuth 认证。',
-  'Failed to authenticate with Qwen OAuth: {{error}}':
-    'Qwen OAuth 认证失败：{{error}}',
+  'Starting OLA OAuth authentication...': '正在启动 OLA OAuth 认证...',
+  'Successfully authenticated with OLA OAuth.': '已成功通过 OLA OAuth 认证。',
+  'Failed to authenticate with OLA OAuth: {{error}}':
+    'OLA OAuth 认证失败：{{error}}',
   'Processing Alibaba Cloud Coding Plan authentication...':
     '正在处理阿里云百炼 Coding Plan 认证...',
   'Successfully authenticated with Alibaba Cloud Coding Plan.':
@@ -1652,17 +1652,17 @@ export default {
   '⚠️  No authentication method configured.\n': '⚠️  未配置认证方式。\n',
   'Run one of the following commands to get started:\n':
     '运行以下命令之一开始配置：\n',
-  '  qwen auth qwen-oauth     - Authenticate with Qwen OAuth (free tier)':
-    '  qwen auth qwen-oauth     - 使用 Qwen OAuth 认证（免费）',
-  '  qwen auth coding-plan      - Authenticate with Alibaba Cloud Coding Plan\n':
-    '  qwen auth coding-plan      - 使用阿里云百炼 Coding Plan 认证\n',
+  '  ola auth qwen-oauth     - Authenticate with OLA OAuth (free tier)':
+    '  ola auth qwen-oauth     - 使用 OLA OAuth 认证（免费）',
+  '  ola auth coding-plan      - Authenticate with Alibaba Cloud Coding Plan\n':
+    '  ola auth coding-plan      - 使用阿里云百炼 Coding Plan 认证\n',
   'Or simply run:': '或者直接运行：',
-  '  qwen auth                - Interactive authentication setup\n':
-    '  qwen auth                - 交互式认证配置\n',
-  '✓ Authentication Method: Qwen OAuth': '✓ 认证方式：Qwen OAuth',
+  '  ola auth                - Interactive authentication setup\n':
+    '  ola auth                - 交互式认证配置\n',
+  '✓ Authentication Method: OLA OAuth': '✓ 认证方式：OLA OAuth',
   '  Type: Free tier': '  类型：免费版',
   '  Limit: Up to 1,000 requests/day': '  限额：每天最多 1,000 次请求',
-  '  Models: Qwen latest models\n': '  模型：Qwen 最新模型\n',
+  '  Models: OLA latest models\n': '  模型：OLA 最新模型\n',
   '✓ Authentication Method: Alibaba Cloud Coding Plan':
     '✓ 认证方式：阿里云百炼 Coding Plan',
   '中国 (China) - 阿里云百炼': '中国 (China) - 阿里云百炼',
@@ -1676,7 +1676,7 @@ export default {
   '  Issue: API key not found in environment or settings\n':
     '  问题：在环境变量或设置中未找到 API 密钥\n',
   '  Run `qwen auth coding-plan` to re-configure.\n':
-    '  运行 `qwen auth coding-plan` 重新配置。\n',
+    '  运行 `ola auth coding-plan` 重新配置。\n',
   '✓ Authentication Method: {{type}}': '✓ 认证方式：{{type}}',
   '  Status: Configured\n': '  状态：已配置\n',
   'Failed to check authentication status: {{error}}':

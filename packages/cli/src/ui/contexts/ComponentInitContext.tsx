@@ -12,7 +12,13 @@
  */
 
 import React from 'react';
-import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+} from 'react';
 import { Box, Text } from 'ink';
 import { theme } from '../semantic-colors.js';
 
@@ -40,7 +46,9 @@ export interface ComponentInitContextValue {
 
 // ─── Context ────────────────────────────────────────────────
 
-const ComponentInitContext = createContext<ComponentInitContextValue | null>(null);
+const ComponentInitContext = createContext<ComponentInitContextValue | null>(
+  null,
+);
 
 // ─── Provider ───────────────────────────────────────────────
 
@@ -54,7 +62,7 @@ export const ComponentInitProvider: React.FC<ComponentInitProviderProps> = ({
   _autoHideDelay,
 }) => {
   const [components, setComponents] = useState<Map<string, ComponentInitState>>(
-    () => new Map()
+    () => new Map(),
   );
   const [allInitialized, setAllInitialized] = useState(false);
 
@@ -128,7 +136,7 @@ export const ComponentInitProvider: React.FC<ComponentInitProviderProps> = ({
   // Check if all components are initialized
   useEffect(() => {
     const allSuccess = [...components.values()].every(
-      (c) => c.status === 'success' || c.status === 'error'
+      (c) => c.status === 'success' || c.status === 'error',
     );
     setAllInitialized(allSuccess);
   }, [components]);
@@ -158,7 +166,7 @@ export const useComponentInit = (componentName: string) => {
 
   if (!context) {
     throw new Error(
-      'useComponentInit must be used within a ComponentInitProvider'
+      'useComponentInit must be used within a ComponentInitProvider',
     );
   }
 
@@ -181,8 +189,14 @@ export const useComponentInit = (componentName: string) => {
   }, [componentName, registerComponent, markInitializing, unregisterComponent]);
 
   return {
-    markSuccess: useCallback(() => markSuccess(componentName), [markSuccess, componentName]),
-    markError: useCallback((error: string) => markError(componentName, error), [markError, componentName]),
+    markSuccess: useCallback(
+      () => markSuccess(componentName),
+      [markSuccess, componentName],
+    ),
+    markError: useCallback(
+      (error: string) => markError(componentName, error),
+      [markError, componentName],
+    ),
   };
 };
 
@@ -196,7 +210,7 @@ const ComponentInitStatusDisplayComponent: React.FC = () => {
   const { components, allInitialized, hasErrors } = context;
 
   // Always show initialization status - no auto-hide
-  
+
   // Don't render if no components registered yet or all initialized with no errors
   if (components.size === 0 || (allInitialized && !hasErrors)) {
     return null;
@@ -255,7 +269,11 @@ const ComponentInitStatusDisplayComponent: React.FC = () => {
     >
       {/* Only show title when all components are initialized */}
       {allInitialized && (
-        <Text bold color={hasErrors ? theme.status.error : theme.status.success} wrap="wrap">
+        <Text
+          bold
+          color={hasErrors ? theme.status.error : theme.status.success}
+          wrap="wrap"
+        >
           {hasErrors
             ? '⚠ Initialization completed with errors'
             : '✓ All components initialized'}
@@ -263,7 +281,7 @@ const ComponentInitStatusDisplayComponent: React.FC = () => {
       )}
       {sortedComponents.map((component) => (
         <Box key={component.name} flexDirection="row">
-          <Text>  </Text>
+          <Text> </Text>
           <Text color={getStatusColor(component.status)}>
             {getStatusIcon(component.status)}
           </Text>
@@ -279,10 +297,16 @@ const ComponentInitStatusDisplayComponent: React.FC = () => {
             {component.name}
           </Text>
           {component.status === 'initializing' && (
-            <Text color={theme.status.warning} wrap="wrap"> loading...</Text>
+            <Text color={theme.status.warning} wrap="wrap">
+              {' '}
+              loading...
+            </Text>
           )}
           {component.status === 'error' && (
-            <Text color={theme.status.error} wrap="wrap"> - {component.error}</Text>
+            <Text color={theme.status.error} wrap="wrap">
+              {' '}
+              - {component.error}
+            </Text>
           )}
         </Box>
       ))}
@@ -290,6 +314,8 @@ const ComponentInitStatusDisplayComponent: React.FC = () => {
   );
 };
 
-export const ComponentInitStatusDisplay = React.memo(ComponentInitStatusDisplayComponent);
+export const ComponentInitStatusDisplay = React.memo(
+  ComponentInitStatusDisplayComponent,
+);
 
 export { ComponentInitContext };

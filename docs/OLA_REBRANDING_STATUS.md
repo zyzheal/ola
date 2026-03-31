@@ -8,7 +8,7 @@
 ### 1. 配置文件和文档 ✅
 
 - ✅ `package.json` - 包名从 `aiops` 改为 `ola`
-- ✅ 所有文档中的 Qwen Code → OLA
+- ✅ 所有文档中的 OLA → OLA
 - ✅ 配置目录从 `.ola` 改为 `.ola`
 - ✅ 环境变量从 `QWEN_*` 改为 `OLA_*`
 

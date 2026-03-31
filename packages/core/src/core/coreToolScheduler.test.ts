@@ -2714,9 +2714,8 @@ describe('Fire hook functions integration', () => {
 
   describe('firePostToolUseFailureHook', () => {
     it('should return additional context when hook provides it', async () => {
-      const { firePostToolUseFailureHook } = await import(
-        './toolHookTriggers.js'
-      );
+      const { firePostToolUseFailureHook } =
+        await import('./toolHookTriggers.js');
 
       const mockResponse: HookExecutionResponse = {
         type: MessageBusType.HOOK_EXECUTION_RESPONSE,
@@ -2745,9 +2744,8 @@ describe('Fire hook functions integration', () => {
     });
 
     it('should return empty object when no message bus is provided', async () => {
-      const { firePostToolUseFailureHook } = await import(
-        './toolHookTriggers.js'
-      );
+      const { firePostToolUseFailureHook } =
+        await import('./toolHookTriggers.js');
 
       const result = await firePostToolUseFailureHook(
         undefined,
@@ -2818,9 +2816,8 @@ describe('Fire hook functions integration', () => {
 
   describe('firePermissionRequestHook', () => {
     it('should return hasDecision: false when hook makes no decision', async () => {
-      const { firePermissionRequestHook } = await import(
-        './toolHookTriggers.js'
-      );
+      const { firePermissionRequestHook } =
+        await import('./toolHookTriggers.js');
 
       const mockResponse: HookExecutionResponse = {
         type: MessageBusType.HOOK_EXECUTION_RESPONSE,
@@ -2844,9 +2841,8 @@ describe('Fire hook functions integration', () => {
     });
 
     it('should return hasDecision: true with allow decision when hook allows', async () => {
-      const { firePermissionRequestHook } = await import(
-        './toolHookTriggers.js'
-      );
+      const { firePermissionRequestHook } =
+        await import('./toolHookTriggers.js');
 
       const mockResponse: HookExecutionResponse = {
         type: MessageBusType.HOOK_EXECUTION_RESPONSE,
@@ -2877,9 +2873,8 @@ describe('Fire hook functions integration', () => {
     });
 
     it('should return hasDecision: true with deny decision when hook denies', async () => {
-      const { firePermissionRequestHook } = await import(
-        './toolHookTriggers.js'
-      );
+      const { firePermissionRequestHook } =
+        await import('./toolHookTriggers.js');
 
       const mockResponse: HookExecutionResponse = {
         type: MessageBusType.HOOK_EXECUTION_RESPONSE,
@@ -2912,9 +2907,8 @@ describe('Fire hook functions integration', () => {
     });
 
     it('should return hasDecision: false when no message bus is provided', async () => {
-      const { firePermissionRequestHook } = await import(
-        './toolHookTriggers.js'
-      );
+      const { firePermissionRequestHook } =
+        await import('./toolHookTriggers.js');
 
       const result = await firePermissionRequestHook(
         undefined,

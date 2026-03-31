@@ -14,8 +14,10 @@ import { createDebugLogger } from '../utils/debugLogger.js';
 
 const debugLogger = createDebugLogger('Extension:variables');
 
-// Re-export types for substituteHookVariables
-export type { HookEventName, HookDefinition };
+// Re-export for substituteHookVariables
+// Note: HookEventName is an enum (value + type), HookDefinition is an interface (type only)
+export { HookEventName } from '../hooks/types.js';
+export type { HookDefinition } from '../hooks/types.js';
 
 export const EXTENSIONS_DIRECTORY_NAME = path.join(OLA_DIR, 'extensions');
 export const EXTENSIONS_CONFIG_FILENAME = 'qwen-extension.json';
