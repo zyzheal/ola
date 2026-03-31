@@ -1337,7 +1337,7 @@ export default {
   'Type / to open the command popup; Tab autocompletes slash commands and saved prompts.':
     '输入 / 打开命令弹窗；按 Tab 自动补全斜杠命令和保存的提示词。',
   'You can resume a previous conversation by running qwen --continue or qwen --resume.':
-    '运行 qwen --continue 或 qwen --resume 可继续之前的会话。',
+    '运行 ola --continue 或 ola --resume 可继续之前的会话。',
   'You can switch permission mode quickly with Shift+Tab or /approval-mode.':
     '按 Shift+Tab 或输入 /approval-mode 可快速切换权限模式。',
   'You can switch permission mode quickly with Tab or /approval-mode.':

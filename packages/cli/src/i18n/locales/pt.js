@@ -1370,7 +1370,7 @@ export default {
   'Type / to open the command popup; Tab autocompletes slash commands and saved prompts.':
     'Digite / para abrir o popup de comandos; Tab autocompleta comandos de barra e prompts salvos.',
   'You can resume a previous conversation by running qwen --continue or qwen --resume.':
-    'Você pode retomar uma conversa anterior executando qwen --continue ou qwen --resume.',
+    'Você pode retomar uma conversa anterior executando ola --continue ou ola --resume.',
   'You can switch permission mode quickly with Shift+Tab or /approval-mode.':
     'Você pode alternar o modo de permissão rapidamente com Shift+Tab ou /approval-mode.',
   'Try /insight to generate personalized insights from your chat history.':

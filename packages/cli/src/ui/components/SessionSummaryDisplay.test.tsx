@@ -88,7 +88,7 @@ describe('<SessionSummaryDisplay />', () => {
 
     expect(output).toContain('Agent powering down. Goodbye!');
     expect(output).toContain('To continue this session, run');
-    expect(output).toContain('qwen --resume test-session-id-12345');
+    expect(output).toContain('ola --resume test-session-id-12345');
     expect(output).toMatchSnapshot();
   });
 

@@ -1634,7 +1634,7 @@ export default {
   'Type / to open the command popup; Tab autocompletes slash commands and saved prompts.':
     'Geben Sie / ein, um das Befehlsmenü zu öffnen; Tab vervollständigt Slash-Befehle und gespeicherte Prompts.',
   'You can resume a previous conversation by running qwen --continue or qwen --resume.':
-    'Sie können eine frühere Unterhaltung mit qwen --continue oder qwen --resume fortsetzen.',
+    'Sie können eine frühere Unterhaltung mit ola --continue oder ola --resume fortsetzen.',
   'You can switch permission mode quickly with Shift+Tab or /approval-mode.':
     'Sie können den Berechtigungsmodus schnell mit Shift+Tab oder /approval-mode wechseln.',
   'You can switch permission mode quickly with Tab or /approval-mode.':

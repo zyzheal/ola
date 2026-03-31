@@ -1034,7 +1034,7 @@ export default {
   'Type / to open the command popup; Tab autocompletes slash commands and saved prompts.':
     '/ を入力してコマンドポップアップを開きます。Tab でスラッシュコマンドと保存済みプロンプトを補完できます。',
   'You can resume a previous conversation by running qwen --continue or qwen --resume.':
-    'qwen --continue または qwen --resume で前の会話を再開できます。',
+    'ola --continue または ola --resume で前の会話を再開できます。',
   'You can switch permission mode quickly with Shift+Tab or /approval-mode.':
     'Shift+Tab または /approval-mode で権限モードをすばやく切り替えられます。',
   'You can switch permission mode quickly with Tab or /approval-mode.':

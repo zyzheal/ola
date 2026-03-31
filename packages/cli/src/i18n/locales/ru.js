@@ -1563,7 +1563,7 @@ export default {
   'Type / to open the command popup; Tab autocompletes slash commands and saved prompts.':
     'Введите /, чтобы открыть меню команд; Tab автодополняет слэш-команды и сохранённые промпты.',
   'You can resume a previous conversation by running qwen --continue or qwen --resume.':
-    'Вы можете продолжить предыдущий разговор, запустив qwen --continue или qwen --resume.',
+    'Вы можете продолжить предыдущий разговор, запустив ola --continue или ola --resume.',
   'You can switch permission mode quickly with Shift+Tab or /approval-mode.':
     'Вы можете быстро переключать режим разрешений с помощью Shift+Tab или /approval-mode.',
   'You can switch permission mode quickly with Tab or /approval-mode.':
