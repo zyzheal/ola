@@ -84,12 +84,6 @@ integration-tests/terminal-capture/scenarios/screenshots/
 *storybook.log
 storybook-static
 
-# OLA runtime files
-.ola/debug/
-.ola/tmp/
-.ola/todos/
-.ola/projects/
-.ola/*.log
-.ola/*.bak
-.ola/*.orig
+# OLA runtime files - ignore all .ola directory
+.ola/
 
