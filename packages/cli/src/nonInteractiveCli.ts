@@ -36,6 +36,7 @@ import {
   handleCancellationError,
   handleMaxTurnsExceededError,
 } from './utils/errors.js';
+import { runExitCleanup } from './utils/cleanup.js';
 
 const debugLogger = createDebugLogger('NON_INTERACTIVE_CLI');
 import {
@@ -114,6 +115,41 @@ export async function runNonInteractive(
   prompt_id: string,
   options: RunNonInteractiveOptions = {},
 ): Promise<void> {
+  // Setup uncaught exception handler for cleanup on memory errors
+  const uncaughtExceptionHandler = async (error: Error, origin: string) => {
+    const isOutOfMemory =
+      error.message.includes('out of memory') ||
+      error.message.includes('ENOMEM') ||
+      (error as NodeJS.ErrnoException).code === 'ENOMEM';
+
+    const adapter = options.adapter;
+    if (adapter) {
+      adapter.startAssistantMessage();
+      adapter.processEvent({
+        type: GeminiEventType.Error,
+        value: `CRITICAL: Uncaught Exception${isOutOfMemory ? ' - Out of Memory' : ''}!
+Origin: ${origin}
+Error: ${error.message}`,
+      } as unknown as Parameters<
+        JsonOutputAdapterInterface['processEvent']
+      >[0]);
+    }
+
+    // Attempt cleanup before exit
+    try {
+      await runExitCleanup();
+    } catch (_cleanupError) {
+      // Ignore cleanup errors, still need to exit
+    }
+
+    // Give some time for error message to be displayed
+    setTimeout(() => {
+      process.exit(1);
+    }, 100);
+  };
+
+  process.on('uncaughtException', uncaughtExceptionHandler);
+
   return promptIdContext.run(prompt_id, async () => {
     // Create output adapter based on format
     let adapter: JsonOutputAdapterInterface;

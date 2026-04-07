@@ -137,6 +137,41 @@ ${reason.stack}`
       appEvents.emit(AppEvent.OpenDebugConsole);
     }
   });
+
+  // Handle uncaught exceptions including out of memory errors
+  process.on('uncaughtException', async (error, origin) => {
+    const isOutOfMemory =
+      error.message.includes('out of memory') ||
+      error.message.includes('ENOMEM') ||
+      (error as NodeJS.ErrnoException).code === 'ENOMEM';
+
+    const errorMessage = `=========================================
+CRITICAL: Uncaught Exception${isOutOfMemory ? ' - Out of Memory' : ''}!
+=========================================
+Origin: ${origin}
+Error: ${error.message}${
+      error.stack
+        ? `
+
+Stack trace:
+${error.stack}`
+        : ''
+    }`;
+
+    appEvents.emit(AppEvent.LogError, errorMessage);
+
+    // Attempt cleanup before exit
+    try {
+      await runExitCleanup();
+    } catch (_cleanupError) {
+      // Ignore cleanup errors, still need to exit
+    }
+
+    // Give some time for error message to be displayed
+    setTimeout(() => {
+      process.exit(1);
+    }, 100);
+  });
 }
 
 export async function startInteractiveUI(
