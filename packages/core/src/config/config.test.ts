@@ -13,12 +13,13 @@ import { setGeminiMdFilename as mockSetGeminiMdFilename } from '../tools/memoryT
 import {
   DEFAULT_TELEMETRY_TARGET,
   DEFAULT_OTLP_ENDPOINT,
-  OlaLogger,
+  QwenLogger,
 } from '../telemetry/index.js';
 import type {
   ContentGenerator,
   ContentGeneratorConfig,
 } from '../core/contentGenerator.js';
+import { DEFAULT_DASHSCOPE_BASE_URL } from '../core/openaiContentGenerator/constants.js';
 import {
   AuthType,
   createContentGenerator,
@@ -121,7 +122,7 @@ vi.mock('../tools/memoryTool', () => ({
   getCurrentGeminiMdFilename: vi.fn(() => 'QWEN.md'), // Mock the original filename
   getAllGeminiMdFilenames: vi.fn(() => ['QWEN.md', 'AGENTS.md']),
   DEFAULT_CONTEXT_FILENAME: 'QWEN.md',
-  OLA_CONFIG_DIR: '.ola',
+  QWEN_CONFIG_DIR: '.qwen',
 }));
 
 vi.mock('../core/contentGenerator.js');
@@ -235,7 +236,7 @@ describe('Server Config (config.ts)', () => {
   beforeEach(() => {
     // Reset mocks if necessary
     vi.clearAllMocks();
-    vi.spyOn(OlaLogger.prototype, 'logStartSessionEvent').mockImplementation(
+    vi.spyOn(QwenLogger.prototype, 'logStartSessionEvent').mockImplementation(
       async () => undefined,
     );
 
@@ -415,6 +416,54 @@ describe('Server Config (config.ts)', () => {
       expect(
         config.getGeminiClient().stripThoughtsFromHistory,
       ).not.toHaveBeenCalledWith();
+    });
+  });
+
+  describe('model switching optimization (QWEN_OAUTH)', () => {
+    it('should switch qwen-oauth model in-place without refreshing auth when safe', async () => {
+      const config = new Config(baseParams);
+
+      const mockContentConfig: ContentGeneratorConfig = {
+        authType: AuthType.QWEN_OAUTH,
+        model: 'coder-model',
+        apiKey: 'QWEN_OAUTH_DYNAMIC_TOKEN',
+        baseUrl: DEFAULT_DASHSCOPE_BASE_URL,
+        timeout: 60000,
+        maxRetries: 3,
+      } as ContentGeneratorConfig;
+
+      vi.mocked(resolveContentGeneratorConfigWithSources).mockImplementation(
+        (_config, authType, generationConfig) => ({
+          config: {
+            ...mockContentConfig,
+            authType,
+            model: generationConfig?.model ?? mockContentConfig.model,
+          } as ContentGeneratorConfig,
+          sources: {},
+        }),
+      );
+      vi.mocked(createContentGenerator).mockResolvedValue({
+        generateContent: vi.fn(),
+        generateContentStream: vi.fn(),
+        countTokens: vi.fn(),
+        embedContent: vi.fn(),
+      } as unknown as ContentGenerator);
+
+      // Establish initial qwen-oauth content generator config/content generator.
+      await config.refreshAuth(AuthType.QWEN_OAUTH);
+
+      // Spy after initial refresh to ensure model switch does not re-trigger refreshAuth.
+      const refreshSpy = vi.spyOn(config, 'refreshAuth');
+
+      await config.switchModel(AuthType.QWEN_OAUTH, 'coder-model');
+
+      expect(config.getModel()).toBe('coder-model');
+      expect(refreshSpy).not.toHaveBeenCalled();
+      // Called once during initial refreshAuth + once during handleModelChange diffing.
+      expect(
+        vi.mocked(resolveContentGeneratorConfigWithSources),
+      ).toHaveBeenCalledTimes(2);
+      expect(vi.mocked(createContentGenerator)).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -643,7 +692,7 @@ describe('Server Config (config.ts)', () => {
       });
       await config.initialize();
 
-      expect(OlaLogger.prototype.logStartSessionEvent).toHaveBeenCalledOnce();
+      expect(QwenLogger.prototype.logStartSessionEvent).toHaveBeenCalledOnce();
     });
   });
 
@@ -1345,5 +1394,225 @@ describe('BaseLlmClient Lifecycle', () => {
       config.getContentGenerator(),
       config,
     );
+  });
+});
+
+describe('Model Switching and Config Updates', () => {
+  const baseParams: ConfigParameters = {
+    cwd: '/tmp',
+    targetDir: '/path/to/target',
+    debugMode: false,
+    model: 'qwen3-coder-plus',
+    usageStatisticsEnabled: false,
+    telemetry: { enabled: false },
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should update contextWindowSize when switching models with hot-update', async () => {
+    const config = new Config(baseParams);
+
+    // Initialize with first model
+    const initialConfig: ContentGeneratorConfig = {
+      ['model']: 'qwen3-coder-plus',
+      ['authType']: AuthType.QWEN_OAUTH,
+      ['apiKey']: 'test-key',
+      ['contextWindowSize']: 1_000_000,
+      ['samplingParams']: { temperature: 0.7 },
+      ['enableCacheControl']: true,
+    };
+
+    vi.mocked(resolveContentGeneratorConfigWithSources).mockReturnValue({
+      config: initialConfig,
+      sources: {
+        model: { kind: 'settings' },
+        contextWindowSize: { kind: 'computed', detail: 'auto' },
+      },
+    });
+
+    await config.refreshAuth(AuthType.QWEN_OAUTH);
+
+    // Verify initial config
+    const contentGenConfig = config.getContentGeneratorConfig();
+    expect(contentGenConfig['model']).toBe('qwen3-coder-plus');
+    expect(contentGenConfig['contextWindowSize']).toBe(1_000_000);
+
+    // Switch to a different model with different token limits
+    const newConfig: ContentGeneratorConfig = {
+      ['model']: 'qwen-max',
+      ['authType']: AuthType.QWEN_OAUTH,
+      ['apiKey']: 'test-key',
+      ['contextWindowSize']: 128_000,
+      ['samplingParams']: { temperature: 0.8 },
+      ['enableCacheControl']: false,
+    };
+
+    vi.mocked(resolveContentGeneratorConfigWithSources).mockReturnValue({
+      config: newConfig,
+      sources: {
+        model: { kind: 'programmatic', detail: 'user' },
+        contextWindowSize: { kind: 'computed', detail: 'auto' },
+        samplingParams: { kind: 'settings' },
+        enableCacheControl: { kind: 'settings' },
+      },
+    });
+
+    // Simulate model switch (this would be called by ModelsConfig.switchModel)
+    await (
+      config as unknown as {
+        handleModelChange: (
+          authType: AuthType,
+          requiresRefresh: boolean,
+        ) => Promise<void>;
+      }
+    ).handleModelChange(AuthType.QWEN_OAUTH, false);
+
+    // Verify all fields are updated
+    const updatedConfig = config.getContentGeneratorConfig();
+    expect(updatedConfig['model']).toBe('qwen-max');
+    expect(updatedConfig['contextWindowSize']).toBe(128_000);
+    expect(updatedConfig['samplingParams']?.temperature).toBe(0.8);
+    expect(updatedConfig['enableCacheControl']).toBe(false);
+
+    // Verify sources are also updated
+    const sources = config.getContentGeneratorConfigSources();
+    expect(sources['model']?.kind).toBe('programmatic');
+    expect(sources['model']?.detail).toBe('user');
+    expect(sources['contextWindowSize']?.kind).toBe('computed');
+    expect(sources['contextWindowSize']?.detail).toBe('auto');
+    expect(sources['samplingParams']?.kind).toBe('settings');
+    expect(sources['enableCacheControl']?.kind).toBe('settings');
+  });
+
+  it('should trigger full refresh when switching to non-qwen-oauth provider', async () => {
+    const config = new Config(baseParams);
+
+    // Initialize with qwen-oauth
+    const initialConfig: ContentGeneratorConfig = {
+      ['model']: 'qwen3-coder-plus',
+      ['authType']: AuthType.QWEN_OAUTH,
+      ['apiKey']: 'test-key',
+      ['contextWindowSize']: 1_000_000,
+    };
+
+    vi.mocked(resolveContentGeneratorConfigWithSources).mockReturnValue({
+      config: initialConfig,
+      sources: {},
+    });
+
+    await config.refreshAuth(AuthType.QWEN_OAUTH);
+
+    // Switch to different auth type (should trigger full refresh)
+    const newConfig: ContentGeneratorConfig = {
+      ['model']: 'gemini-flash',
+      ['authType']: AuthType.USE_GEMINI,
+      ['apiKey']: 'gemini-key',
+      ['contextWindowSize']: 32_000,
+    };
+
+    vi.mocked(resolveContentGeneratorConfigWithSources).mockReturnValue({
+      config: newConfig,
+      sources: {},
+    });
+
+    const refreshAuthSpy = vi.spyOn(
+      config as unknown as {
+        refreshAuth: (authType: AuthType) => Promise<void>;
+      },
+      'refreshAuth',
+    );
+
+    // Simulate model switch with different auth type
+    await (
+      config as unknown as {
+        handleModelChange: (
+          authType: AuthType,
+          requiresRefresh: boolean,
+        ) => Promise<void>;
+      }
+    ).handleModelChange(AuthType.USE_GEMINI, true);
+
+    // Verify refreshAuth was called (full refresh path)
+    expect(refreshAuthSpy).toHaveBeenCalledWith(AuthType.USE_GEMINI);
+  });
+
+  it('should handle model switch when contextWindowSize is undefined', async () => {
+    const config = new Config(baseParams);
+
+    // Initialize with config that has undefined token limits
+    const initialConfig: ContentGeneratorConfig = {
+      ['model']: 'qwen3-coder-plus',
+      ['authType']: AuthType.QWEN_OAUTH,
+      ['apiKey']: 'test-key',
+      ['contextWindowSize']: undefined,
+    };
+
+    vi.mocked(resolveContentGeneratorConfigWithSources).mockReturnValue({
+      config: initialConfig,
+      sources: {},
+    });
+
+    await config.refreshAuth(AuthType.QWEN_OAUTH);
+
+    // Switch to model with defined limits
+    const newConfig: ContentGeneratorConfig = {
+      ['model']: 'qwen-max',
+      ['authType']: AuthType.QWEN_OAUTH,
+      ['apiKey']: 'test-key',
+      ['contextWindowSize']: 128_000,
+    };
+
+    vi.mocked(resolveContentGeneratorConfigWithSources).mockReturnValue({
+      config: newConfig,
+      sources: {},
+    });
+
+    await (
+      config as unknown as {
+        handleModelChange: (
+          authType: AuthType,
+          requiresRefresh: boolean,
+        ) => Promise<void>;
+      }
+    ).handleModelChange(AuthType.QWEN_OAUTH, false);
+
+    // Verify limits are now defined
+    const updatedConfig = config.getContentGeneratorConfig();
+    expect(updatedConfig['contextWindowSize']).toBe(128_000);
+  });
+
+  describe('hasHooksForEvent', () => {
+    it('should return false when hookSystem is not initialized', () => {
+      const config = new Config(baseParams);
+      expect(config.hasHooksForEvent('Stop')).toBe(false);
+    });
+
+    it('should delegate to hookSystem.hasHooksForEvent when hookSystem exists', () => {
+      const config = new Config(baseParams);
+      const mockHasHooksForEvent = vi.fn().mockReturnValue(true);
+      const mockHookSystem = {
+        hasHooksForEvent: mockHasHooksForEvent,
+      };
+      // @ts-expect-error - accessing private for testing
+      config['hookSystem'] = mockHookSystem;
+
+      expect(config.hasHooksForEvent('UserPromptSubmit')).toBe(true);
+      expect(mockHasHooksForEvent).toHaveBeenCalledWith('UserPromptSubmit');
+    });
+
+    it('should return false when hookSystem has no hooks for the event', () => {
+      const config = new Config(baseParams);
+      const mockHasHooksForEvent = vi.fn().mockReturnValue(false);
+      const mockHookSystem = {
+        hasHooksForEvent: mockHasHooksForEvent,
+      };
+      // @ts-expect-error - accessing private for testing
+      config['hookSystem'] = mockHookSystem;
+
+      expect(config.hasHooksForEvent('Stop')).toBe(false);
+      expect(mockHasHooksForEvent).toHaveBeenCalledWith('Stop');
+    });
   });
 });
