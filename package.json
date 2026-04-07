@@ -1,6 +1,6 @@
 {
   "name": "ola",
-  "version": "0.13.1",
+  "version": "0.14.0",
   "description": "AI Platform Code Assistant — based on qwen-code (Apache 2.0), de-branded",
   "engines": {
     "node": ">=20.0.0"
@@ -14,7 +14,7 @@
     "url": "git+https://github.com/zyzheal/ola.git"
   },
   "config": {
-    "sandboxImageUri": "ghcr.io/zyzheal/ola:0.13.1"
+    "sandboxImageUri": "ghcr.io/zyzheal/ola:0.14.0"
   },
   "scripts": {
     "start": "cross-env node scripts/start.js",

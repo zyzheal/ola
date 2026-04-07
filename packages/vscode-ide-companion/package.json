@@ -2,7 +2,7 @@
   "name": "ai-platform-code-assistant-vscode-companion",
   "displayName": "AI Platform Code Assistant",
   "description": "Enable AI Platform Code Assistant with direct access to your VS Code workspace.",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "publisher": "your-org",
   "icon": "assets/icon.png",
   "repository": {
