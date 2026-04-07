@@ -1,21 +1,21 @@
 {
   "name": "@zyzheal/ola",
-  "version": "0.14.1",
+  "version": "0.14.2",
   "description": "AI Platform Code Assistant",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zyzheal/ola.git"
   },
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/cli.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "ola": "dist/index.js"
+    "ola": "dist/cli.js"
   },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/cli.js"
     }
   },
   "scripts": {
