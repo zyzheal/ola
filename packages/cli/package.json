@@ -1,25 +1,19 @@
 {
   "name": "@zyzheal/ola",
-  "version": "0.14.2",
+  "version": "0.14.3",
   "description": "AI Platform Code Assistant",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zyzheal/ola.git"
   },
   "type": "module",
-  "main": "dist/cli.js",
-  "types": "dist/index.d.ts",
+  "main": "cli.js",
   "bin": {
-    "ola": "dist/cli.js"
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/cli.js"
-    }
+    "ola": "cli.js"
   },
   "scripts": {
     "build": "node ../../scripts/build_package.js",
+    "prepublishOnly": "mkdir -p ./bundled && cp -r ../../dist/bundled/* ./bundled/ && mkdir -p ./locales && cp ../../dist/locales/* ./locales/ && mkdir -p ./vendor && cp -r ../../dist/vendor/* ./vendor/ && cp ../../dist/cli.js ./cli.js && cp ../../dist/sandbox-macos-*.sb ./ && cp ../../LICENSE ./LICENSE && cp ../../README.md ./README.md",
     "start": "NODE_ENV=development node dist/index.js",
     "start:prod": "node dist/index.js",
     "debug": "NODE_ENV=development node --inspect-brk dist/index.js",
@@ -31,7 +25,13 @@
     "check-i18n": "tsx ../../scripts/check-i18n.ts"
   },
   "files": [
-    "dist"
+    "bundled",
+    "locales",
+    "vendor",
+    "cli.js",
+    "LICENSE",
+    "README.md",
+    "sandbox-macos-*.sb"
   ],
   "config": {
     "sandboxImageUri": "ghcr.io/your-org/ola:0.14.0"
