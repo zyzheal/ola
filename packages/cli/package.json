@@ -1,6 +1,6 @@
 {
   "name": "@zyzheal/ola",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "AI Platform Code Assistant",
   "repository": {
     "type": "git",
@@ -41,8 +41,8 @@
     "@google/genai": "1.30.0",
     "@iarna/toml": "^2.2.5",
     "@modelcontextprotocol/sdk": "^1.26.0",
-    "ola-core": "file:../core",
-    "ola-web-templates": "file:../web-templates",
+    "ola-core": "^0.14.0",
+    "ola-web-templates": "^0.14.0",
     "@types/update-notifier": "^6.0.8",
     "ansi-regex": "^6.2.2",
     "command-exists": "^1.2.9",
