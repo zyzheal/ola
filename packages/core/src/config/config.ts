@@ -44,6 +44,9 @@ import { GitService } from '../services/gitService.js';
 
 // Tools
 import { AskUserQuestionTool } from '../tools/askUserQuestion.js';
+import { CronCreateTool } from '../tools/cron-create.js';
+import { CronDeleteTool } from '../tools/cron-delete.js';
+import { CronListTool } from '../tools/cron-list.js';
 import { EditTool } from '../tools/edit.js';
 import { ExitPlanModeTool } from '../tools/exitPlanMode.js';
 import { GlobTool } from '../tools/glob.js';
@@ -94,6 +97,7 @@ import {
   type HookExecutionRequest,
   type HookExecutionResponse,
 } from '../confirmation-bus/types.js';
+import { CronScheduler } from '../services/cronScheduler.js';
 import {
   PermissionMode,
   NotificationType,
@@ -598,6 +602,7 @@ export class Config {
   private readonly hooksConfig?: Record<string, unknown>;
   private hookSystem?: HookSystem;
   private messageBus?: MessageBus;
+  private cronScheduler?: CronScheduler;
 
   constructor(params: ConfigParameters) {
     this.sessionId = params.sessionId ?? randomUUID();
@@ -1772,6 +1777,17 @@ export class Config {
   }
 
   /**
+   * Get the cron scheduler instance.
+   * Creates a new instance if not already created.
+   */
+  getCronScheduler(): CronScheduler {
+    if (!this.cronScheduler) {
+      this.cronScheduler = new CronScheduler();
+    }
+    return this.cronScheduler;
+  }
+
+  /**
    * Set the message bus instance.
    * This is called by the CLI layer to inject the MessageBus.
    */
@@ -2137,6 +2153,11 @@ export class Config {
     registerCoreTool(SkillTool, this);
     registerCoreTool(LSTool, this);
     registerCoreTool(ReadFileTool, this);
+
+    // Register cron tools for in-session task scheduling
+    registerCoreTool(CronCreateTool, this);
+    registerCoreTool(CronListTool, this);
+    registerCoreTool(CronDeleteTool, this);
 
     if (this.getUseRipgrep()) {
       let useRipgrep = false;
