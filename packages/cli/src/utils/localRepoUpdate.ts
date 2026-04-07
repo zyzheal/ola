@@ -44,6 +44,11 @@ function getCurrentBranch(projectRoot: string): string {
     const result = cpExecSync('git rev-parse --abbrev-ref HEAD', {
       cwd: projectRoot,
       encoding: 'utf8',
+      env: {
+        GIT_ASKPASS: 'echo',
+        GIT_TERMINAL_PROMPT: '0',
+        GIT_CONFIG_NOSYSTEM: '1',
+      },
     });
     return result.trim();
   } catch (error) {
@@ -60,6 +65,11 @@ function getCurrentCommit(projectRoot: string): string {
     const result = cpExecSync('git rev-parse HEAD', {
       cwd: projectRoot,
       encoding: 'utf8',
+      env: {
+        GIT_ASKPASS: 'echo',
+        GIT_TERMINAL_PROMPT: '0',
+        GIT_CONFIG_NOSYSTEM: '1',
+      },
     });
     return result.trim();
   } catch (error) {
@@ -80,6 +90,11 @@ function getLatestRemoteCommit(
     const result = cpExecSync(`git ls-remote ${remote} ${branch}`, {
       cwd: projectRoot,
       encoding: 'utf8',
+      env: {
+        GIT_ASKPASS: 'echo',
+        GIT_TERMINAL_PROMPT: '0',
+        GIT_CONFIG_NOSYSTEM: '1',
+      },
     });
     return result.split('\t')[0] || 'unknown';
   } catch (error) {
@@ -124,6 +139,11 @@ export function updateFromLocalRepo(
   const fetchProcess = spawn('git', ['fetch', remote, branch], {
     cwd: projectRoot,
     stdio: 'pipe',
+    env: {
+      GIT_ASKPASS: 'echo',
+      GIT_TERMINAL_PROMPT: '0',
+      GIT_CONFIG_NOSYSTEM: '1',
+    },
   });
 
   let fetchError = '';
@@ -167,6 +187,11 @@ export function updateFromLocalRepo(
       {
         cwd: projectRoot,
         stdio: 'pipe',
+        env: {
+          GIT_ASKPASS: 'echo',
+          GIT_TERMINAL_PROMPT: '0',
+          GIT_CONFIG_NOSYSTEM: '1',
+        },
       },
     );
 
@@ -191,6 +216,11 @@ export function updateFromLocalRepo(
       const cleanProcess = spawn('git', ['clean', '-fd'], {
         cwd: projectRoot,
         stdio: 'pipe',
+        env: {
+          GIT_ASKPASS: 'echo',
+          GIT_TERMINAL_PROMPT: '0',
+          GIT_CONFIG_NOSYSTEM: '1',
+        },
       });
 
       let cleanError = '';

@@ -7,6 +7,7 @@
 import type { UpdateInfo } from 'update-notifier';
 import updateNotifier from 'update-notifier';
 import semver from 'semver';
+import * as path from 'node:path';
 import { getPackageJson } from '../../utils/package.js';
 import { createDebugLogger } from 'ola-core';
 import * as childProcess from 'node:child_process';
@@ -109,19 +110,6 @@ export async function checkForUpdates(): Promise<UpdateObject | null> {
       return null;
     }
 
-    // Check if this is a local git repository
-    const gitDir = childProcess
-      .execSync('git rev-parse --git-dir', {
-        cwd: process.cwd(),
-        encoding: 'utf8',
-        stdio: 'pipe',
-      })
-      .trim();
-
-    if (gitDir) {
-      return checkForLocalRepoUpdate(packageJson.version);
-    }
-
     // Skip update check for local development versions
     // Check if this is a locally linked package (npm link)
     const pkgJson = packageJson as Record<string, unknown>;
@@ -131,6 +119,71 @@ export async function checkForUpdates(): Promise<UpdateObject | null> {
     if (fromField?.includes('file:') || resolvedField?.includes('file:')) {
       debugLogger.info('Skipping update check for locally linked package');
       return null;
+    }
+
+    // Check if ola itself is running from a local git repository
+    // Only check for updates if ola is installed from git, not for user's project
+    // Skip git check in test environment
+    if (!process.env['VITEST'] && !process.env['TEST']) {
+      try {
+        const olaPackageDir = path.dirname(path.dirname(__dirname));
+        const olaGitDir = childProcess
+          .execSync('git rev-parse --git-dir', {
+            cwd: olaPackageDir,
+            encoding: 'utf8',
+            stdio: 'pipe',
+            env: {
+              GIT_ASKPASS: 'echo',
+              GIT_TERMINAL_PROMPT: '0',
+              GIT_CONFIG_NOSYSTEM: '1',
+            },
+          })
+          .trim();
+
+        if (olaGitDir) {
+          // Verify this is the ola repository by checking the remote URL
+          const remoteUrl = childProcess
+            .execSync('git remote get-url origin', {
+              cwd: olaPackageDir,
+              encoding: 'utf8',
+              stdio: 'pipe',
+              env: {
+                GIT_ASKPASS: 'echo',
+                GIT_TERMINAL_PROMPT: '0',
+                GIT_CONFIG_NOSYSTEM: '1',
+              },
+            })
+            .trim()
+            .toLowerCase();
+
+          // Only check for git updates if this is the ola/qwen-code repository
+          const isOlaRepo =
+            remoteUrl.includes('zyzheal/ola') ||
+            remoteUrl.includes('qwen-code');
+
+          if (isOlaRepo) {
+            const gitUpdate = checkForLocalRepoUpdate(
+              packageJson.version,
+              olaPackageDir,
+            );
+            if (gitUpdate) {
+              return gitUpdate;
+            }
+            // If git check returned null (no update), skip npm check
+            // If git check returned undefined (failed), continue to npm check
+            if (gitUpdate === null) {
+              return null;
+            }
+            // gitUpdate === undefined, continue to npm check
+          }
+        }
+      } catch (e) {
+        // Not a git repository or no origin remote, continue with npm update check
+        debugLogger.debug(
+          'Not running from ola git repo, continuing with npm update check: ' +
+            (e instanceof Error ? e.message : e),
+        );
+      }
     }
 
     const { version: currentVersion } = packageJson;
@@ -193,27 +246,75 @@ export async function checkForUpdates(): Promise<UpdateObject | null> {
 
 /**
  * Check for updates in local git repository
+ * @param currentVersion - Current version string
+ * @param repoDir - Optional directory to check (defaults to current working directory)
+ * @returns UpdateObject if update available, null if no update, undefined if check failed
  */
-function checkForLocalRepoUpdate(currentVersion: string): UpdateObject | null {
+function checkForLocalRepoUpdate(
+  currentVersion: string,
+  repoDir?: string,
+): UpdateObject | null | undefined {
   try {
-    const cwd = process.cwd();
+    const cwd = repoDir || process.cwd();
 
     // Get current commit hash
     const currentCommit = childProcess
-      .execSync('git rev-parse HEAD', { cwd, encoding: 'utf8' })
+      .execSync('git rev-parse HEAD', {
+        cwd,
+        encoding: 'utf8',
+        env: {
+          GIT_ASKPASS: 'echo',
+          GIT_TERMINAL_PROMPT: '0',
+          GIT_CONFIG_NOSYSTEM: '1',
+        },
+      })
       .trim();
 
     // Get current branch
     const branch = childProcess
-      .execSync('git rev-parse --abbrev-ref HEAD', { cwd, encoding: 'utf8' })
+      .execSync('git rev-parse --abbrev-ref HEAD', {
+        cwd,
+        encoding: 'utf8',
+        env: {
+          GIT_ASKPASS: 'echo',
+          GIT_TERMINAL_PROMPT: '0',
+          GIT_CONFIG_NOSYSTEM: '1',
+        },
+      })
       .trim();
 
-    // Fetch latest from origin
-    childProcess.execSync('git fetch origin', { cwd, stdio: 'ignore' });
+    // Fetch latest from origin with timeout to avoid hanging on authentication prompts
+    try {
+      childProcess.execSync('git fetch origin', {
+        cwd,
+        stdio: 'ignore',
+        timeout: 5000, // 5 second timeout
+        env: {
+          GIT_ASKPASS: 'echo',
+          GIT_TERMINAL_PROMPT: '0',
+          GIT_CONFIG_NOSYSTEM: '1',
+        },
+      });
+    } catch (fetchError) {
+      debugLogger.warn(
+        'Git fetch failed or timed out, skipping remote update check: ' +
+          fetchError,
+      );
+      // If fetch fails (e.g., due to auth required or network issue), return undefined to indicate check failed
+      return undefined;
+    }
 
     // Get latest remote commit
     const latestCommit = childProcess
-      .execSync(`git rev-parse origin/${branch}`, { cwd, encoding: 'utf8' })
+      .execSync(`git rev-parse origin/${branch}`, {
+        cwd,
+        encoding: 'utf8',
+        env: {
+          GIT_ASKPASS: 'echo',
+          GIT_TERMINAL_PROMPT: '0',
+          GIT_CONFIG_NOSYSTEM: '1',
+        },
+      })
       .trim();
 
     debugLogger.info(
@@ -235,6 +336,6 @@ function checkForLocalRepoUpdate(currentVersion: string): UpdateObject | null {
     return null;
   } catch (e) {
     debugLogger.warn('Failed to check local repo update: ' + e);
-    return null;
+    return undefined;
   }
 }

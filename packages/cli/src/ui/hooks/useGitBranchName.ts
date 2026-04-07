@@ -19,10 +19,19 @@ export function useGitBranchName(cwd: string): string | undefined {
         return;
       }
 
+      // Disable git credential helper to avoid authentication prompts
+      // Hardcoded environment variables to ensure git never prompts for credentials
       const { stdout } = await execCommand(
         'git',
         ['rev-parse', '--abbrev-ref', 'HEAD'],
-        { cwd },
+        {
+          cwd,
+          env: {
+            GIT_ASKPASS: 'echo',
+            GIT_TERMINAL_PROMPT: '0',
+            GIT_CONFIG_NOSYSTEM: '1',
+          },
+        },
       );
       const branch = stdout.toString().trim();
       if (branch && branch !== 'HEAD') {
@@ -31,7 +40,14 @@ export function useGitBranchName(cwd: string): string | undefined {
         const { stdout: hashStdout } = await execCommand(
           'git',
           ['rev-parse', '--short', 'HEAD'],
-          { cwd },
+          {
+            cwd,
+            env: {
+              GIT_ASKPASS: 'echo',
+              GIT_TERMINAL_PROMPT: '0',
+              GIT_CONFIG_NOSYSTEM: '1',
+            },
+          },
         );
         setBranchName(hashStdout.toString().trim());
       }

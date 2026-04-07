@@ -11,6 +11,16 @@ import { createDebugLogger } from 'ola-core';
 const debugLogger = createDebugLogger('GIT');
 
 /**
+ * Environment variables to disable git authentication prompts
+ * Hardcoded defaults to ensure git never prompts for credentials
+ */
+const GIT_NO_PROMPT_ENV: NodeJS.ProcessEnv = {
+  GIT_ASKPASS: 'echo',
+  GIT_TERMINAL_PROMPT: '0',
+  GIT_CONFIG_NOSYSTEM: '1',
+};
+
+/**
  * Checks if a directory is within a git repository hosted on GitHub.
  * @returns true if the directory is in a git repository with a github.com remote, false otherwise
  */
@@ -19,6 +29,7 @@ export const isGitHubRepository = (): boolean => {
     const remotes = (
       execSync('git remote -v', {
         encoding: 'utf-8',
+        env: GIT_NO_PROMPT_ENV,
       }) || ''
     ).trim();
 
@@ -41,6 +52,7 @@ export const getGitRepoRoot = (): string => {
   const gitRepoRoot = (
     execSync('git rev-parse --show-toplevel', {
       encoding: 'utf-8',
+      env: GIT_NO_PROMPT_ENV,
     }) || ''
   ).trim();
 
@@ -104,6 +116,7 @@ export const getLatestGitHubRelease = async (
 export function getGitHubRepoInfo(): { owner: string; repo: string } {
   const remoteUrl = execSync('git remote get-url origin', {
     encoding: 'utf-8',
+    env: GIT_NO_PROMPT_ENV,
   }).trim();
 
   // Handle SCP-style SSH URLs (git@github.com:owner/repo.git)

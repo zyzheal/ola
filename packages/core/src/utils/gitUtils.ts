@@ -82,6 +82,11 @@ export const getGitBranch = (cwd: string): string | undefined => {
       cwd,
       encoding: 'utf8',
       stdio: ['pipe', 'pipe', 'pipe'],
+      env: {
+        GIT_ASKPASS: 'echo',
+        GIT_TERMINAL_PROMPT: '0',
+        GIT_CONFIG_NOSYSTEM: '1',
+      },
     }).trim();
     return branch || undefined;
   } catch {
@@ -100,6 +105,11 @@ export const getGitRepoName = (cwd: string): string | undefined => {
       cwd,
       encoding: 'utf8',
       stdio: ['pipe', 'pipe', 'pipe'],
+      env: {
+        GIT_ASKPASS: 'echo',
+        GIT_TERMINAL_PROMPT: '0',
+        GIT_CONFIG_NOSYSTEM: '1',
+      },
     }).trim();
 
     if (remoteUrl) {

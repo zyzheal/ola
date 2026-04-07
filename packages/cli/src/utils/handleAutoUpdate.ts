@@ -13,14 +13,38 @@ import { MessageType } from '../ui/types.js';
 import { spawnWrapper } from './spawnWrapper.js';
 import type { spawn } from 'node:child_process';
 import os from 'node:os';
+import * as fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { createDebugLogger } from 'ola-core';
-import {
-  isLocalGitRepo,
-  updateFromLocalRepo,
-  type LocalRepoUpdateResult,
-} from './localRepoUpdate.js';
+import * as path from 'node:path';
 
 const debugLogger = createDebugLogger('HANDLE_AUTO_UPDATE');
+
+/**
+ * Check if ola itself is running from a local git repository
+ * Only check for updates if ola is installed from git, not for user's project
+ */
+function isOlaGitRepo(): boolean {
+  try {
+    // In ESM, use import.meta.url instead of __dirname
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    // Walk up to find .git directory
+    let currentDir = __dirname;
+    for (let i = 0; i < 5; i++) {
+      const gitDir = path.join(currentDir, '.git');
+      if (fs.existsSync(gitDir)) {
+        return true;
+      }
+      const parentDir = path.dirname(currentDir);
+      if (parentDir === currentDir) break;
+      currentDir = parentDir;
+    }
+    return false;
+  } catch (_error) {
+    return false;
+  }
+}
 
 export function handleAutoUpdate(
   info: UpdateObject | null,
@@ -41,9 +65,12 @@ export function handleAutoUpdate(
     return;
   }
 
-  // Check if this is a local git repository - use local repo update
-  if (isLocalGitRepo(projectRoot)) {
-    handleLocalRepoUpdate(projectRoot, info);
+  // Skip auto-update for git repository installations
+  // Git-based installations should be updated manually with "git pull"
+  if (isOlaGitRepo()) {
+    debugLogger.debug(
+      'Git repository installation detected. Skipping auto-update.',
+    );
     return;
   }
 
@@ -104,35 +131,6 @@ export function handleAutoUpdate(
     });
   });
   return updateProcess;
-}
-
-/**
- * Handle update from local git repository
- */
-function handleLocalRepoUpdate(projectRoot: string, info: UpdateObject) {
-  updateEventEmitter.emit('update-received', {
-    message: `${info.message}\nLocal git repository detected. Updating from remote repository...`,
-  });
-
-  updateFromLocalRepo(
-    { projectRoot, branch: 'main', remote: 'origin' },
-    (message) => {
-      // Progress updates
-      debugLogger.info('Update progress:', message);
-      updateEventEmitter.emit('update-info', { message });
-    },
-    (result: LocalRepoUpdateResult) => {
-      if (result.success) {
-        updateEventEmitter.emit('update-success', {
-          message: result.message,
-        });
-      } else {
-        updateEventEmitter.emit('update-failed', {
-          message: `Local repo update failed: ${result.message}`,
-        });
-      }
-    },
-  );
 }
 
 export function setUpdateHandler(

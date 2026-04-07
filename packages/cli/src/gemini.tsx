@@ -14,8 +14,10 @@ import {
 } from 'ola-core';
 import { render } from 'ink';
 import dns from 'node:dns';
+import * as fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import os from 'node:os';
-import { basename } from 'node:path';
+import * as path from 'node:path';
 import v8 from 'node:v8';
 import React from 'react';
 import { validateAuthMethod } from './config/auth.js';
@@ -154,7 +156,7 @@ export async function startInteractiveUI(
     `[startInteractiveUI] CLI version: ${version}, took ${Date.now() - uiStartTime}ms`,
   );
 
-  setWindowTitle(basename(workspaceRoot), settings);
+  setWindowTitle(path.basename(workspaceRoot), settings);
 
   // Create wrapper component to use hooks inside render
   const AppWrapper = () => {
@@ -212,9 +214,33 @@ export async function startInteractiveUI(
     `[startInteractiveUI] Total UI startup time: ${Date.now() - uiStartTime}ms`,
   );
 
-  // Check for updates only if enableAutoUpdate is not explicitly disabled.
-  // Using !== false ensures updates are enabled by default when undefined.
-  if (settings.merged.general?.enableAutoUpdate !== false) {
+  // Skip update check for git repository installations
+  // Git-based installations should be updated manually with "git pull"
+  const isOlaGitRepo = (() => {
+    try {
+      // In ESM, use import.meta.url instead of __dirname
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
+      // __dirname is dist/src, so walk up to find .git directory
+      let currentDir = __dirname;
+      for (let i = 0; i < 5; i++) {
+        const gitDir = path.join(currentDir, '.git');
+        if (fs.existsSync(gitDir)) {
+          return true;
+        }
+        const parentDir = path.dirname(currentDir);
+        if (parentDir === currentDir) break;
+        currentDir = parentDir;
+      }
+      return false;
+    } catch (_error) {
+      return false;
+    }
+  })();
+
+  // Check for updates only if enableAutoUpdate is not explicitly disabled
+  // and ola is not installed from a git repository
+  if (settings.merged.general?.enableAutoUpdate !== false && !isOlaGitRepo) {
     checkForUpdates()
       .then((info) => {
         handleAutoUpdate(info, settings, config.getProjectRoot());
@@ -223,6 +249,10 @@ export async function startInteractiveUI(
         // Silently ignore update check errors.
         debugLogger.warn(`Update check failed: ${err}`);
       });
+  } else if (isOlaGitRepo) {
+    debugLogger.debug(
+      'Git repository installation detected. Skipping update check.',
+    );
   }
 
   registerCleanup(() => instance.unmount());
