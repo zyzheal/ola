@@ -204,6 +204,117 @@ export class OpenAIContentConverter {
   }
 
   /**
+   * Sanitize JSON Schema parameters for DashScope compatibility.
+   *
+   * This method ensures that:
+   * - 'properties' is always a valid object mapping (not null, undefined, or array)
+   * - 'items' is a single schema object (not an array for tuple validation)
+   * - 'additionalProperties' is boolean or a schema object
+   * - Removes null/undefined values that could cause API errors
+   *
+   * @param params - The parameters to sanitize
+   * @param toolName - Tool name for debugging purposes
+   * @returns Sanitized parameters safe for DashScope API
+   */
+  sanitizeParameters(
+    params: Record<string, unknown>,
+    toolName: string,
+  ): Record<string, unknown> {
+    if (!params || typeof params !== 'object') {
+      debugLogger.warn(
+        `[${toolName}] Parameters is not an object, returning empty object`,
+      );
+      return { type: 'object', properties: {} };
+    }
+
+    const sanitized: Record<string, unknown> = {};
+
+    for (const [key, value] of Object.entries(params)) {
+      if (key === 'properties') {
+        // Ensure properties is a valid object mapping
+        if (value && typeof value === 'object' && !Array.isArray(value)) {
+          // Recursively sanitize nested properties
+          const sanitizedProps: Record<string, unknown> = {};
+          for (const [propKey, propValue] of Object.entries(
+            value as Record<string, unknown>,
+          )) {
+            if (propValue && typeof propValue === 'object') {
+              sanitizedProps[propKey] = this.sanitizeParameters(
+                propValue as Record<string, unknown>,
+                `${toolName}.${propKey}`,
+              );
+            }
+          }
+          sanitized[key] = sanitizedProps;
+        } else {
+          // Invalid properties - use empty object
+          debugLogger.warn(
+            `[${toolName}] Invalid 'properties' field (null, array, or primitive), using empty object`,
+          );
+          sanitized[key] = {};
+        }
+      } else if (key === 'items') {
+        // Ensure items is a single schema object, not an array (tuple validation not supported)
+        if (Array.isArray(value)) {
+          debugLogger.warn(
+            `[${toolName}] 'items' is an array (tuple validation), using first item`,
+          );
+          sanitized[key] =
+            value.length > 0 && value[0] && typeof value[0] === 'object'
+              ? this.sanitizeParameters(
+                  value[0] as Record<string, unknown>,
+                  `${toolName}.items`,
+                )
+              : { type: 'string' };
+        } else if (value && typeof value === 'object') {
+          sanitized[key] = this.sanitizeParameters(
+            value as Record<string, unknown>,
+            `${toolName}.items`,
+          );
+        } else {
+          // Default to string items for safety
+          debugLogger.warn(
+            `[${toolName}] Invalid 'items' field, using default string type`,
+          );
+          sanitized[key] = { type: 'string' };
+        }
+      } else if (key === 'additionalProperties') {
+        // Ensure additionalProperties is boolean or schema object
+        if (typeof value === 'boolean') {
+          sanitized[key] = value;
+        } else if (value && typeof value === 'object') {
+          sanitized[key] = this.sanitizeParameters(
+            value as Record<string, unknown>,
+            `${toolName}.additionalProperties`,
+          );
+        } else {
+          // Default to false for safety
+          debugLogger.warn(
+            `[${toolName}] Invalid 'additionalProperties', defaulting to false`,
+          );
+          sanitized[key] = false;
+        }
+      } else if (key === 'required') {
+        // Ensure required is an array of strings
+        if (Array.isArray(value)) {
+          sanitized[key] = value.filter((item) => typeof item === 'string');
+        }
+        // Skip invalid required fields
+      } else if (value !== null && value !== undefined) {
+        // Copy other non-null values
+        sanitized[key] = value;
+      }
+    }
+
+    // Ensure type is set, default to 'object' if missing
+    if (!sanitized['type']) {
+      sanitized['type'] = 'object';
+    }
+
+    return sanitized;
+  }
+
+  /**
    * Convert Gemini tools to OpenAI format for API compatibility.
    * Handles both Gemini tools (using 'parameters' field) and MCP tools (using 'parametersJsonSchema' field).
    */
@@ -246,6 +357,8 @@ export class OpenAIContentConverter {
 
             if (parameters) {
               parameters = convertSchema(parameters, this.schemaCompliance);
+              // Sanitize parameters for DashScope compatibility
+              parameters = this.sanitizeParameters(parameters, func.name);
             }
 
             openAITools.push({
