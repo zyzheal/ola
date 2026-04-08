@@ -20,6 +20,7 @@ import type {
 import { GenerateContentResponse, FinishReason } from '@google/genai';
 import type OpenAI from 'openai';
 import { safeJsonParse } from '../../utils/safeJsonParse.js';
+import { safeStringify } from '../../utils/safeStringify.js';
 import { createDebugLogger } from '../../utils/debugLogger.js';
 import type { InputModalities } from '../contentGenerator.js';
 import { StreamingToolCallParser } from './streamingToolCallParser.js';
@@ -317,7 +318,7 @@ export class OpenAIContentConverter {
           type: 'function' as const,
           function: {
             name: part.functionCall.name || '',
-            arguments: JSON.stringify(part.functionCall.args || {}),
+            arguments: safeStringify(part.functionCall.args || {}),
           },
         });
         toolCallIndex += 1;
@@ -469,7 +470,7 @@ export class OpenAIContentConverter {
           type: 'function' as const,
           function: {
             name: part.functionCall.name || '',
-            arguments: JSON.stringify(part.functionCall.args || {}),
+            arguments: safeStringify(part.functionCall.args || {}),
           },
         });
         toolCallIndex += 1;
